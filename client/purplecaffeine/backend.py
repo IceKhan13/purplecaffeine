@@ -25,4 +25,9 @@ class LocalBackend(BaseBackend):
         self.path = path
 
     def save_trial(self, trial):
+        """Saves given trial.
+
+        Args:
+            trial: trial to save
+        """
         return self.path
