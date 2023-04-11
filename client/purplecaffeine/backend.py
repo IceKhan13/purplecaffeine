@@ -16,8 +16,7 @@ class BaseBackend:
 class LocalBackend(BaseBackend):
     """Local backend."""
 
-    def __init__(self,
-                 path: str):
+    def __init__(self, path: str):
         """Local backend.
 
         Args:

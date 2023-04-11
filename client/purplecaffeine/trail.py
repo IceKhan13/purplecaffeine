@@ -6,9 +6,7 @@ from purplecaffeine.backend import BaseBackend, LocalBackend
 class Trial:
     """Trial class."""
 
-    def __init__(self,
-                 name: str,
-                 backend: Optional[BaseBackend] = None):
+    def __init__(self, name: str, backend: Optional[BaseBackend] = None):
         """Trail class for tracking experiments data.
 
         Args:
