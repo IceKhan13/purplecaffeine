@@ -1,4 +1,4 @@
-"""Backend."""
+"""Trail."""
 from typing import Optional, Union
 
 from purplecaffeine.backend import BaseBackend, LocalBackend
