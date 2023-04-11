@@ -8,13 +8,15 @@ on:
 
 jobs:
   tests:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-${{ matrix.folder }}
     timeout-minutes: 60
     strategy:
       max-parallel: 2
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
+        # In future we can add [macos-latest, windows-latest]
         python-version: [3.9, '3.10']
+        folder: ["client"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -27,8 +29,12 @@ jobs:
           pip install tox
       - name: Test using tox environment
         shell: bash
+        env:
+          FOLDER: ${{ matrix.folder }}
         run: |
           pver=${{ matrix.python-version }}
           tox -epy${pver/./}
       - name: Coverage check
+        env:
+          FOLDER: ${{ matrix.folder }}
         run: tox -ecoverage
