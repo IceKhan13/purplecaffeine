@@ -1,7 +1,6 @@
 [run]
 omit =
     # omit tempalte files
-    ecosystem/templates/*
     .tox/*
     .github/*
     docs/*
