@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    runs-on: ${{ matrix.os }}-${{ matrix.folder }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
       max-parallel: 2
