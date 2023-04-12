@@ -1,0 +1,6 @@
+[run]
+omit =
+    # omit tempalte files
+    .tox/*
+    .github/*
+    docs/*

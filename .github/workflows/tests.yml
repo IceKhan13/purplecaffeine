@@ -1,0 +1,40 @@
+name: Unit Tests & Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-latest]
+        # In future we can add [macos-latest, windows-latest]
+        python-version: [3.9, '3.10']
+        folder: ["client"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+      - name: Test using tox environment
+        shell: bash
+        env:
+          FOLDER: ${{ matrix.folder }}
+        run: |
+          pver=${{ matrix.python-version }}
+          tox -epy${pver/./}
+      - name: Coverage check
+        env:
+          FOLDER: ${{ matrix.folder }}
+        run: tox -ecoverage
