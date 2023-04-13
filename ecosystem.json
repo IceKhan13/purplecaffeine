@@ -1,6 +1,6 @@
 {
     "dependencies_files": [
-        "requirements.txt",
+        "client/requirements.txt",
         "requirements-dev.txt"
     ],
     "language": {
@@ -8,12 +8,12 @@
         "versions": ["3.10"]
     },
     "tests_command": [
-        "cd client && pytest"
+        "python -m unittest discover -s client -v"
     ],
     "styles_check_command": [
-        "pylint -rn backend client"
+        "pylint -rn api_server client"
     ],
     "coverages_check_command": [
-        "cd client && coverage3 run -m pytest"
+        "coverage3 run -m unittest discover -s client -v"
     ]
 }

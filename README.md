@@ -28,6 +28,14 @@ This project is aimed to create simple general interface to track quantum experi
 
 ----------------------------------------------------------------------------------------------------
 
+### Project organization
+
+The repository is split in 2 parts :
+- `client` folder who contains the python lib
+- `api_server` folder who contains the remote api
+
+----------------------------------------------------------------------------------------------------
+
 ### How to Give Feedback
 
 We encourage your feedback! You can share your thoughts with us by:
