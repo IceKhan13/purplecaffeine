@@ -34,6 +34,7 @@ The repository is split in 2 parts :
 - `client` folder who contains the python lib
 - `api_server` folder who contains the remote api
 
+
 ----------------------------------------------------------------------------------------------------
 
 ### How to Give Feedback
