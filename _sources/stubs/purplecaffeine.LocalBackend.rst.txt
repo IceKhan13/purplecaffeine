@@ -1,0 +1,23 @@
+﻿purplecaffeine.LocalBackend
+===========================
+
+.. currentmodule:: purplecaffeine
+
+.. autoclass:: LocalBackend
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LocalBackend.__init__
+      ~LocalBackend.save_trial
+   
+   
+
+   
+   
+   

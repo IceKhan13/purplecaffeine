@@ -1,0 +1,23 @@
+﻿purplecaffeine.Trial
+====================
+
+.. currentmodule:: purplecaffeine
+
+.. autoclass:: Trial
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Trial.__init__
+      ~Trial.add_metric
+   
+   
+
+   
+   
+   

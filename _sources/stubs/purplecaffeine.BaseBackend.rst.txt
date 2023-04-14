@@ -1,0 +1,23 @@
+﻿purplecaffeine.BaseBackend
+==========================
+
+.. currentmodule:: purplecaffeine
+
+.. autoclass:: BaseBackend
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseBackend.__init__
+      ~BaseBackend.save_trial
+   
+   
+
+   
+   
+   
