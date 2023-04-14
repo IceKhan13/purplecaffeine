@@ -6,8 +6,8 @@ from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 
-from purplecaffeine.backend import BaseBackend, LocalBackend
 from purplecaffeine.helpers import Configuration
+from purplecaffeine.backend import BaseBackend, LocalBackend
 
 
 class Trial:
