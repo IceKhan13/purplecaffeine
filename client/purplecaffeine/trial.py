@@ -7,6 +7,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 
 from purplecaffeine.backend import BaseBackend, LocalBackend
+from purplecaffeine.helpers import Configuration
 
 
 class Trial:
@@ -97,8 +98,12 @@ class Trial:
             name: name of the file
             path_to_file: path to access to the file
         """
-        if os.stat(path_to_file).st_size >= 5e6:
-            print("Your file is too big ! Limit : " + str(5) + " Mo")
+        if os.stat(path_to_file).st_size >= Configuration.MAX_SIZE:
+            print(
+                "Your file is too big ! Limit : "
+                + str(Configuration.MAX_SIZE)
+                + " Bytes"
+            )
         self.artifacts.append((name, path_to_file))
 
     def add_text(self, title: str, text: str):
