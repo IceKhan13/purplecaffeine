@@ -1,8 +1,8 @@
 """Tests for Trial."""
-from unittest import TestCase
 import os
-from qiskit import execute, QuantumCircuit
+from unittest import TestCase
 from qiskit_aer import AerSimulator
+from qiskit import execute, QuantumCircuit
 from qiskit.extensions import XGate
 from qiskit.quantum_info.operators import Operator
 
@@ -28,20 +28,20 @@ class TestTrial(TestCase):
         self.param = "Ubuntu"
 
         # Create custom operators
-        self.op_name = "XGate"
-        self.op = Operator(XGate())
+        self.ope_name = "XGate"
+        self.ope = Operator(XGate())
 
         # Create the circuit
-        self.qc_name = "Custom circuit"
-        self.qc = QuantumCircuit(nb_qubit)
-        self.qc.append(self.op, [1])
-        self.qc.cx(1, 0)
-        self.qc.measure_all()
+        self.circ_name = "Custom circuit"
+        self.circ = QuantumCircuit(nb_qubit)
+        self.circ.append(self.ope, [1])
+        self.circ.cx(1, 0)
+        self.circ.measure_all()
 
         # Run circuit
         self.backend_name = "AerSimulator"
         self.backend = AerSimulator()
-        job = execute(self.qc, self.backend, shots=512, memory=True)
+        job = execute(self.circ, self.backend, shots=512, memory=True)
         self.array = job.result()
 
         # Imaginary artifact
@@ -63,18 +63,18 @@ class TestTrial(TestCase):
         # Add everything
         self.my_trial.add_metric(self.metric_name, self.metric)
         self.my_trial.add_parameter(self.param_name, self.param)
-        self.my_trial.add_circuit(self.qc_name, self.qc)
+        self.my_trial.add_circuit(self.circ_name, self.circ)
         self.my_trial.add_qbackend(self.backend_name, self.backend)
-        self.my_trial.add_operator(self.op_name, self.op)
+        self.my_trial.add_operator(self.ope_name, self.ope)
         self.my_trial.add_artifact(self.artifact_name, self.artifact)
         self.my_trial.add_text(self.title, self.text)
         self.my_trial.add_array(self.array)
         # Check everything
         self.assertEqual(self.my_trial.metrics, [(self.metric_name, self.metric)])
         self.assertEqual(self.my_trial.parameters, [(self.param_name, self.param)])
-        self.assertEqual(self.my_trial.circuits, [(self.qc_name, self.qc)])
+        self.assertEqual(self.my_trial.circuits, [(self.circ_name, self.circ)])
         self.assertEqual(self.my_trial.qbackends, [(self.backend_name, self.backend)])
-        self.assertEqual(self.my_trial.operators, [(self.op_name, self.op)])
+        self.assertEqual(self.my_trial.operators, [(self.ope_name, self.ope)])
         self.assertEqual(self.my_trial.artifacts, [(self.artifact_name, self.artifact)])
         self.assertEqual(self.my_trial.texts, [(self.title, self.text)])
         self.assertEqual(self.my_trial.arrays, [self.array])

@@ -7,5 +7,5 @@
     LocalBackend
 """
 
-from .trail import Trial
+from .trial import Trial
 from .backend import LocalBackend, BaseBackend

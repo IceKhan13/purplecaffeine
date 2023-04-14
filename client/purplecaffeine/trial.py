@@ -1,7 +1,7 @@
 """Trial."""
 import os
-import numpy as np
 from typing import Optional, Union, List, Any
+import numpy as np
 from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
