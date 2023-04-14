@@ -19,6 +19,8 @@ class Trial:
         Args:
             name: name of trial
             backend: backend to store data of trial. Default: local storage.
+
+        Properties:
             metrics: list of metric, like number of qubits
             parameters: list of parameter, like env details
             circuits: list of quantum circuit

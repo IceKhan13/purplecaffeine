@@ -15,7 +15,7 @@ class TestTrial(TestCase):
     def setUp(self) -> None:
         """SetUp Trial object."""
         current_directory = os.path.dirname(os.path.abspath(__file__))
-        res_path = f"{current_directory}/resources"
+        res_path = os.path.join(current_directory, "resources")
         self.my_trial = Trial("My Awesome Trial !")
         nb_qubit = 2
 
