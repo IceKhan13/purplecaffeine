@@ -1,4 +1,5 @@
 """Backend."""
+import json
 
 
 class BaseBackend:
@@ -20,14 +21,47 @@ class LocalBackend(BaseBackend):
         """Local backend.
 
         Args:
-            path: folder where trail data will be saved.
+            path: folder where trial data will be saved.
         """
         self.path = path
 
-    def save_trial(self, trial):
+    def save_trial(self, trial) -> str:
         """Saves given trial.
 
         Args:
             trial: trial to save
+
+        Returns:
+            self.path: path of the trial file
         """
+        to_register = {
+            "name": f"{trial.name}",
+            "metrics": f"{trial.metrics}",
+            "parameters": f"{trial.parameters}",
+            "circuits": f"{trial.circuits}",
+            "qbackends": f"{trial.qbackends}",
+            "operators": f"{trial.operators}",
+            "artifacts": f"{trial.artifacts}",
+            "texts": f"{trial.texts}",
+            "arrays": f"{trial.arrays}",
+        }
+        trial_json = json.dumps(to_register)
+
+        with open(self.path + "/" + trial.name + ".json", "w") as trial_file:
+            trial_file.write(trial_json)
+
         return self.path
+
+    def read_trial(self, name) -> dict:
+        """Read a given trial file.
+
+        Args:
+            name: name of the trial
+
+        Returns:
+            trial_json: Json object of a trial
+        """
+        with open(self.path + "/" + name + ".json", "r") as trial_file:
+            trial_json = json.loads(trial_file.read())
+
+        return trial_json

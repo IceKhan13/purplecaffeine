@@ -1,5 +1,7 @@
 """Trial."""
 import os
+import re
+import ast
 from typing import Optional, Union, List, Any
 import numpy as np
 from qiskit.providers import Backend
@@ -124,6 +126,31 @@ class Trial:
             array: quantum circuit results
         """
         self.arrays.append(array)
+
+    # def save_trial(self):
+    #     """Save a trial into Backend."""
+    #     self.backend.save_trial(trial=self)
+
+    def read_trial(self):
+        """Read a trial from Backend."""
+        trial_json = self.backend.read_trial(name=self.name)
+
+        self.name = trial_json["name"]
+        self.metrics = ast.literal_eval(trial_json["metrics"])
+        self.parameters = ast.literal_eval(trial_json["parameters"])
+
+        #self.circuits = ast.literal_eval(trial_json["circuits"])
+        #qbackends_list = ast.literal_eval(trial_json['qbackends'])
+        #for backend in qbackends_list:
+        #    backend_name = backend[0]
+        #    backend_instance = eval(backend[1])
+        #    print(backend_name, backend_instance)
+
+        #self.operators = ast.literal_eval(trial_json["operators"])
+        #self.artifacts = ast.literal_eval(trial_json["artifacts"])
+        self.texts = ast.literal_eval(trial_json["texts"])
+
+        #array_string = re.search(r'\[.*\]', trial_json["arrays"]).group()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.backend.save_trial(self)
