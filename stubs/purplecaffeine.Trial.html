@@ -45,9 +45,9 @@
 <h1>purplecaffeine.Trial<a class="headerlink" href="#purplecaffeine-trial" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="purplecaffeine.Trial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/trail.html#Trial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.Trial" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/trial.html#Trial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.Trial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trial class.</p>
-<p>Trail class for tracking experiments data.</p>
+<p>Trial class for tracking experiments data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -56,16 +56,38 @@
 </ul>
 </dd>
 </dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>metrics: list of metric, like number of qubits
+parameters: list of parameter, like env details
+circuits: list of quantum circuit
+qbackends: list of quantum backend
+operators: list of operator, like Pauli operators
+artifacts: list of artifact path, any external files path
+texts: list of text, any descriptions
+arrays: list of array, like quantum circuit results</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="purplecaffeine.Trial.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/trail.html#Trial.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.Trial.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trail class for tracking experiments data.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/trial.html#Trial.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.Trial.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trial class for tracking experiments data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – name of trial</p></li>
 <li><p><strong>backend</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="purplecaffeine.BaseBackend.html#purplecaffeine.BaseBackend" title="purplecaffeine.backend.BaseBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBackend</span></code></a>]) – backend to store data of trial. Default: local storage.</p></li>
 </ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>metrics: list of metric, like number of qubits
+parameters: list of parameter, like env details
+circuits: list of quantum circuit
+qbackends: list of quantum backend
+operators: list of operator, like Pauli operators
+artifacts: list of artifact path, any external files path
+texts: list of text, any descriptions
+arrays: list of array, like quantum circuit results</p>
 </dd>
 </dl>
 </dd></dl>
@@ -74,10 +96,31 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.Trial.__init__" title="purplecaffeine.Trial.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name[, backend])</p></td>
-<td><p>Trail class for tracking experiments data.</p></td>
+<td><p>Trial class for tracking experiments data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_metric</span></code>(name, value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_array</span></code>(array)</p></td>
+<td><p>Adds array to trial data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_artifact</span></code>(name, path_to_file)</p></td>
+<td><p>Adds artifacts path to trial data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_circuit</span></code>(name, circuit)</p></td>
+<td><p>Adds circuit to trial data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_metric</span></code>(name, value)</p></td>
 <td><p>Adds metric to trial data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_operator</span></code>(name, operator)</p></td>
+<td><p>Adds operator to trial data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_parameter</span></code>(name, value)</p></td>
+<td><p>Adds parameter to trial data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_qbackend</span></code>(name, backend)</p></td>
+<td><p>Adds quantum backend to trial data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_text</span></code>(title, text)</p></td>
+<td><p>Adds any text to trial data.</p></td>
 </tr>
 </tbody>
 </table>
