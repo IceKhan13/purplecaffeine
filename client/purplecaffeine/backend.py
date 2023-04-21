@@ -1,5 +1,6 @@
 """Backend."""
 import json
+from qiskit_ibm_runtime.utils import RuntimeEncoder, RuntimeDecoder
 
 
 class BaseBackend:
@@ -45,7 +46,7 @@ class LocalBackend(BaseBackend):
             "texts": f"{trial.texts}",
             "arrays": f"{trial.arrays}",
         }
-        trial_json = json.dumps(to_register)
+        trial_json = json.dumps(to_register, cls=RuntimeEncoder)
 
         with open(self.path + "/" + trial.name + ".json", "w") as trial_file:
             trial_file.write(trial_json)
@@ -62,6 +63,6 @@ class LocalBackend(BaseBackend):
             trial_json: Json object of a trial
         """
         with open(self.path + "/" + name + ".json", "r") as trial_file:
-            trial_json = json.loads(trial_file.read())
+            trial_json = json.loads(trial_file.read(), cls=RuntimeDecoder)
 
         return trial_json

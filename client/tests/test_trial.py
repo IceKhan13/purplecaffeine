@@ -17,7 +17,8 @@ class TestTrial(TestCase):
         """SetUp Trial object."""
         current_directory = os.path.dirname(os.path.abspath(__file__))
         self.res_path = os.path.join(current_directory, "resources")
-        self.my_trial = Trial("My_Awesome_Trial")
+        self.local_backend = LocalBackend(path=self.res_path)
+        self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
         nb_qubit = 2
 
         # Create metric
@@ -42,7 +43,7 @@ class TestTrial(TestCase):
         # Run circuit
         self.backend_name = "AerSimulator"
         self.backend = AerSimulator()
-        job = execute(self.circ, self.backend, shots=512, memory=True)
+        job = execute(self.circ, self.backend, shots=512)
         self.array = job.result()
 
         # Imaginary artifact
@@ -55,11 +56,19 @@ class TestTrial(TestCase):
 
     def test_trial_context(self):
         """Test train context."""
-        with Trial("test_trial") as trial:
+        with Trial(name="test_trial", backend=self.local_backend) as trial:
             trial.add_metric(self.metric_name, self.metric)
         self.assertEqual(trial.metrics, [(self.metric_name, self.metric)])
 
-    def test_trial_add(self):
+        trial.save_trial()
+        self.assertTrue(
+            os.path.isfile(self.res_path + "/" + trial.name + ".json")
+        )
+        trial.read_trial()
+
+        os.remove(self.res_path + "/" + trial.name + ".json")
+
+    def test_add_trial(self):
         """Test adding stuff into Trial."""
         # Add everything
         self.my_trial.add_metric(self.metric_name, self.metric)
@@ -79,24 +88,18 @@ class TestTrial(TestCase):
         self.assertEqual(self.my_trial.artifacts, [(self.artifact_name, self.artifact)])
         self.assertEqual(self.my_trial.texts, [(self.title, self.text)])
         self.assertEqual(self.my_trial.arrays, [self.array])
-
-    # def test_save_trial(self):
-    #     """Test save trial into Backend."""
-    #     self.local_backend = LocalBackend(path=self.res_path)
-    #     local_trial = Trial(name="local_backend_trial", backend=self.local_backend)
-    #     local_trial.add_metric(self.metric_name, self.metric)
-    #     local_trial.add_parameter(self.param_name, self.param)
-    #     local_trial.add_circuit(self.circ_name, self.circ)
-    #
-    #     local_trial.save_trial()
+        self.my_trial.save_trial()
 
     def test_read_trial(self):
         """Test read trial from Backend."""
-        local_backend = LocalBackend(path=self.res_path)
-        local_trial = Trial(name="keep_trial", backend=local_backend)
+        local_trial = Trial(name=self.my_trial.name, backend=self.local_backend)
         local_trial.read_trial()
-        self.assertEqual(local_trial.name, "keep_trial")
-        self.assertEqual(local_trial.metrics, [("nb_qubit", 2)])
-        self.assertEqual(local_trial.parameters, [('OS', 'Ubuntu')])
-        self.assertEqual(local_trial.texts, [('description', 'This is my very much awesome experiment !')])
-
+        self.assertEqual(local_trial.name, self.my_trial.name)
+        self.assertEqual(local_trial.metrics, [(self.metric_name, self.metric)])
+        self.assertEqual(local_trial.parameters, [(self.param_name, self.param)])
+        # self.assertEqual(self.my_trial.circuits, [(self.circ_name, self.circ)])
+        # self.assertEqual(self.my_trial.qbackends, [(self.backend_name, self.backend)])
+        # self.assertEqual(self.my_trial.operators, [(self.ope_name, self.ope)])
+        # self.assertEqual(self.my_trial.artifacts, [(self.artifact_name, self.artifact)])
+        self.assertEqual(local_trial.texts, [(self.title, self.text)])
+        # self.assertEqual(self.my_trial.arrays, [self.array])

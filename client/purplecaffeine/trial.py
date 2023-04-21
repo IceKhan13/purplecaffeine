@@ -1,6 +1,5 @@
 """Trial."""
 import os
-import re
 import ast
 from typing import Optional, Union, List, Any
 import numpy as np
@@ -127,9 +126,9 @@ class Trial:
         """
         self.arrays.append(array)
 
-    # def save_trial(self):
-    #     """Save a trial into Backend."""
-    #     self.backend.save_trial(trial=self)
+    def save_trial(self):
+        """Save a trial into Backend."""
+        self.backend.save_trial(trial=self)
 
     def read_trial(self):
         """Read a trial from Backend."""
@@ -140,6 +139,8 @@ class Trial:
         self.parameters = ast.literal_eval(trial_json["parameters"])
 
         #self.circuits = ast.literal_eval(trial_json["circuits"])
+        #for name, circuit in circuits_json:
+        #    decoder.object_hook(circuit)
         #qbackends_list = ast.literal_eval(trial_json['qbackends'])
         #for backend in qbackends_list:
         #    backend_name = backend[0]
