@@ -1,16 +1,18 @@
 """Backend."""
 import json
-from qiskit_ibm_runtime.utils import RuntimeEncoder, RuntimeDecoder
+
+from purplecaffeine.helpers import Encoder, Decoder
 
 
 class BaseBackend:
     """Base backend class."""
 
-    def save_trial(self, trial):
+    def save_trial(self, name: str, trial_json: Encoder):
         """Saves given trial.
 
         Args:
-            trial: trial to save
+            name: name of the trial
+            trial_json: encode trial to save
         """
         raise NotImplementedError
 
@@ -26,29 +28,18 @@ class LocalBackend(BaseBackend):
         """
         self.path = path
 
-    def save_trial(self, trial) -> str:
+    def save_trial(self, name: str, trial_json: Encoder) -> str:
         """Saves given trial.
 
         Args:
-            trial: trial to save
+            name: name of the trial
+            trial_json: encode trial to save
 
         Returns:
             self.path: path of the trial file
         """
-        to_register = {
-            "name": f"{trial.name}",
-            "metrics": f"{trial.metrics}",
-            "parameters": f"{trial.parameters}",
-            "circuits": f"{trial.circuits}",
-            "qbackends": f"{trial.qbackends}",
-            "operators": f"{trial.operators}",
-            "artifacts": f"{trial.artifacts}",
-            "texts": f"{trial.texts}",
-            "arrays": f"{trial.arrays}",
-        }
-        trial_json = json.dumps(to_register, cls=RuntimeEncoder)
 
-        with open(self.path + "/" + trial.name + ".json", "w") as trial_file:
+        with open(self.path + "/" + name + ".json", "w") as trial_file:
             trial_file.write(trial_json)
 
         return self.path
@@ -63,6 +54,6 @@ class LocalBackend(BaseBackend):
             trial_json: Json object of a trial
         """
         with open(self.path + "/" + name + ".json", "r") as trial_file:
-            trial_json = json.loads(trial_file.read(), cls=RuntimeDecoder)
+            trial_json = json.loads(trial_file.read())
 
         return trial_json

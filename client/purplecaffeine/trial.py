@@ -7,7 +7,7 @@ from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 
-from purplecaffeine.helpers import Configuration
+from purplecaffeine.helpers import Configuration, Encoder, Decoder
 from purplecaffeine.backend import BaseBackend, LocalBackend
 
 
@@ -118,40 +118,33 @@ class Trial:
         """
         self.texts.append((title, text))
 
-    def add_array(self, array: Union[np.ndarray, List[Any]]):
+    def add_array(self, name, array: Union[np.ndarray, List[Any]]):
         """Adds array to trial data.
 
         Args:
+            name: name of the array
             array: quantum circuit results
         """
-        self.arrays.append(array)
+        self.arrays.append((name, array))
 
     def save_trial(self):
         """Save a trial into Backend."""
-        self.backend.save_trial(trial=self)
+        self.backend.save_trial(name=self.name, trial_json=Encoder(self).json)
 
     def read_trial(self):
         """Read a trial from Backend."""
         trial_json = self.backend.read_trial(name=self.name)
+        trial_decode = Decoder(payload=trial_json)
 
-        self.name = trial_json["name"]
-        self.metrics = ast.literal_eval(trial_json["metrics"])
-        self.parameters = ast.literal_eval(trial_json["parameters"])
-
-        #self.circuits = ast.literal_eval(trial_json["circuits"])
-        #for name, circuit in circuits_json:
-        #    decoder.object_hook(circuit)
-        #qbackends_list = ast.literal_eval(trial_json['qbackends'])
-        #for backend in qbackends_list:
-        #    backend_name = backend[0]
-        #    backend_instance = eval(backend[1])
-        #    print(backend_name, backend_instance)
-
-        #self.operators = ast.literal_eval(trial_json["operators"])
-        #self.artifacts = ast.literal_eval(trial_json["artifacts"])
-        self.texts = ast.literal_eval(trial_json["texts"])
-
-        #array_string = re.search(r'\[.*\]', trial_json["arrays"]).group()
+        self.name = trial_decode.name
+        self.metrics = trial_decode.metrics
+        self.parameters = trial_decode.parameters
+        self.circuits = trial_decode.circuits
+        self.qbackends = trial_decode.qbackends
+        self.operators = trial_decode.operators
+        self.artifacts = trial_decode.artifacts
+        self.texts = trial_decode.texts
+        self.arrays = trial_decode.arrays
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.backend.save_trial(self)

@@ -6,3 +6,4 @@
 """
 
 from .conf import Configuration
+from .json import Encoder, Decoder
