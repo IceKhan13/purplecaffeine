@@ -1,0 +1,38 @@
+$body = @{
+    name = "Trial 1"
+    description = "This is the second trial"
+    metrics = "This is the second trial"
+    parameters = "This is the second trial"
+    circuits = "This is the second trial"
+    backends = "This is the second trial"
+    operators = "This is the second trial"
+    artifacts = "This is the second trial"
+    texts = "This is the second trial"
+    arrays = "This is the second trial"
+} | ConvertTo-Json
+
+Invoke-WebRequest -Uri http://127.0.0.1:8000/api/trials/ -Method POST -Body $body -ContentType "application/json"
+
+
+-------------READ--------
+curl http://127.0.0.1:8000/api/trials/1/
+------------READ ALL-----
+curl http://127.0.0.1:8000/api/trials/
+------------UPDATE-------
+$body = @{
+    name = "Updated Trial 1"
+    description = "This trial has been updated"
+    metrics = "This IS UPDATED tRIAL"
+    parameters = "This IS UPDATED tRIAL"
+    circuits = "This IS UPDATED tRIAL"
+    backends = "This IS UPDATED tRIAL"
+    operators = "This IS UPDATED tRIAL"
+    artifacts = "This IS UPDATED tRIAL"
+    texts = "This IS UPDATED tRIAL"
+    arrays = "This IS UPDATED tRIAL"
+} | ConvertTo-Json
+
+Invoke-WebRequest -Uri http://127.0.0.1:8000/api/trials/4/ -Method PUT -Body $body -ContentType "application/json"
+--------------DELETE--------
+Invoke-WebRequest -Method DELETE http://127.0.0.1:8000/api/trials/1/
+----------------------------
