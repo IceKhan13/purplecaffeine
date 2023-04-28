@@ -1,13 +1,11 @@
 """Backend."""
 import json
 
-from purplecaffeine.helpers import Encoder, Decoder
-
 
 class BaseBackend:
     """Base backend class."""
 
-    def save_trial(self, name: str, trial_json: Encoder):
+    def save_trial(self, name: str, trial_json: json):
         """Saves given trial.
 
         Args:
@@ -28,7 +26,7 @@ class LocalBackend(BaseBackend):
         """
         self.path = path
 
-    def save_trial(self, name: str, trial_json: Encoder) -> str:
+    def save_trial(self, name: str, trial_json: json) -> str:
         """Saves given trial.
 
         Args:

@@ -122,7 +122,7 @@ class Trial:
         """
         self.texts.append((title, text))
 
-    def add_array(self, name, array: Union[np.ndarray, List[Any]]):
+    def add_array(self, name: str, array: Union[np.ndarray, List[Any]]):
         """Adds array to trial data.
 
         Args:
