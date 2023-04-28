@@ -15,6 +15,7 @@ class TestTrial(TestCase):
 
     def setUp(self) -> None:
         """SetUp Trial object."""
+        self.temp = "to_remove"
         current_directory = os.path.dirname(os.path.abspath(__file__))
         self.res_path = os.path.join(current_directory, "resources")
         self.local_backend = LocalBackend(path=self.res_path)
@@ -43,7 +44,8 @@ class TestTrial(TestCase):
         # Run circuit
         self.backend_name = "AerSimulator"
         self.backend = AerSimulator()
-        job = execute(self.circ, self.backend, shots=512)
+        job = execute(self.circ, self.backend, shots=1, memory=False)
+        self.array_name = "result"
         self.array = job.result()
 
         # Imaginary artifact
@@ -53,24 +55,10 @@ class TestTrial(TestCase):
         # Description
         self.title = "description"
         self.text = "This is my very much awesome experiment !"
+        self.my_tags = ["quantum", "test"]
 
-    def test_trial_context(self):
-        """Test train context."""
-        with Trial(name="test_trial", backend=self.local_backend) as trial:
-            trial.add_metric(self.metric_name, self.metric)
-        self.assertEqual(trial.metrics, [(self.metric_name, self.metric)])
-
-        trial.save_trial()
-        self.assertTrue(
-            os.path.isfile(self.res_path + "/" + trial.name + ".json")
-        )
-        trial.read_trial()
-
-        os.remove(self.res_path + "/" + trial.name + ".json")
-
-    def test_add_trial(self):
-        """Test adding stuff into Trial."""
-        # Add everything
+    def populate_trial(self):
+        """Populate Trial with data."""
         self.my_trial.add_metric(self.metric_name, self.metric)
         self.my_trial.add_parameter(self.param_name, self.param)
         self.my_trial.add_circuit(self.circ_name, self.circ)
@@ -78,7 +66,23 @@ class TestTrial(TestCase):
         self.my_trial.add_operator(self.ope_name, self.ope)
         self.my_trial.add_artifact(self.artifact_name, self.artifact)
         self.my_trial.add_text(self.title, self.text)
-        self.my_trial.add_array(self.array)
+        self.my_trial.add_array(self.array_name, self.array)
+        for tags in self.my_tags:
+            self.my_trial.add_tag(tags)
+
+    def test_trial_context(self):
+        """Test train context."""
+        with Trial(name=self.temp, backend=self.local_backend) as trial:
+            trial.add_metric(self.metric_name, self.metric)
+            trial.save_trial()
+            trial.read_trial()
+        self.assertTrue(os.path.isfile(self.res_path + "/" + trial.name + ".json"))
+        self.assertEqual(trial.metrics, [(self.metric_name, self.metric)])
+
+    def test_add_trial(self):
+        """Test adding stuff into Trial."""
+        # Add everything
+        self.populate_trial()
         # Check everything
         self.assertEqual(self.my_trial.metrics, [(self.metric_name, self.metric)])
         self.assertEqual(self.my_trial.parameters, [(self.param_name, self.param)])
@@ -87,19 +91,35 @@ class TestTrial(TestCase):
         self.assertEqual(self.my_trial.operators, [(self.ope_name, self.ope)])
         self.assertEqual(self.my_trial.artifacts, [(self.artifact_name, self.artifact)])
         self.assertEqual(self.my_trial.texts, [(self.title, self.text)])
-        self.assertEqual(self.my_trial.arrays, [self.array])
-        self.my_trial.save_trial()
+        self.assertEqual(self.my_trial.arrays, [(self.array_name, self.array)])
+        self.assertEqual(self.my_trial.tags, self.my_tags)
 
-    def test_read_trial(self):
-        """Test read trial from Backend."""
-        local_trial = Trial(name=self.my_trial.name, backend=self.local_backend)
-        local_trial.read_trial()
-        self.assertEqual(local_trial.name, self.my_trial.name)
-        self.assertEqual(local_trial.metrics, [(self.metric_name, self.metric)])
-        self.assertEqual(local_trial.parameters, [(self.param_name, self.param)])
-        # self.assertEqual(self.my_trial.circuits, [(self.circ_name, self.circ)])
+    def test_save_and_read(self):
+        """Test save and read Trial."""
+        # Populate Trial data
+        self.populate_trial()
+        # Save Trial into localbackend
+        self.my_trial.save_trial()
+        self.assertTrue(
+            os.path.isfile(self.res_path + "/" + self.my_trial.name + ".json")
+        )
+        # Read Trial from localbackend
+        self.my_trial.read_trial()
+        self.assertEqual(self.my_trial.name, self.my_trial.name)
+        self.assertEqual(self.my_trial.metrics, [(self.metric_name, self.metric)])
+        self.assertEqual(self.my_trial.parameters, [(self.param_name, self.param)])
+        self.assertEqual(self.my_trial.circuits, [(self.circ_name, self.circ)])
         # self.assertEqual(self.my_trial.qbackends, [(self.backend_name, self.backend)])
-        # self.assertEqual(self.my_trial.operators, [(self.ope_name, self.ope)])
+        self.assertEqual(self.my_trial.operators, [(self.ope_name, self.ope)])
         # self.assertEqual(self.my_trial.artifacts, [(self.artifact_name, self.artifact)])
-        self.assertEqual(local_trial.texts, [(self.title, self.text)])
-        # self.assertEqual(self.my_trial.arrays, [self.array])
+        self.assertEqual(self.my_trial.texts, [(self.title, self.text)])
+        self.assertEqual(
+            str(self.my_trial.arrays), str([(self.array_name, self.array)])
+        )
+        self.assertEqual(self.my_trial.tags, self.my_tags)
+
+    def tearDown(self) -> None:
+        """TearDown Trial object."""
+        file_to_remove = self.res_path + "/" + self.temp + ".json"
+        if os.path.exists(file_to_remove):
+            os.remove(file_to_remove)

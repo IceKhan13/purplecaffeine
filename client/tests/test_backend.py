@@ -1,5 +1,6 @@
 """Tests for Backend."""
 import os
+import json
 from unittest import TestCase
 from purplecaffeine.trial import Trial
 from purplecaffeine.backend import LocalBackend
@@ -14,16 +15,21 @@ class TestBackend(TestCase):
         self.res_path = os.path.join(current_directory, "resources")
 
         # Setting up local backend
+        self.temp = "to_remove"
         self.local_backend = LocalBackend(path=self.res_path)
-        with Trial(name="test_backend", backend=self.local_backend) as self.my_trial:
-            self.my_trial.add_metric("some-metrics", 2)
+        self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
+        self.my_trial.add_metric("some-metrics", 2)
 
     def test_save_backend(self):
         """Test save trial."""
-        self.local_backend.save_trial(self.my_trial)
-        self.assertTrue(
-            os.path.isfile(self.res_path + "/" + self.my_trial.name + ".json")
-        )
+        to_register = {
+            "name": f"{self.my_trial.name}",
+            "metrics": f"{self.my_trial.metrics}",
+        }
+        trial_json = json.dumps(to_register)
+
+        self.local_backend.save_trial(name=self.temp, trial_json=trial_json)
+        self.assertTrue(os.path.isfile(self.res_path + "/" + self.temp + ".json"))
 
     def test_read_backend(self):
         """Test read trial."""
@@ -32,4 +38,6 @@ class TestBackend(TestCase):
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
-        os.remove(self.res_path + "/" + self.my_trial.name + ".json")
+        file_to_remove = self.res_path + "/" + self.temp + ".json"
+        if os.path.exists(file_to_remove):
+            os.remove(file_to_remove)

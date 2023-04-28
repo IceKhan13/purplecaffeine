@@ -1,13 +1,15 @@
 """Trial."""
 import os
 import ast
+import json
 from typing import Optional, Union, List, Any
 import numpy as np
 from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
+from qiskit_ibm_runtime.utils import RuntimeEncoder, RuntimeDecoder
 
-from purplecaffeine.helpers import Configuration, Encoder, Decoder
+from purplecaffeine.helpers import Configuration
 from purplecaffeine.backend import BaseBackend, LocalBackend
 
 
@@ -30,6 +32,7 @@ class Trial:
             artifacts: list of artifact path, any external files path
             texts: list of text, any descriptions
             arrays: list of array, like quantum circuit results
+            tags: list of tags in string format
         """
         self.name = name
         self.backend = backend or LocalBackend(path="./")
@@ -42,6 +45,7 @@ class Trial:
         self.artifacts = []
         self.texts = []
         self.arrays = []
+        self.tags = []
 
     def __repr__(self):
         return f"<Trial: {self.name}>"
@@ -127,24 +131,69 @@ class Trial:
         """
         self.arrays.append((name, array))
 
+    def add_tag(self, tag: str):
+        """Adds any tag to trial data.
+
+        Args:
+            tag: word of your tag
+        """
+        self.tags.append(tag)
+
     def save_trial(self):
         """Save a trial into Backend."""
-        self.backend.save_trial(name=self.name, trial_json=Encoder(self).json)
+        circuits_encoder = []
+        qbackends_encoder = []
+        operators_encoder = []
+        artifacts_encoder = []
+        arrays_encoder = []
+
+        for elem in self.circuits:
+            circuits_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+
+        for elem in self.operators:
+            operators_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+
+        for elem in self.arrays:
+            arrays_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+
+        to_register = {
+            "name": f"{self.name}",
+            "metrics": f"{self.metrics}",
+            "parameters": f"{self.parameters}",
+            "circuits": f"{circuits_encoder}",
+            "qbackends": f"{qbackends_encoder}",
+            "operators": f"{operators_encoder}",
+            "artifacts": f"{artifacts_encoder}",
+            "texts": f"{self.texts}",
+            "arrays": f"{arrays_encoder}",
+            "tags": f"{self.tags}",
+        }
+
+        trial_json = json.dumps(to_register)
+        self.backend.save_trial(name=self.name, trial_json=trial_json)
 
     def read_trial(self):
         """Read a trial from Backend."""
+        self.circuits = []
+        self.qbackends = []
+        self.operators = []
+        self.artifacts = []
+        self.arrays = []
         trial_json = self.backend.read_trial(name=self.name)
-        trial_decode = Decoder(payload=trial_json)
 
-        self.name = trial_decode.name
-        self.metrics = trial_decode.metrics
-        self.parameters = trial_decode.parameters
-        self.circuits = trial_decode.circuits
-        self.qbackends = trial_decode.qbackends
-        self.operators = trial_decode.operators
-        self.artifacts = trial_decode.artifacts
-        self.texts = trial_decode.texts
-        self.arrays = trial_decode.arrays
+        self.name = trial_json["name"]
+        self.metrics = ast.literal_eval(trial_json["metrics"])
+        self.parameters = ast.literal_eval(trial_json["parameters"])
+        for elem in ast.literal_eval(trial_json["circuits"]):
+            self.circuits.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+        self.qbackends = []
+        for elem in ast.literal_eval(trial_json["operators"]):
+            self.operators.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+        self.artifacts = []
+        self.texts = ast.literal_eval(trial_json["texts"])
+        for elem in ast.literal_eval(trial_json["arrays"]):
+            self.arrays.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+        self.tags = ast.literal_eval(trial_json["tags"])
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.backend.save_trial(self)
+        self.save_trial()
