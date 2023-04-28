@@ -30,7 +30,7 @@ class Trial:
             circuits: list of quantum circuit
             qbackends: list of quantum backend
             operators: list of operator, like Pauli operators
-            artifacts: list of artifact path, any external files path
+            artifacts: list of artifact, any external files
             texts: list of text, any descriptions
             arrays: list of array, like quantum circuit results
             tags: list of tags in string format
@@ -141,7 +141,7 @@ class Trial:
         self.tags.append(tag)
 
     def save_trial(self):
-        """Save a trial into Backend."""
+        """Serialize Trial into Json format and save into Backend."""
         circuits_encoder = []
         for elem in self.circuits:
             circuits_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
@@ -179,7 +179,7 @@ class Trial:
         self.backend.save_trial(name=self.name, trial_json=trial_json)
 
     def read_trial(self):
-        """Read a trial from Backend."""
+        """Read a trial from Backend & deserialize it into Trial object."""
         trial_json = self.backend.read_trial(name=self.name)
 
         self.name = trial_json["name"]
