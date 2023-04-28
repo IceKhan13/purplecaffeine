@@ -1,8 +1,9 @@
 """Trial."""
-import os
 import ast
 import json
+import pickle
 import numpy as np
+from pympler import asizeof
 from typing import Optional, Union, List, Any
 from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
@@ -98,20 +99,20 @@ class Trial:
         """
         self.operators.append((name, operator))
 
-    def add_artifact(self, name: str, path_to_file: str):
+    def add_artifact(self, name: str, artifact: Any):
         """Adds artifacts path to trial data.
 
         Args:
             name: name of the file
-            path_to_file: path to access to the file
+            artifact: file object
         """
-        if os.stat(path_to_file).st_size >= Configuration.MAX_SIZE:
+        if asizeof.asizeof(artifact) >= Configuration.MAX_SIZE:
             print(
                 "Your file is too big ! Limit : "
                 + str(Configuration.MAX_SIZE)
                 + " Bytes"
             )
-        self.artifacts.append((name, path_to_file))
+        self.artifacts.append((name, artifact))
 
     def add_text(self, title: str, text: str):
         """Adds any text to trial data.
@@ -146,16 +147,16 @@ class Trial:
             circuits_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
 
         qbackends_encoder = []
-        # for elem in self.qbackends:
-        #    qbackends_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+        for elem in self.qbackends:
+            qbackends_encoder.append((elem[0], pickle.dumps(elem[1])))
 
         operators_encoder = []
         for elem in self.operators:
             operators_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
 
         artifacts_encoder = []
-        # for elem in self.artifacts:
-        #    artifacts_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+        for elem in self.artifacts:
+            artifacts_encoder.append((elem[0], pickle.dumps(elem[1])))
 
         arrays_encoder = []
         for elem in self.arrays:
@@ -190,16 +191,16 @@ class Trial:
             self.circuits.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
 
         self.qbackends = []
-        #for elem in ast.literal_eval(trial_json["qbackends"]):
-        #    self.qbackends.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+        for elem in ast.literal_eval(trial_json["qbackends"]):
+            self.qbackends.append((elem[0], pickle.loads(elem[1])))
 
         self.operators = []
         for elem in ast.literal_eval(trial_json["operators"]):
             self.operators.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
 
         self.artifacts = []
-        #for elem in ast.literal_eval(trial_json["artifacts"]):
-        #    self.artifacts.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+        for elem in ast.literal_eval(trial_json["artifacts"]):
+            self.artifacts.append((elem[0], pickle.loads(elem[1])))
 
         self.texts = ast.literal_eval(trial_json["texts"])
 
