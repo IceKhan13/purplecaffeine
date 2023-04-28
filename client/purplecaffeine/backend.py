@@ -37,7 +37,9 @@ class LocalBackend(BaseBackend):
             self.path: path of the trial file
         """
 
-        with open(self.path + "/" + name + ".json", "w") as trial_file:
+        with open(
+            self.path + "/" + name + ".json", "w", encoding="utf-8"
+        ) as trial_file:
             trial_file.write(trial_json)
 
         return self.path
@@ -51,7 +53,9 @@ class LocalBackend(BaseBackend):
         Returns:
             trial_json: Json object of a trial
         """
-        with open(self.path + "/" + name + ".json", "r") as trial_file:
+        with open(
+            self.path + "/" + name + ".json", "r", encoding="utf-8"
+        ) as trial_file:
             trial_json = json.loads(trial_file.read())
 
         return trial_json

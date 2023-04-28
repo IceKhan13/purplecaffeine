@@ -1,7 +1,7 @@
 """Tests for Trial."""
 import os
-from PIL import Image
 from unittest import TestCase
+from PIL import Image
 from qiskit_aer import AerSimulator
 from qiskit.providers import Backend
 from qiskit import execute, QuantumCircuit

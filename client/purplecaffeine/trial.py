@@ -2,9 +2,9 @@
 import ast
 import json
 import pickle
+from typing import Optional, Union, List, Any
 import numpy as np
 from pympler import asizeof
-from typing import Optional, Union, List, Any
 from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
