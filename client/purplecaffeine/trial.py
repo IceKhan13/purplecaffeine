@@ -2,8 +2,8 @@
 import os
 import ast
 import json
-from typing import Optional, Union, List, Any
 import numpy as np
+from typing import Optional, Union, List, Any
 from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
@@ -142,17 +142,22 @@ class Trial:
     def save_trial(self):
         """Save a trial into Backend."""
         circuits_encoder = []
-        qbackends_encoder = []
-        operators_encoder = []
-        artifacts_encoder = []
-        arrays_encoder = []
-
         for elem in self.circuits:
             circuits_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
 
+        qbackends_encoder = []
+        # for elem in self.qbackends:
+        #    qbackends_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+
+        operators_encoder = []
         for elem in self.operators:
             operators_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
 
+        artifacts_encoder = []
+        # for elem in self.artifacts:
+        #    artifacts_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
+
+        arrays_encoder = []
         for elem in self.arrays:
             arrays_encoder.append((elem[0], json.dumps(elem[1], cls=RuntimeEncoder)))
 
@@ -174,25 +179,34 @@ class Trial:
 
     def read_trial(self):
         """Read a trial from Backend."""
-        self.circuits = []
-        self.qbackends = []
-        self.operators = []
-        self.artifacts = []
-        self.arrays = []
         trial_json = self.backend.read_trial(name=self.name)
 
         self.name = trial_json["name"]
         self.metrics = ast.literal_eval(trial_json["metrics"])
         self.parameters = ast.literal_eval(trial_json["parameters"])
+
+        self.circuits = []
         for elem in ast.literal_eval(trial_json["circuits"]):
             self.circuits.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+
         self.qbackends = []
+        #for elem in ast.literal_eval(trial_json["qbackends"]):
+        #    self.qbackends.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+
+        self.operators = []
         for elem in ast.literal_eval(trial_json["operators"]):
             self.operators.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+
         self.artifacts = []
+        #for elem in ast.literal_eval(trial_json["artifacts"]):
+        #    self.artifacts.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+
         self.texts = ast.literal_eval(trial_json["texts"])
+
+        self.arrays = []
         for elem in ast.literal_eval(trial_json["arrays"]):
             self.arrays.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
+
         self.tags = ast.literal_eval(trial_json["tags"])
 
     def __exit__(self, exc_type, exc_val, exc_tb):
