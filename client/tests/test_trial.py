@@ -76,8 +76,7 @@ class TestTrial(TestCase):
         """Test train context."""
         with Trial(name=self.temp, backend=self.local_backend) as trial:
             trial.add_metric(self.metric_name, self.metric)
-            trial.save_trial()
-            trial.read_trial()
+        trial.read_trial()
         self.assertTrue(os.path.isfile(self.res_path + "/" + trial.name + ".json"))
         self.assertEqual(trial.metrics, [(self.metric_name, self.metric)])
 
