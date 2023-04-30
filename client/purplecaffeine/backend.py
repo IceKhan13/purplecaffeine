@@ -2,6 +2,8 @@
 import os
 import json
 
+from purplecaffeine.utils import TrialEncoder, TrialDecoder
+
 
 class BaseBackend:
     """Base backend class."""
@@ -40,22 +42,20 @@ class LocalBackend(BaseBackend):
         with open(
             os.path.join(self.path, name + ".json"), "w", encoding="utf-8"
         ) as trial_file:
-            trial_file.write(trial)
+            json.dump(trial_file, trial, cls=TrialEncoder)
 
         return self.path
 
-    def read_trial(self, name) -> dict:
+    def read_trial(self, name: str) -> dict:
         """Read a given trial file.
 
         Args:
             name: name of the trial
 
         Returns:
-            trial: Json object of a trial
+            trial: object of a trial
         """
         with open(
             os.path.join(self.path, name + ".json"), "r", encoding="utf-8"
         ) as trial_file:
-            trial = json.loads(trial_file.read())
-
-        return trial
+            return json.load(trial_file, cls=TrialDecoder)

@@ -13,6 +13,13 @@ from purplecaffeine.trial import Trial
 
 
 def filtered_attr(obj: Trial) -> []:
+    """Filter for Trial object def.
+    Args:
+        obj: Trial object.
+
+    Returns:
+        List of Trial attributes
+    """
     return [
         name_elem
         for name_elem in dir(obj)
@@ -28,18 +35,17 @@ def filtered_attr(obj: Trial) -> []:
 class TrialEncoder(json.JSONEncoder):
     """Json encoder."""
 
-    def default(self, obj):
+    def default(self, obj):  # pylint: disable=arguments-differ
         """Default encoder class."""
         to_register = {}
-        if isinstance(obj, Trial):
-            trial_elem = filtered_attr(obj=obj)
-            to_register = {
-                f"name": f"{obj.name}",
-                **{
-                    f"{name_elem}": f"{self.tuple_encoder(getattr(obj, name_elem))}"
-                    for name_elem in trial_elem
-                },
-            }
+        trial_elem = filtered_attr(obj=obj)
+        to_register = {
+            "name": f"{obj.name}",
+            **{
+                f"{name_elem}": f"{self.tuple_encoder(getattr(obj, name_elem))}"
+                for name_elem in trial_elem
+            },
+        }
         return to_register
 
     @staticmethod
@@ -48,13 +54,9 @@ class TrialEncoder(json.JSONEncoder):
         to_append = []
         if len(trial_elem) == 0:
             return []
-        if type(trial_elem[0]) is tuple:
+        if isinstance(trial_elem[0], tuple):
             for obj_tuple in trial_elem:
-                if (
-                    isinstance(obj_tuple[1], str)
-                    or isinstance(obj_tuple[1], int)
-                    or isinstance(obj_tuple[1], float)
-                ):
+                if isinstance(obj_tuple[1], (str, int, float)):
                     to_append.append((obj_tuple[0], obj_tuple[1]))
                 elif isinstance(obj_tuple[1], QuantumCircuit):
                     to_append.append(
@@ -86,9 +88,9 @@ class TrialDecoder(json.JSONDecoder):
         json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
 
     @staticmethod
-    def object_hook(obj: json):
+    def object_hook(obj: json):  # pylint: disable=arguments-differ
         """Rules for decoder."""
-        new_trial = Trial(obj["name"])
+        new_trial = Trial(name=obj["name"])
         trial_elem = filtered_attr(obj=new_trial)
         for attr in trial_elem:
             to_value = []

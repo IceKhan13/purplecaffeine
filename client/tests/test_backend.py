@@ -1,6 +1,5 @@
 """Tests for Backend."""
 import os
-import json
 from unittest import TestCase
 from purplecaffeine.trial import Trial
 from purplecaffeine.backend import LocalBackend
@@ -21,14 +20,7 @@ class TestBackend(TestCase):
         self.my_trial.add_metric("some-metrics", 2)
 
     def test_save_backend(self):
-        """Test save trial."""
-        to_register = {
-            "name": f"{self.my_trial.name}",
-            "metrics": f"{self.my_trial.metrics}",
-        }
-        trial_json = json.dumps(to_register)
-
-        self.local_backend.save_trial(name=self.temp, trial=trial_json)
+        self.local_backend.save_trial(name=self.temp, trial=self.my_trial)
         self.assertTrue(
             os.path.isfile(os.path.join(self.res_path, self.temp + ".json"))
         )
