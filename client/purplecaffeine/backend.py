@@ -6,12 +6,12 @@ import json
 class BaseBackend:
     """Base backend class."""
 
-    def save_trial(self, name: str, trial_json: json):
+    def save_trial(self, name: str, trial):
         """Saves given trial.
 
         Args:
             name: name of the trial
-            trial_json: encode trial to save
+            trial: encode trial to save
         """
         raise NotImplementedError
 
@@ -27,12 +27,12 @@ class LocalBackend(BaseBackend):
         """
         self.path = path
 
-    def save_trial(self, name: str, trial_json: json) -> str:
+    def save_trial(self, name: str, trial) -> str:
         """Saves given trial.
 
         Args:
             name: name of the trial
-            trial_json: encode trial to save
+            trial: encode trial to save
 
         Returns:
             self.path: path of the trial file
@@ -40,7 +40,7 @@ class LocalBackend(BaseBackend):
         with open(
             os.path.join(self.path, name + ".json"), "w", encoding="utf-8"
         ) as trial_file:
-            trial_file.write(trial_json)
+            trial_file.write(trial)
 
         return self.path
 
@@ -51,11 +51,11 @@ class LocalBackend(BaseBackend):
             name: name of the trial
 
         Returns:
-            trial_json: Json object of a trial
+            trial: Json object of a trial
         """
         with open(
             os.path.join(self.path, name + ".json"), "r", encoding="utf-8"
         ) as trial_file:
-            trial_json = json.loads(trial_file.read())
+            trial = json.loads(trial_file.read())
 
-        return trial_json
+        return trial

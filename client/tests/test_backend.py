@@ -28,7 +28,7 @@ class TestBackend(TestCase):
         }
         trial_json = json.dumps(to_register)
 
-        self.local_backend.save_trial(name=self.temp, trial_json=trial_json)
+        self.local_backend.save_trial(name=self.temp, trial=trial_json)
         self.assertTrue(
             os.path.isfile(os.path.join(self.res_path, self.temp + ".json"))
         )

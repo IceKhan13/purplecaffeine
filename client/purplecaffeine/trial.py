@@ -176,40 +176,40 @@ class Trial:
             "tags": f"{self.tags}",
         }
 
-        trial_json = json.dumps(to_register)
-        self.backend.save_trial(name=self.name, trial_json=trial_json)
+        trial = json.dumps(to_register)
+        self.backend.save_trial(name=self.name, trial=trial)
 
     def read_trial(self):
         """Read a trial from Backend & deserialize it into Trial object."""
-        trial_json = self.backend.read_trial(name=self.name)
+        trial = self.backend.read_trial(name=self.name)
 
-        self.name = trial_json["name"]
-        self.metrics = ast.literal_eval(trial_json["metrics"])
-        self.parameters = ast.literal_eval(trial_json["parameters"])
+        self.name = trial["name"]
+        self.metrics = ast.literal_eval(trial["metrics"])
+        self.parameters = ast.literal_eval(trial["parameters"])
 
         self.circuits = []
-        for elem in ast.literal_eval(trial_json["circuits"]):
+        for elem in ast.literal_eval(trial["circuits"]):
             self.circuits.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
 
         self.qbackends = []
-        for elem in ast.literal_eval(trial_json["qbackends"]):
+        for elem in ast.literal_eval(trial["qbackends"]):
             self.qbackends.append((elem[0], pickle.loads(elem[1])))
 
         self.operators = []
-        for elem in ast.literal_eval(trial_json["operators"]):
+        for elem in ast.literal_eval(trial["operators"]):
             self.operators.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
 
         self.artifacts = []
-        for elem in ast.literal_eval(trial_json["artifacts"]):
+        for elem in ast.literal_eval(trial["artifacts"]):
             self.artifacts.append((elem[0], pickle.loads(elem[1])))
 
-        self.texts = ast.literal_eval(trial_json["texts"])
+        self.texts = ast.literal_eval(trial["texts"])
 
         self.arrays = []
-        for elem in ast.literal_eval(trial_json["arrays"]):
+        for elem in ast.literal_eval(trial["arrays"]):
             self.arrays.append((elem[0], json.loads(elem[1], cls=RuntimeDecoder)))
 
-        self.tags = ast.literal_eval(trial_json["tags"])
+        self.tags = ast.literal_eval(trial["tags"])
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save_trial()
