@@ -9,10 +9,8 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 from qiskit_ibm_runtime.utils import RuntimeEncoder, RuntimeDecoder
 
-from purplecaffeine.trial import Trial
 
-
-def filtered_attr(obj: Trial) -> []:
+def filtered_attr(obj: Any) -> []:
     """Filter for Trial object def.
     Args:
         obj: Trial object.
@@ -32,12 +30,20 @@ def filtered_attr(obj: Trial) -> []:
     ]
 
 
+class FakeTrial(object):
+    """Fake Trial object to avoid circular import."""
+
+    def __init__(self, obj):
+        """Fake Trial init."""
+        for elem in obj.keys():
+            setattr(self, elem, [])
+
+
 class TrialEncoder(json.JSONEncoder):
     """Json encoder."""
 
     def default(self, obj):  # pylint: disable=arguments-differ
         """Default encoder class."""
-        to_register = {}
         trial_elem = filtered_attr(obj=obj)
         to_register = {
             "name": f"{obj.name}",
@@ -88,9 +94,10 @@ class TrialDecoder(json.JSONDecoder):
         json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
 
     @staticmethod
-    def object_hook(obj: json):  # pylint: disable=arguments-differ
+    def object_hook(obj):  # pylint: disable=arguments-differ
         """Rules for decoder."""
-        new_trial = Trial(name=obj["name"])
+        new_trial = FakeTrial(obj)
+        new_trial.name = obj["name"]
         trial_elem = filtered_attr(obj=new_trial)
         for attr in trial_elem:
             to_value = []

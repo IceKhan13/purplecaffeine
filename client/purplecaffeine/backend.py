@@ -42,11 +42,11 @@ class LocalBackend(BaseBackend):
         with open(
             os.path.join(self.path, name + ".json"), "w", encoding="utf-8"
         ) as trial_file:
-            json.dump(trial_file, trial, cls=TrialEncoder)
+            json.dump(trial, trial_file, cls=TrialEncoder)
 
         return self.path
 
-    def read_trial(self, name: str) -> dict:
+    def read_trial(self, name: str) -> object:
         """Read a given trial file.
 
         Args:

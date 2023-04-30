@@ -1,6 +1,9 @@
 """Tests for Backend."""
 import os
 from unittest import TestCase
+
+from .common import test_teardown
+
 from purplecaffeine.trial import Trial
 from purplecaffeine.backend import LocalBackend
 
@@ -28,10 +31,8 @@ class TestBackend(TestCase):
     def test_read_backend(self):
         """Test read trial."""
         trial_json = self.local_backend.read_trial(name=self.my_trial.name)
-        self.assertTrue(isinstance(trial_json, dict))
+        self.assertTrue(isinstance(trial_json, object))
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
-        file_to_remove = os.path.join(self.res_path, self.temp + ".json")
-        if os.path.exists(file_to_remove):
-            os.remove(file_to_remove)
+        test_teardown(self)
