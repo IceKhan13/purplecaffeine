@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Trial(models.Model):
     name = models.CharField(max_length=255)
     metrics = models.JSONField(default=list)
