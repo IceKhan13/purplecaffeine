@@ -11,7 +11,7 @@ from qiskit.quantum_info.operators import Operator
 
 from purplecaffeine.trial import Trial
 from purplecaffeine.backend import LocalBackend
-from purplecaffeine.utils import TrialEncoder
+from purplecaffeine.utils import TrialEncoder, TrialDecoder
 
 
 class TestJson(TestCase):
@@ -69,7 +69,7 @@ class TestJson(TestCase):
         trial.add_circuit(self.circ_name, self.circ)
         trial.add_qbackend(self.backend_name, self.backend)
         trial.add_operator(self.ope_name, self.ope)
-        #trial.add_artifact(self.artifact_name, self.artifact)
+        # trial.add_artifact(self.artifact_name, self.artifact)
         trial.add_text(self.title, self.text)
         trial.add_array(self.array_name, self.array)
         for tags in self.my_tags:
@@ -82,6 +82,39 @@ class TestJson(TestCase):
         self.populate_trial(temp_trial)
         encoded = json.dumps(temp_trial, cls=TrialEncoder)
         self.assertTrue(isinstance(json.loads(encoded), dict))
+
+    def test_decoder(self):
+        """Test decoder"""
+        temp_trial = Trial(name=self.temp, backend=self.local_backend)
+        # Populate Trial data
+        self.populate_trial(temp_trial)
+        with open(
+            os.path.join(self.local_backend.path, temp_trial.name + ".json"),
+            "w",
+            encoding="utf-8",
+        ) as trial_file:
+            trial_file.write(json.dumps(temp_trial, cls=TrialEncoder))
+
+        with open(
+            os.path.join(self.local_backend.path, temp_trial.name + ".json"),
+            "r",
+            encoding="utf-8",
+        ) as trial_file:
+            trial = json.loads(trial_file.read(), cls=TrialDecoder)
+
+        self.assertEqual(trial.name, self.temp)
+        self.assertEqual(trial.metrics, [(self.metric_name, self.metric), ("toto", 12)])
+        self.assertEqual(trial.parameters, [(self.param_name, self.param)])
+        self.assertEqual(trial.circuits, [(self.circ_name, self.circ)])
+        self.assertEqual(
+            str(temp_trial.qbackends), str([(self.backend_name, self.backend)])
+        )
+        self.assertTrue(isinstance(trial.qbackends[0][1], Backend))
+        self.assertEqual(trial.operators, [(self.ope_name, self.ope)])
+        # self.assertEqual(trial.artifacts, [(self.artifact_name, self.artifact)])
+        self.assertEqual(trial.texts, [(self.title, self.text)])
+        self.assertEqual(str(trial.arrays), str([(self.array_name, self.array)]))
+        self.assertEqual(trial.tags, self.my_tags)
 
     def tearDown(self) -> None:
         """TearDown Trial object."""

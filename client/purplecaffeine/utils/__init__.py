@@ -3,6 +3,7 @@
     :toctree: ../../stubs/
 
     TrialEncoder
+    TrialDecoder
 """
 
-from .json import TrialEncoder
+from .json import TrialEncoder, TrialDecoder
