@@ -2,6 +2,7 @@
 import ast
 import json
 import pickle
+import logging
 from typing import Optional, Union, List, Any
 import numpy as np
 from pympler import asizeof
@@ -107,7 +108,7 @@ class Trial:
             artifact: file object
         """
         if asizeof.asizeof(artifact) >= Configuration.MAX_SIZE:
-            print(
+            logging.warning(
                 "Your file is too big ! Limit : "
                 + str(Configuration.MAX_SIZE)
                 + " Bytes"

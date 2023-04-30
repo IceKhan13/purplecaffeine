@@ -52,7 +52,7 @@ class TestTrial(TestCase):
 
         # Imaginary artifact
         self.artifact_name = "Qiskit logo"
-        self.artifact = Image.open(self.res_path + "/qiskit.png")
+        self.artifact = Image.open(os.path.join(self.res_path, "qiskit.png"))
 
         # Description
         self.title = "description"
@@ -77,7 +77,9 @@ class TestTrial(TestCase):
         with Trial(name=self.temp, backend=self.local_backend) as trial:
             trial.add_metric(self.metric_name, self.metric)
         trial.read_trial()
-        self.assertTrue(os.path.isfile(self.res_path + "/" + trial.name + ".json"))
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.res_path, trial.name + ".json"))
+        )
         self.assertEqual(trial.metrics, [(self.metric_name, self.metric)])
 
     def test_add_trial(self):
@@ -102,7 +104,9 @@ class TestTrial(TestCase):
         self.populate_trial(temp_trial)
         # Save Trial into localbackend
         temp_trial.save_trial()
-        self.assertTrue(os.path.isfile(self.res_path + "/" + temp_trial.name + ".json"))
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.res_path, temp_trial.name + ".json"))
+        )
         # Read Trial from localbackend
         temp_trial.read_trial()
         self.assertEqual(temp_trial.name, self.temp)
@@ -122,6 +126,6 @@ class TestTrial(TestCase):
     def tearDown(self) -> None:
         """TearDown Trial object."""
         self.artifact.close()
-        file_to_remove = self.res_path + "/" + self.temp + ".json"
+        file_to_remove = os.path.join(self.res_path, self.temp + ".json")
         if os.path.exists(file_to_remove):
             os.remove(file_to_remove)

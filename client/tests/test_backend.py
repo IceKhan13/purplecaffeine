@@ -29,7 +29,9 @@ class TestBackend(TestCase):
         trial_json = json.dumps(to_register)
 
         self.local_backend.save_trial(name=self.temp, trial_json=trial_json)
-        self.assertTrue(os.path.isfile(self.res_path + "/" + self.temp + ".json"))
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.res_path, self.temp + ".json"))
+        )
 
     def test_read_backend(self):
         """Test read trial."""
@@ -38,6 +40,6 @@ class TestBackend(TestCase):
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
-        file_to_remove = self.res_path + "/" + self.temp + ".json"
+        file_to_remove = os.path.join(self.res_path, self.temp + ".json")
         if os.path.exists(file_to_remove):
             os.remove(file_to_remove)

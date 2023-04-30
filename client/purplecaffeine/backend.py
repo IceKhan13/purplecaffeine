@@ -1,4 +1,5 @@
 """Backend."""
+import os
 import json
 
 
@@ -36,9 +37,8 @@ class LocalBackend(BaseBackend):
         Returns:
             self.path: path of the trial file
         """
-
         with open(
-            self.path + "/" + name + ".json", "w", encoding="utf-8"
+            os.path.join(self.path, name + ".json"), "w", encoding="utf-8"
         ) as trial_file:
             trial_file.write(trial_json)
 
@@ -54,7 +54,7 @@ class LocalBackend(BaseBackend):
             trial_json: Json object of a trial
         """
         with open(
-            self.path + "/" + name + ".json", "r", encoding="utf-8"
+            os.path.join(self.path, name + ".json"), "r", encoding="utf-8"
         ) as trial_file:
             trial_json = json.loads(trial_file.read())
 
