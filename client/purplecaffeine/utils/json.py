@@ -30,19 +30,20 @@ def filtered_attr(obj: Any) -> []:
     ]
 
 
-class FakeTrial(object):
+class FakeTrial:  # pylint: disable=too-few-public-methods)
     """Fake Trial object to avoid circular import."""
 
     def __init__(self, obj):
         """Fake Trial init."""
         for elem in obj.keys():
             setattr(self, elem, [])
+        self.name = obj["name"]
 
 
 class TrialEncoder(json.JSONEncoder):
     """Json encoder."""
 
-    def default(self, obj):  # pylint: disable=arguments-differ
+    def default(self, obj):  # pylint: disable=arguments-renamed
         """Default encoder class."""
         trial_elem = filtered_attr(obj=obj)
         to_register = {
@@ -94,10 +95,9 @@ class TrialDecoder(json.JSONDecoder):
         json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
 
     @staticmethod
-    def object_hook(obj):  # pylint: disable=arguments-differ
+    def object_hook(obj):  # pylint: disable=method-hidden
         """Rules for decoder."""
         new_trial = FakeTrial(obj)
-        new_trial.name = obj["name"]
         trial_elem = filtered_attr(obj=new_trial)
         for attr in trial_elem:
             to_value = []

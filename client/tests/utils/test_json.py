@@ -8,8 +8,10 @@ from purplecaffeine.utils import TrialEncoder, TrialDecoder
 
 from ..common import populate_trial, test_setup
 
+# pylint: disable=no-member
 
-class TestJson(TestCase):  # pylint: disable=no-member
+
+class TestJson(TestCase):
     """TestJson."""
 
     def setUp(self) -> None:

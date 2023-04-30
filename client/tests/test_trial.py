@@ -7,8 +7,10 @@ from purplecaffeine.trial import Trial
 
 from .common import populate_trial, test_setup, test_teardown
 
+# pylint: disable=no-member
 
-class TestTrial(TestCase):  # pylint: disable=no-member
+
+class TestTrial(TestCase):
     """TestTrial."""
 
     def setUp(self) -> None:
