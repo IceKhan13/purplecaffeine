@@ -3,12 +3,12 @@ import os
 from unittest import TestCase
 from qiskit.providers import Backend
 
-from .common import populate_trial, test_setup, test_teardown
-
 from purplecaffeine.trial import Trial
 
+from .common import populate_trial, test_setup, test_teardown
 
-class TestTrial(TestCase):
+
+class TestTrial(TestCase):  # pylint: disable=no-member
     """TestTrial."""
 
     def setUp(self) -> None:

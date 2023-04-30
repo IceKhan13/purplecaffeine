@@ -2,10 +2,10 @@
 import os
 from unittest import TestCase
 
-from .common import test_teardown
-
 from purplecaffeine.trial import Trial
 from purplecaffeine.backend import LocalBackend
+
+from .common import test_teardown
 
 
 class TestBackend(TestCase):
@@ -23,6 +23,7 @@ class TestBackend(TestCase):
         self.my_trial.add_metric("some-metrics", 2)
 
     def test_save_backend(self):
+        """Test save trial."""
         self.local_backend.save_trial(name=self.temp, trial=self.my_trial)
         self.assertTrue(
             os.path.isfile(os.path.join(self.res_path, self.temp + ".json"))

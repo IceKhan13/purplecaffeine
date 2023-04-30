@@ -25,6 +25,7 @@ def populate_trial(test_obj, trial: Trial):
 
 
 def test_setup(test_obj) -> None:
+    """Standard SetUp function."""
     test_obj.temp = "to_remove"
     current_directory = os.path.dirname(os.path.abspath(__file__))
     test_obj.res_path = os.path.join(current_directory, "resources")
@@ -66,10 +67,11 @@ def test_setup(test_obj) -> None:
     test_obj.title = "description"
     test_obj.text = "This is my very much awesome experiment !"
     test_obj.my_tags = ["quantum", "test"]
+    return test_obj
 
 
 def test_teardown(test_obj) -> None:
-    """TearDown Backend object."""
+    """Standard TearDown function."""
     file_to_remove = os.path.join(test_obj.res_path, test_obj.temp + ".json")
     if os.path.exists(file_to_remove):
         os.remove(file_to_remove)

@@ -3,13 +3,13 @@ import json
 from unittest import TestCase
 from qiskit.providers import Backend
 
-from ..common import populate_trial, test_setup
-
 from purplecaffeine.trial import Trial
 from purplecaffeine.utils import TrialEncoder, TrialDecoder
 
+from ..common import populate_trial, test_setup
 
-class TestJson(TestCase):
+
+class TestJson(TestCase):  # pylint: disable=no-member
     """TestJson."""
 
     def setUp(self) -> None:
