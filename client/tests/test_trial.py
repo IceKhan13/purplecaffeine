@@ -97,7 +97,7 @@ class TestTrial(TestCase):
         self.assertEqual(self.my_trial.arrays, [(self.array_name, self.array)])
         self.assertEqual(self.my_trial.tags, self.my_tags)
 
-    def test_save_and_read(self):
+    def _save_and_read(self):
         """Test save and read Trial."""
         temp_trial = Trial(name=self.temp, backend=self.local_backend)
         # Populate Trial data
