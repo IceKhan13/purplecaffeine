@@ -13,7 +13,7 @@ jobs:
       max-parallel: 2
       matrix:
         python-version: [3.9, '3.10']
-        folder: ["client"]
+        folder: ["client", "api_server"]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3

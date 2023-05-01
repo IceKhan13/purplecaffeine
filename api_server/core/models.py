@@ -11,3 +11,4 @@ class Trial(models.Model):
     artifacts = models.JSONField(default=list)
     texts = models.JSONField(default=list)
     arrays = models.JSONField(default=list)
+    tags = models.JSONField(default=list)

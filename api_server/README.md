@@ -1,5 +1,35 @@
 # PurpleCaffeine API backend
 
+## Launch your development instance of the API
+
+To run this docker you need to have a database server and docker running.
+
+You also need to fill the variables [.envrc](../.envrc)
+
+### Automatically
+
+To setup your installation automatically, you can launch the script [`./setup.sh`](setup.sh)
+
+Now you can open your browser into `http://localhost:8000`
+
+### Manually
+#### Build
+```bash
+docker build . -f api_server/docker/Dockerfile.dev --tag purplecaffeine:dev
+```
+
+#### Run
+```bash
+docker run --rm --name purplecaffeine \
+    -v $PWD/api_server:/opt/api_server \
+    -p 8000:8000 \
+    -e SERV_KEY="${SERV_KEY}" \
+    -e DB_NAME="${DB_NAME}" -e DB_USER="${DB_USER}" -e DB_PASSWORD="${DB_PASSWORD}" \
+    -e DB_PORT="${DB_PORT}" -e DB_HOST="${DB_HOST}" \
+    purplecaffeine:dev
+```
+Now you can open your browser into `http://localhost:8000`
+
 ## Below are commands to perform CRUD of Trials data into Backend using terminal
 
 ### 1) Sending data to the backend
