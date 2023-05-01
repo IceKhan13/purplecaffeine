@@ -1,7 +1,8 @@
 """Trial."""
-import os
+import logging
 from typing import Optional, Union, List, Any
 import numpy as np
+from pympler import asizeof
 from qiskit.providers import Backend
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
@@ -26,9 +27,10 @@ class Trial:
             circuits: list of quantum circuit
             qbackends: list of quantum backend
             operators: list of operator, like Pauli operators
-            artifacts: list of artifact path, any external files path
+            artifacts: list of artifact, any external files
             texts: list of text, any descriptions
             arrays: list of array, like quantum circuit results
+            tags: list of tags in string format
         """
         self.name = name
         self.backend = backend or LocalBackend(path="./")
@@ -41,6 +43,7 @@ class Trial:
         self.artifacts = []
         self.texts = []
         self.arrays = []
+        self.tags = []
 
     def __repr__(self):
         return f"<Trial: {self.name}>"
@@ -93,20 +96,18 @@ class Trial:
         """
         self.operators.append((name, operator))
 
-    def add_artifact(self, name: str, path_to_file: str):
+    def add_artifact(self, name: str, artifact: Any):
         """Adds artifacts path to trial data.
 
         Args:
             name: name of the file
-            path_to_file: path to access to the file
+            artifact: file object
         """
-        if os.stat(path_to_file).st_size >= Configuration.MAX_SIZE:
-            print(
-                "Your file is too big ! Limit : "
-                + str(Configuration.MAX_SIZE)
-                + " Bytes"
+        if asizeof.asizeof(artifact) >= Configuration.MAX_SIZE:
+            logging.warning(
+                "Your file is too big ! Limit : %s Bytes", str(Configuration.MAX_SIZE)
             )
-        self.artifacts.append((name, path_to_file))
+        self.artifacts.append((name, artifact))
 
     def add_text(self, title: str, text: str):
         """Adds any text to trial data.
@@ -117,13 +118,34 @@ class Trial:
         """
         self.texts.append((title, text))
 
-    def add_array(self, array: Union[np.ndarray, List[Any]]):
+    def add_array(self, name: str, array: Union[np.ndarray, List[Any]]):
         """Adds array to trial data.
 
         Args:
+            name: name of the array
             array: quantum circuit results
         """
-        self.arrays.append(array)
+        self.arrays.append((name, array))
+
+    def add_tag(self, tag: str):
+        """Adds any tag to trial data.
+
+        Args:
+            tag: word of your tag
+        """
+        self.tags.append(tag)
+
+    def save_trial(self):
+        """Save into Backend."""
+        self.backend.save_trial(name=self.name, trial=self)
+
+    def read_trial(self) -> dict:
+        """Read a trial from Backend.
+
+        Returns:
+            Trial dict object
+        """
+        return self.backend.read_trial(name=self.name)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.backend.save_trial(self)
+        self.save_trial()

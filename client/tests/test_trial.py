@@ -1,12 +1,13 @@
 """Tests for Trial."""
 import os
 from unittest import TestCase
-from qiskit_aer import AerSimulator
-from qiskit import execute, QuantumCircuit
-from qiskit.extensions import XGate
-from qiskit.quantum_info.operators import Operator
+from qiskit.providers import Backend
 
 from purplecaffeine.trial import Trial
+
+from .common import populate_trial, test_setup, test_teardown
+
+# pylint: disable=no-member
 
 
 class TestTrial(TestCase):
@@ -14,61 +15,26 @@ class TestTrial(TestCase):
 
     def setUp(self) -> None:
         """SetUp Trial object."""
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        res_path = os.path.join(current_directory, "resources")
-        self.my_trial = Trial("My Awesome Trial !")
-        nb_qubit = 2
+        test_setup(test_obj=self)
 
-        # Create metric
-        self.metric_name = "nb_qubit"
-        self.metric = nb_qubit
+    def populate_trial(self, trial: Trial):
+        """Populate Trial with data."""
+        populate_trial(test_obj=self, trial=trial)
 
-        # Create custom parameters
-        self.param_name = "OS"
-        self.param = "Ubuntu"
-
-        # Create custom operators
-        self.ope_name = "XGate"
-        self.ope = Operator(XGate())
-
-        # Create the circuit
-        self.circ_name = "Custom circuit"
-        self.circ = QuantumCircuit(nb_qubit)
-        self.circ.append(self.ope, [1])
-        self.circ.cx(1, 0)
-        self.circ.measure_all()
-
-        # Run circuit
-        self.backend_name = "AerSimulator"
-        self.backend = AerSimulator()
-        job = execute(self.circ, self.backend, shots=512, memory=True)
-        self.array = job.result()
-
-        # Imaginary artifact
-        self.artifact_name = "Qiskit logo"
-        self.artifact = res_path + "/qiskit.png"
-
-        # Description
-        self.title = "description"
-        self.text = "This is my very much awesome experiment !"
-
-    def test_trail_context(self):
+    def test_trial_context(self):
         """Test train context."""
-        with Trial("test_trial") as trial:
+        with Trial(name=self.temp, backend=self.local_backend) as trial:
             trial.add_metric(self.metric_name, self.metric)
+        trial.read_trial()
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.res_path, trial.name + ".json"))
+        )
         self.assertEqual(trial.metrics, [(self.metric_name, self.metric)])
 
-    def test_trail_add(self):
+    def test_add_trial(self):
         """Test adding stuff into Trial."""
         # Add everything
-        self.my_trial.add_metric(self.metric_name, self.metric)
-        self.my_trial.add_parameter(self.param_name, self.param)
-        self.my_trial.add_circuit(self.circ_name, self.circ)
-        self.my_trial.add_qbackend(self.backend_name, self.backend)
-        self.my_trial.add_operator(self.ope_name, self.ope)
-        self.my_trial.add_artifact(self.artifact_name, self.artifact)
-        self.my_trial.add_text(self.title, self.text)
-        self.my_trial.add_array(self.array)
+        self.populate_trial(self.my_trial)
         # Check everything
         self.assertEqual(self.my_trial.metrics, [(self.metric_name, self.metric)])
         self.assertEqual(self.my_trial.parameters, [(self.param_name, self.param)])
@@ -77,4 +43,36 @@ class TestTrial(TestCase):
         self.assertEqual(self.my_trial.operators, [(self.ope_name, self.ope)])
         self.assertEqual(self.my_trial.artifacts, [(self.artifact_name, self.artifact)])
         self.assertEqual(self.my_trial.texts, [(self.title, self.text)])
-        self.assertEqual(self.my_trial.arrays, [self.array])
+        self.assertEqual(self.my_trial.arrays, [(self.array_name, self.array)])
+        self.assertEqual(self.my_trial.tags, self.my_tags)
+
+    def test_save_and_read(self):
+        """Test save and read Trial."""
+        temp_trial = Trial(name=self.temp, backend=self.local_backend)
+        # Populate Trial data
+        self.populate_trial(temp_trial)
+        # Save Trial into localbackend
+        temp_trial.save_trial()
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.res_path, temp_trial.name + ".json"))
+        )
+        # Read Trial from localbackend
+        temp_trial.read_trial()
+        self.assertEqual(temp_trial.name, self.temp)
+        self.assertEqual(temp_trial.metrics, [(self.metric_name, self.metric)])
+        self.assertEqual(temp_trial.parameters, [(self.param_name, self.param)])
+        self.assertEqual(temp_trial.circuits, [(self.circ_name, self.circ)])
+        self.assertEqual(
+            str(temp_trial.qbackends), str([(self.backend_name, self.backend)])
+        )
+        self.assertTrue(isinstance(temp_trial.qbackends[0][1], Backend))
+        self.assertEqual(temp_trial.operators, [(self.ope_name, self.ope)])
+        self.assertEqual(temp_trial.artifacts, [(self.artifact_name, self.artifact)])
+        self.assertEqual(temp_trial.texts, [(self.title, self.text)])
+        self.assertEqual(str(temp_trial.arrays), str([(self.array_name, self.array)]))
+        self.assertEqual(temp_trial.tags, self.my_tags)
+
+    def tearDown(self) -> None:
+        """TearDown Trial object."""
+        self.artifact.close()
+        test_teardown(self)
