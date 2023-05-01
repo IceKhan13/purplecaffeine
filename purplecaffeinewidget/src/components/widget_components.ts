@@ -1,0 +1,3 @@
+interface Component {
+  contents: number;
+}

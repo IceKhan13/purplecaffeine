@@ -1,0 +1,2 @@
+[run]
+omit = purple_caffeine_widget/tests/*
