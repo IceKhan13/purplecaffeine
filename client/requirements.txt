@@ -4,3 +4,5 @@ Jinja2==3.0.1
 coloredlogs==15.0.1
 mdformat==0.7.10
 qiskit==0.42.1
+qiskit-ibm-runtime==0.9.3
+pympler~=0.9
