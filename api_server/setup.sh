@@ -17,8 +17,8 @@ echo "================================================================="
 echo "Launch Django"
 echo "================================================================="
 
-docker rm -f purplecaffeine 2> /dev/null
-docker run --rm --name purplecaffeine \
+docker rm -f purplecaffeine-dev 2> /dev/null
+docker run --rm --name purplecaffeine-dev \
     -p 8000:8000 \
     -v $PWD:/opt/api_server \
     -e SERV_KEY="${SERV_KEY}" \

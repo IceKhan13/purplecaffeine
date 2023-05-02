@@ -20,7 +20,7 @@ docker build . -f docker/Dockerfile.dev --tag purplecaffeine:dev
 
 #### Run
 ```bash
-docker run --rm --name purplecaffeine \
+docker run --rm --name purplecaffeine-dev \
     -v $PWD:/opt/api_server \
     -p 8000:8000 \
     -e SERV_KEY="${SERV_KEY}" \
