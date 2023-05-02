@@ -15,15 +15,12 @@ ENV TZ=Europe/Paris
 ENV PROJECT_NAME="PurpleCaffeine"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV env="dev"
 
 LABEL org.opencontainers.image.title="${PROJECT_NAME}" \
-      org.opencontainers.image.authors=${GITHUB_ACTOR} \
-      org.opencontainers.image.vendor=${GITHUB_REPOSITORY} \
-      org.opencontainers.image.source="https://github.com/${GITHUB_ACTOR}/purplecaffeine" \
-      org.opencontainers.image.url="https://github.com/${GITHUB_ACTOR}/purplecaffeine/tags" \
       org.opencontainers.image.description="API for quantum experiment tracking." \
       org.opencontainers.image.os="Ubuntu" \
-      org.opencontainers.image.version=${GITHUB_REF}
+      org.opencontainers.image.version="${env}"
 
 RUN apt-get update -yq \
 && apt-get install python3-pip libpq-dev -y

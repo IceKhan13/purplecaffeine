@@ -1,5 +1,9 @@
 FROM ubuntu:22.04
 
+#######################################
+# Dockerfile for production !
+#######################################
+
 # Var for labels
 ARG GITHUB_ACTOR
 ARG GITHUB_REPOSITORY
@@ -11,6 +15,7 @@ ENV TZ=Europe/Paris
 ENV PROJECT_NAME="PurpleCaffeine"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV env="prod"
 
 LABEL org.opencontainers.image.title="${PROJECT_NAME}" \
       org.opencontainers.image.authors=${GITHUB_ACTOR} \
@@ -31,6 +36,8 @@ COPY api_server/docker/start.sh /opt/
 
 RUN pip3 install --upgrade pip setuptools
 RUN pip3 install -r /opt/api_server/requirements.txt
+
+WORKDIR /opt/api_server
 
 EXPOSE 8000
 

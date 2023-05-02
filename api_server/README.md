@@ -15,13 +15,13 @@ Now you can open your browser into `http://localhost:8000`
 ### Manually
 #### Build
 ```bash
-docker build . -f api_server/docker/Dockerfile.dev --tag purplecaffeine:dev
+docker build . -f docker/Dockerfile.dev --tag purplecaffeine:dev
 ```
 
 #### Run
 ```bash
 docker run --rm --name purplecaffeine \
-    -v $PWD/api_server:/opt/api_server \
+    -v $PWD:/opt/api_server \
     -p 8000:8000 \
     -e SERV_KEY="${SERV_KEY}" \
     -e DB_NAME="${DB_NAME}" -e DB_USER="${DB_USER}" -e DB_PASSWORD="${DB_PASSWORD}" \
