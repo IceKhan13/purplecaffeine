@@ -47,97 +47,102 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/trial.html#Trial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.Trial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trial class.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">metrics</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.metrics">
+<span class="sig-name descname"><span class="pre">metrics</span></span><a class="headerlink" href="#purplecaffeine.Trial.metrics" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of metric, like number of qubits</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, Union[int, float]</p>
+<dd class="field-odd"><p>[(str, Union[int, float])]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">parameters</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#purplecaffeine.Trial.parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of parameter, like env details</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, str</p>
+<dd class="field-odd"><p>[(str, str)]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">circuits</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.circuits">
+<span class="sig-name descname"><span class="pre">circuits</span></span><a class="headerlink" href="#purplecaffeine.Trial.circuits" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of quantum circuit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, QuantumCircuit</p>
+<dd class="field-odd"><p>[(str, QuantumCircuit)]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">qbackends</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.qbackends">
+<span class="sig-name descname"><span class="pre">qbackends</span></span><a class="headerlink" href="#purplecaffeine.Trial.qbackends" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of quantum backend</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, Backend</p>
+<dd class="field-odd"><p>[(str, Backend)]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">operators</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.operators">
+<span class="sig-name descname"><span class="pre">operators</span></span><a class="headerlink" href="#purplecaffeine.Trial.operators" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of operator, like Pauli operators</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, Operator</p>
+<dd class="field-odd"><p>[(str, Operator)]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">artifacts</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.artifacts">
+<span class="sig-name descname"><span class="pre">artifacts</span></span><a class="headerlink" href="#purplecaffeine.Trial.artifacts" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of artifact, any external files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, Any</p>
+<dd class="field-odd"><p>[(str, Any)]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">texts</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.texts">
+<span class="sig-name descname"><span class="pre">texts</span></span><a class="headerlink" href="#purplecaffeine.Trial.texts" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of text, any descriptions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, str</p>
+<dd class="field-odd"><p>[(str, str)]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">arrays</span> <span class="pre">[</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.arrays">
+<span class="sig-name descname"><span class="pre">arrays</span></span><a class="headerlink" href="#purplecaffeine.Trial.arrays" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of array, like quantum circuit results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, Union[np.ndarray, List[Any]]</p>
+<dd class="field-odd"><p>[(str, Union[np.ndarray, List[Any]])]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">tags</span> <span class="pre">[str]</span></span></dt>
+<dt class="sig sig-object py" id="purplecaffeine.Trial.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><a class="headerlink" href="#purplecaffeine.Trial.tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of tags in string format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Trial class for tracking experiments data.</p>
