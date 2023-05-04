@@ -10,6 +10,7 @@ jupyter-sphinx>=0.3.2
 nbsphinx>=0.8.8
 sphinx-autodoc-typehints>=1.17.0
 reno>=3.5.0
+pympler~=0.9
 # Black's formatting rules can change between major versions, so we use
 # the ~= specifier for it.
 black[jupyter]~=22.1
