@@ -27,7 +27,7 @@ jobs:
 #          tox -edocs
       - name: Test echo
         run : |
-          echo "branch : ${{github.ref}}"
+          echo "branch : ${{github.ref_name}}"
       - name: Deploy docs
         if: startsWith(github.ref, '26-') || github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
