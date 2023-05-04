@@ -26,7 +26,7 @@ jobs:
         run: |
           tox -edocs
       - name: Deploy docs
-        if: contains(github.ref, "main") || contains(github.ref, "stable/")
+        if: contains(github.ref, '26-') || github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
