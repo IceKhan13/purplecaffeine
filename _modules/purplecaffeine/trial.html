@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -40,9 +39,10 @@
             
   <h1>Source code for purplecaffeine.trial</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Trial.&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pympler</span> <span class="kn">import</span> <span class="n">asizeof</span>
 <span class="kn">from</span> <span class="nn">qiskit.providers</span> <span class="kn">import</span> <span class="n">Backend</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit.quantum_info.operators</span> <span class="kn">import</span> <span class="n">Operator</span>
@@ -52,7 +52,19 @@
 
 
 <div class="viewcode-block" id="Trial"><a class="viewcode-back" href="../../stubs/purplecaffeine.Trial.html#purplecaffeine.Trial">[docs]</a><span class="k">class</span> <span class="nc">Trial</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trial class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trial class.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        metrics [(str, Union[int, float])]: list of metric, like number of qubits</span>
+<span class="sd">        parameters [(str, str)]: list of parameter, like env details</span>
+<span class="sd">        circuits [(str, QuantumCircuit)]: list of quantum circuit</span>
+<span class="sd">        qbackends [(str, Backend)]: list of quantum backend</span>
+<span class="sd">        operators [(str, Operator)]: list of operator, like Pauli operators</span>
+<span class="sd">        artifacts [(str, Any)]: list of artifact, any external files</span>
+<span class="sd">        texts [(str, str)]: list of text, any descriptions</span>
+<span class="sd">        arrays [(str, Union[np.ndarray, List[Any]])]: list of array, like quantum circuit results</span>
+<span class="sd">        tags [str]: list of tags in string format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Trial.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.Trial.html#purplecaffeine.Trial.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseBackend</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trial class for tracking experiments data.</span>
@@ -60,16 +72,6 @@
 <span class="sd">        Args:</span>
 <span class="sd">            name: name of trial</span>
 <span class="sd">            backend: backend to store data of trial. Default: local storage.</span>
-
-<span class="sd">        Properties:</span>
-<span class="sd">            metrics: list of metric, like number of qubits</span>
-<span class="sd">            parameters: list of parameter, like env details</span>
-<span class="sd">            circuits: list of quantum circuit</span>
-<span class="sd">            qbackends: list of quantum backend</span>
-<span class="sd">            operators: list of operator, like Pauli operators</span>
-<span class="sd">            artifacts: list of artifact path, any external files path</span>
-<span class="sd">            texts: list of text, any descriptions</span>
-<span class="sd">            arrays: list of array, like quantum circuit results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">or</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
@@ -81,7 +83,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">operators</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">arrays</span> <span class="o">=</span> <span class="p">[]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrays</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Trial: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
@@ -134,20 +137,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">operators</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">operator</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_to_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds artifacts path to trial data.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: name of the file</span>
-<span class="sd">            path_to_file: path to access to the file</span>
+<span class="sd">            artifact: file object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">&gt;=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">MAX_SIZE</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;Your file is too big ! Limit : &quot;</span>
-                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Configuration</span><span class="o">.</span><span class="n">MAX_SIZE</span><span class="p">)</span>
-                <span class="o">+</span> <span class="s2">&quot; Bytes&quot;</span>
+        <span class="k">if</span> <span class="n">asizeof</span><span class="o">.</span><span class="n">asizeof</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">MAX_SIZE</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Your file is too big ! Limit : </span><span class="si">%s</span><span class="s2"> Bytes&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">Configuration</span><span class="o">.</span><span class="n">MAX_SIZE</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">path_to_file</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">artifact</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">add_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds any text to trial data.</span>
@@ -158,16 +159,37 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">title</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">add_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]):</span>
+    <span class="k">def</span> <span class="nf">add_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds array to trial data.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            name: name of the array</span>
 <span class="sd">            array: quantum circuit results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrays</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">array</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">add_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds any tag to trial data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag: word of your tag</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save into Backend.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">save_trial</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">trial</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a trial from Backend.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Trial dict object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">read_trial</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">save_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_trial</span><span class="p">()</span></div>
 </pre></div>
 
           </div>
@@ -225,7 +247,7 @@
       &copy;2023.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
