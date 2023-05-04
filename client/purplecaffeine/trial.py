@@ -15,15 +15,15 @@ class Trial:
     """Trial class.
 
     Attributes:
-        metrics [(str, Union[int, float])]: list of metric, like number of qubits
-        parameters [(str, str)]: list of parameter, like env details
-        circuits [(str, QuantumCircuit)]: list of quantum circuit
-        qbackends [(str, Backend)]: list of quantum backend
-        operators [(str, Operator)]: list of operator, like Pauli operators
-        artifacts [(str, Any)]: list of artifact, any external files
-        texts [(str, str)]: list of text, any descriptions
-        arrays [(str, Union[np.ndarray, List[Any]])]: list of array, like quantum circuit results
-        tags [str]: list of tags in string format
+        metrics ([(str, Union[int, float])]): list of metric, like number of qubits
+        parameters ([(str, str)]): list of parameter, like env details
+        circuits ([(str, QuantumCircuit)]): list of quantum circuit
+        qbackends ([(str, Backend)]): list of quantum backend
+        operators ([(str, Operator)]): list of operator, like Pauli operators
+        artifacts ([(str, Any)]): list of artifact, any external files
+        texts ([(str, str)]): list of text, any descriptions
+        arrays ([(str, Union[np.ndarray, List[Any]])]): list of array, like quantum circuit results
+        tags ([str]): list of tags in string format
     """
 
     def __init__(self, name: str, backend: Optional[BaseBackend] = None):
