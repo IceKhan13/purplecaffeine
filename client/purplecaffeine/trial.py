@@ -22,7 +22,8 @@ class Trial:
         operators (List[(str, Operator)]): list of operator, like Pauli operators
         artifacts (List[(str, Any)]): list of artifact, any external files
         texts (List[(str, str)]): list of text, any descriptions
-        arrays (List[(str, Union[np.ndarray, List[Any]])]): list of array, like quantum circuit results
+        arrays (List[(str, Union[np.ndarray, List[Any]])]):
+            list of array, like quantum circuit results
         tags (List[str]): list of tags in string format
     """
 
