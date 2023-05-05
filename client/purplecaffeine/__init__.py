@@ -7,5 +7,4 @@
     LocalBackend
 """
 
-from .trial import Trial
-from .backend import LocalBackend, BaseBackend
+from .core import Trial, LocalBackend, BaseBackend
