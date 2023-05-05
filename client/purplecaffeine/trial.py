@@ -12,7 +12,20 @@ from purplecaffeine.backend import BaseBackend, LocalBackend
 
 
 class Trial:
-    """Trial class."""
+    """Trial class.
+
+    Attributes:
+        metrics (List[(str, Union[int, float])]): list of metric, like number of qubits
+        parameters (List[(str, str)]): list of parameter, like env details
+        circuits (List[(str, QuantumCircuit)]): list of quantum circuit
+        qbackends (List[(str, Backend)]): list of quantum backend
+        operators (List[(str, Operator)]): list of operator, like Pauli operators
+        artifacts (List[(str, Any)]): list of artifact, any external files
+        texts (List[(str, str)]): list of text, any descriptions
+        arrays (List[(str, Union[np.ndarray, List[Any]])]):
+            list of array, like quantum circuit results
+        tags (List[str]): list of tags in string format
+    """
 
     def __init__(self, name: str, backend: Optional[BaseBackend] = None):
         """Trial class for tracking experiments data.
@@ -20,17 +33,6 @@ class Trial:
         Args:
             name: name of trial
             backend: backend to store data of trial. Default: local storage.
-
-        Properties:
-            metrics: list of metric, like number of qubits
-            parameters: list of parameter, like env details
-            circuits: list of quantum circuit
-            qbackends: list of quantum backend
-            operators: list of operator, like Pauli operators
-            artifacts: list of artifact, any external files
-            texts: list of text, any descriptions
-            arrays: list of array, like quantum circuit results
-            tags: list of tags in string format
         """
         self.name = name
         self.backend = backend or LocalBackend(path="./")
