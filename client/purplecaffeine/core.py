@@ -1,4 +1,4 @@
-"""Backend."""
+"""Core."""
 import glob
 import json
 import logging
@@ -160,7 +160,7 @@ class Trial:
 class BaseBackend:
     """Base backend class."""
 
-    def save(self, name: str, trial):
+    def save(self, name: str, trial: Trial):
         """Saves given trial.
 
         Args:
