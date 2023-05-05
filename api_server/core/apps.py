@@ -1,5 +1,7 @@
+'''
+Module to define the configuration class for the 'core' app
+'''
 from django.apps import AppConfig
-
 
 class CoreConfig(AppConfig):
     """

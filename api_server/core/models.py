@@ -1,8 +1,12 @@
+'''
+Module to initialize the database
+'''
 from django.db import models
 
 class Trial(models.Model):
-    # Model representing a trial
-    
+    '''
+    Model representing a trial
+    '''
     name = models.CharField(max_length=255)
     metrics = models.JSONField(default=list)
     parameters = models.JSONField(default=list)
