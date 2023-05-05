@@ -43,35 +43,26 @@
 <h1>purplecaffeine.LocalBackend<a class="headerlink" href="#purplecaffeine-localbackend" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="purplecaffeine.LocalBackend">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/backend.html#LocalBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.LocalBackend" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#LocalBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.LocalBackend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Local backend.</p>
-<p>Local backend.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – folder where trial data will be saved.</p>
-</dd>
-</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="purplecaffeine.LocalBackend.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/backend.html#LocalBackend.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.LocalBackend.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Local backend.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – folder where trial data will be saved.</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#LocalBackend.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.LocalBackend.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.LocalBackend.__init__" title="purplecaffeine.LocalBackend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(path)</p></td>
-<td><p>Local backend.</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_trial</span></code>(name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(name)</p></td>
 <td><p>Read a given trial file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_trial</span></code>(name, trial)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>([query, limit, offset])</p></td>
+<td><p>Returns list of trails.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(name, trial)</p></td>
 <td><p>Saves given trial.</p></td>
 </tr>
 </tbody>

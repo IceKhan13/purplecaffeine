@@ -20,11 +20,10 @@
       ~Trial.add_metric
       ~Trial.add_operator
       ~Trial.add_parameter
-      ~Trial.add_qbackend
       ~Trial.add_tag
       ~Trial.add_text
       ~Trial.read_trial
-      ~Trial.save_trial
+      ~Trial.save
    
    
 

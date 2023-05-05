@@ -14,7 +14,9 @@
    .. autosummary::
    
       ~BaseBackend.__init__
-      ~BaseBackend.save_trial
+      ~BaseBackend.get
+      ~BaseBackend.list
+      ~BaseBackend.save
    
    
 

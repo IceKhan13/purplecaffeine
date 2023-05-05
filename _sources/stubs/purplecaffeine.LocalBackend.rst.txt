@@ -14,8 +14,9 @@
    .. autosummary::
    
       ~LocalBackend.__init__
-      ~LocalBackend.read_trial
-      ~LocalBackend.save_trial
+      ~LocalBackend.get
+      ~LocalBackend.list
+      ~LocalBackend.save
    
    
 

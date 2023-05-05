@@ -44,7 +44,7 @@
 <h1>purplecaffeine.BaseBackend<a class="headerlink" href="#purplecaffeine-basebackend" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="purplecaffeine.BaseBackend">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseBackend</span></span><a class="reference internal" href="../_modules/purplecaffeine/backend.html#BaseBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.BaseBackend" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseBackend</span></span><a class="reference internal" href="../_modules/purplecaffeine/core.html#BaseBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.BaseBackend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base backend class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="purplecaffeine.BaseBackend.__init__">
@@ -57,7 +57,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.BaseBackend.__init__" title="purplecaffeine.BaseBackend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_trial</span></code>(name, trial)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(name)</p></td>
+<td><p>Returns trail by name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>([query, limit, offset])</p></td>
+<td><p>Returns list of trails.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(name, trial)</p></td>
 <td><p>Saves given trial.</p></td>
 </tr>
 </tbody>
