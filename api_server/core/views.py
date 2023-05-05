@@ -4,5 +4,6 @@ from .serializers import TrialSerializer
 
 
 class TrialViewSet(viewsets.ModelViewSet):
+    # ViewSet for Trial model.
     queryset = Trial.objects.all()
     serializer_class = TrialSerializer
