@@ -75,6 +75,8 @@ WSGI_APPLICATION = "purplecaffeine.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+DB_SCHEMA = os.getenv("DB_SCHEMA") or "public"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -83,6 +85,7 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT"),
+        "OPTIONS": {"options": f"-c search_path={DB_SCHEMA}"},
     }
 }
 

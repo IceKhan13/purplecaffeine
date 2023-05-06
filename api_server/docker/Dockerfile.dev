@@ -10,7 +10,7 @@ ARG GITHUB_REPOSITORY
 ARG GITHUB_REF
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Paris
+ENV TZ=UTC
 
 ENV PROJECT_NAME="PurpleCaffeine"
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -32,8 +32,8 @@ RUN pip3 install -r /opt/api_server/requirements.txt
 
 VOLUME /opt/api_server
 
-WORKDIR /opt/api_server
-
 EXPOSE 8000
 
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD cd /opt/api_server; \
+    python3 manage.py migrate; \
+    python3 manage.py runserver 0.0.0.0:8000
