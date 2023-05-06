@@ -30,4 +30,6 @@ jobs:
           FOLDER: ${{ matrix.folder }}
         run: tox -elint
       - name: Run black check
+        env:
+          FOLDER: ${{ matrix.folder }}
         run: tox -eblack
