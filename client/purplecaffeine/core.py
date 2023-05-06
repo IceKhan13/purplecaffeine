@@ -1,9 +1,12 @@
 """Core."""
+from __future__ import annotations
+
 import glob
 import json
 import logging
 import os
 from typing import Optional, Union, List, Any
+import requests
 
 import numpy as np
 from pympler import asizeof
@@ -143,15 +146,23 @@ class Trial:
 
     def save(self):
         """Save into Backend."""
-        self.backend.save(name=self.name, trial=self)
+        self.backend.save(trial=self)
 
-    def read_trial(self) -> "Trial":
+    def read_trial(
+        self, trial_name: Optional[str] = None, trial_id: Optional[int] = None
+    ) -> Trial:
         """Read a trial from Backend.
+
+        Args:
+            trial_name: if backend is LocalBackend, you need the trial name.
+            trial_id: if backend is the remote api, you need the trial id find in database.
 
         Returns:
             Trial dict object
         """
-        return self.backend.get(name=self.name)
+        if isinstance(self.backend, LocalBackend):
+            return self.backend.get(name=trial_name)
+        return self.backend.get(trial_id=trial_id)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save()
@@ -160,23 +171,52 @@ class Trial:
 class BaseBackend:
     """Base backend class."""
 
-    def save(self, name: str, trial: Trial):
+    def save(self, trial: Trial):
         """Saves given trial.
 
         Args:
-            name: name of the trial
             trial: encode trial to save
         """
-        raise NotImplementedError
+        try:
+            requests.post(
+                Configuration.API_FULL_URL,
+                headers=Configuration.API_HEADERS,
+                json=json.dumps(trial.__dict__, cls=TrialEncoder, indent=4),
+                timeout=Configuration.API_TIMEOUT,
+            )
+        except Exception as curl_error:  # pylint: disable=broad-except
+            raise ValueError("Bad request.") from curl_error
+
+        return trial.name
+
+    def get(self, trial_id: int) -> Trial:
+        """Returns trial by name.
+
+        Args:
+            trial_id: trial id
+
+        Returns:
+            trial: object of a trial
+        """
+        try:
+            curl_req = requests.get(
+                f"{Configuration.API_FULL_URL}/{trial_id}/",
+                headers=Configuration.API_HEADERS,
+                timeout=Configuration.API_TIMEOUT,
+            )
+        except Exception as curl_error:  # pylint: disable=broad-except
+            raise ValueError("Bad request.") from curl_error
+
+        return Trial(**json.load(curl_req.json(), cls=TrialDecoder))
 
     def list(
         self,
-        query: Optional[str] = None,
+        query: Optional[str] = None,  # pylint: disable=unused-argument
         limit: Optional[int] = None,
         offset: Optional[int] = None,
-        **kwargs,
-    ) -> List["Trial"]:
-        """Returns list of trails.
+        **kwargs,  # pylint: disable=unused-argument
+    ) -> List[Trial]:
+        """Returns list of trials.
 
         Args:
             query: search query
@@ -187,18 +227,22 @@ class BaseBackend:
         Returns:
             list of trials
         """
-        raise NotImplementedError
+        offset = offset or 0
+        limit = limit or 10
+        trials = []
 
-    def get(self, name: str) -> "Trial":
-        """Returns trail by name.
+        try:
+            for to_get in range(offset, limit):
+                curl_req = requests.get(
+                    f"{Configuration.API_FULL_URL}/{to_get}/",
+                    headers=Configuration.API_HEADERS,
+                    timeout=Configuration.API_TIMEOUT,
+                )
+                trials.append(json.load(curl_req.json(), cls=TrialDecoder))
+        except Exception as curl_error:  # pylint: disable=broad-except
+            raise ValueError("Bad request.") from curl_error
 
-        Args:
-            name: trail name
-
-        Returns:
-            trial by given name
-        """
-        raise NotImplementedError
+        return trials
 
 
 class LocalBackend(BaseBackend):
@@ -207,24 +251,23 @@ class LocalBackend(BaseBackend):
     def __init__(self, path: str):
         self.path = path
 
-    def save(self, name: str, trial) -> str:
+    def save(self, trial: Trial) -> str:
         """Saves given trial.
 
         Args:
-            name: name of the trial
             trial: encode trial to save
 
         Returns:
             self.path: path of the trial file
         """
         with open(
-            os.path.join(self.path, name + ".json"), "w", encoding="utf-8"
+            os.path.join(self.path, trial.name + ".json"), "w", encoding="utf-8"
         ) as trial_file:
             json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         return self.path
 
-    def get(self, name: str) -> "Trial":
+    def get(self, name: str) -> Trial:  # pylint: disable=arguments-renamed
         """Read a given trial file.
 
         Args:
@@ -244,8 +287,8 @@ class LocalBackend(BaseBackend):
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         **kwargs,
-    ) -> List["Trial"]:
-        """Returns list of trails.
+    ) -> List[Trial]:
+        """Returns list of trials.
 
         Args:
             query: search query

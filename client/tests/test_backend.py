@@ -22,7 +22,7 @@ class TestBackend(TestCase):
 
     def test_save_and_load_backend(self):
         """Test save trial."""
-        self.local_backend.save(name="keep_trial", trial=self.my_trial)
+        self.local_backend.save(trial=self.my_trial)
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, "keep_trial.json")))
         recovered = self.local_backend.get(name="keep_trial")
         self.assertTrue(isinstance(recovered, Trial))
