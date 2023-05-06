@@ -46,7 +46,7 @@ class TestTrial(TestCase):
         """Test train context."""
         with Trial(name="test_trial", backend=self.local_backend) as trial:
             trial.add_metric("test_metric", 42)
-        trial.read_trial(trial_name=trial.name)
+        trial.read_trial()
         self.assertTrue(
             os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
         )
@@ -73,7 +73,7 @@ class TestTrial(TestCase):
             os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
         )
 
-        recovered = trial.read_trial(trial.name)
+        recovered = trial.read_trial()
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])

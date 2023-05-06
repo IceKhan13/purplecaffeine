@@ -148,20 +148,17 @@ class Trial:
         """Save into Backend."""
         self.backend.save(trial=self)
 
-    def read_trial(
-        self, trial_name: Optional[str] = None, trial_id: Optional[int] = None
-    ) -> Trial:
+    def read_trial(self, trial_id: Optional[int] = None) -> Trial:
         """Read a trial from Backend.
 
         Args:
-            trial_name: if backend is LocalBackend, you need the trial name.
             trial_id: if backend is the remote api, you need the trial id find in database.
 
         Returns:
             Trial dict object
         """
         if isinstance(self.backend, LocalBackend):
-            return self.backend.get(name=trial_name)
+            return self.backend.get(name=self.name)
         return self.backend.get(trial_id=trial_id)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
