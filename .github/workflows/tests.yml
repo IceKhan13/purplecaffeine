@@ -24,6 +24,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
           POSTGRES_DB: github_actions
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-
@@ -49,7 +50,7 @@ jobs:
           DB_USER: root
           DB_PASSWORD: root
           DB_PORT: 5432
-          DB_HOST: postgres
+          DB_HOST: localhost
         run: |
           sudo apt-get install libpq-dev -y
           cd api_server/
