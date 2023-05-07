@@ -68,7 +68,7 @@ class TestTrial(TestCase):
 
     def test_save_and_read_local_trial(self):
         """Test save and read Trial locally."""
-        trial = dummy_trial(self.local_backend)
+        trial = dummy_trial(backend=self.local_backend)
         trial.save()
 
         self.assertTrue(
@@ -86,7 +86,7 @@ class TestTrial(TestCase):
 
     def test_save_and_read_remote_trial(self):
         """Test save and read Trial remotely."""
-        trial = dummy_trial(TrialBackend())
+        trial = dummy_trial(backend=TrialBackend())
         trial.save()
 
         recovered = trial.read_trial(trial_id=1)
