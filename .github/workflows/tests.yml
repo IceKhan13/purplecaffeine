@@ -17,6 +17,17 @@ jobs:
         # In future we can add [macos-latest, windows-latest]
         python-version: [3.9, '3.10']
         folder: ["client"]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -27,6 +38,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install tox
+      - name: Setup API
+        env:
+          SERV_KEY: test
+          DB_NAME: postgres
+          DB_SCHEMA: public
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_PORT: 5432
+          DB_HOST: postgres
+        run: |
+          cd api_server/
+          pip install -r requirements.txt
+          python manage.py makemigrations core
+          python manage.py migrate
+          python manage.py runserver 0.0.0.0:8000
       - name: Test using tox environment
         shell: bash
         env:
