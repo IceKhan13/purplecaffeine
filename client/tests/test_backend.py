@@ -18,7 +18,7 @@ class TestBackend(TestCase):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
         self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
-        self.my_trial.add_metric("some-metrics", 2)
+        self.my_trial.add_metric("test_metric", 42)
 
     def test_save_and_load_local_backend(self):
         """Test save trial locally."""
