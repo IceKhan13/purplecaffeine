@@ -198,7 +198,7 @@ class BaseBackend:
             timeout=Configuration.API_TIMEOUT,
         )
         if "Not found." in str(curl_req.json()):
-            raise Exception(curl_req.json())
+            raise ValueError(curl_req.json())
 
         trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
         if "id" in trial_json:
@@ -228,18 +228,15 @@ class BaseBackend:
         limit = limit or 10
         trials = []
 
-        try:
-            for to_get in range(offset, limit):
-                curl_req = requests.get(
-                    f"{Configuration.API_FULL_URL}/{to_get}/",
-                    headers=Configuration.API_HEADERS,
-                    timeout=Configuration.API_TIMEOUT,
-                )
-                trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
-                del trial_json["id"]
-                trials.append(trial_json)
-        except Exception as curl_error:  # pylint: disable=broad-except
-            raise ValueError("Bad request.") from curl_error
+        for to_get in range(offset, limit):
+            curl_req = requests.get(
+                f"{Configuration.API_FULL_URL}/{to_get}/",
+                headers=Configuration.API_HEADERS,
+                timeout=Configuration.API_TIMEOUT,
+            )
+            trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
+            del trial_json["id"]
+            trials.append(trial_json)
 
         return trials
 

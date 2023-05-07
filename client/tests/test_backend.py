@@ -34,7 +34,7 @@ class TestBackend(TestCase):
         recovered = TrialBackend().get(trial_id=1)
         self.assertTrue(isinstance(recovered, Trial))
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             TrialBackend().get(trial_id=999)
 
     def tearDown(self) -> None:
