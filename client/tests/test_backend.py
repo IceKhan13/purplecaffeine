@@ -6,6 +6,8 @@ from unittest import TestCase
 
 from purplecaffeine.core import Trial, LocalBackend, BaseBackend as TrialBackend
 
+from .test_trial import dummy_trial
+
 
 class TestBackend(TestCase):
     """TestBackend."""
@@ -17,8 +19,7 @@ class TestBackend(TestCase):
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
-        self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
-        self.my_trial.add_metric("test_metric", 42)
+        self.my_trial = dummy_trial(name="keep_trial", backend=self.local_backend)
 
     def test_save_and_load_local_backend(self):
         """Test save trial locally."""
@@ -26,13 +27,14 @@ class TestBackend(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, "keep_trial.json")))
         recovered = self.local_backend.get(name="keep_trial")
         self.assertTrue(isinstance(recovered, Trial))
-        self.assertEqual(recovered.parameters, [])
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
 
     def test_save_and_load_remote_backend(self):
         """Test save trial remotely."""
         TrialBackend().save(trial=self.my_trial)
         recovered = TrialBackend().get(trial_id=1)
         self.assertTrue(isinstance(recovered, Trial))
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
 
         with self.assertRaises(ValueError):
             TrialBackend().get(trial_id=999)

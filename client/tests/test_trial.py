@@ -13,13 +13,15 @@ from qiskit.quantum_info import Operator
 from purplecaffeine import Trial, LocalBackend, BaseBackend as TrialBackend
 
 
-def dummy_trial(backend: Optional[TrialBackend] = None):
+def dummy_trial(
+    name: Optional[TrialBackend] = "test_trial", backend: Optional[TrialBackend] = None
+):
     """Returns dummy trial for tests.
 
     Returns:
         dummy trial
     """
-    trial = Trial("test_trial", backend=backend)
+    trial = Trial(name=name, backend=backend)
     trial.add_metric("test_metric", 42)
     trial.add_parameter("test_parameter", "parameter")
     trial.add_circuit("test_circuit", QuantumCircuit(2))
@@ -64,7 +66,7 @@ class TestTrial(TestCase):
         self.assertEqual(trial.arrays, [["test_array", np.array([42])]])
         self.assertEqual(trial.tags, ["qiskit", "test"])
 
-    def test_save_and_read_local(self):
+    def test_save_and_read_local_trial(self):
         """Test save and read Trial locally."""
         trial = dummy_trial(self.local_backend)
         trial.save()
@@ -82,7 +84,7 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
 
-    def test_save_and_read_remote(self):
+    def test_save_and_read_remote_trial(self):
         """Test save and read Trial remotely."""
         trial = dummy_trial(TrialBackend())
         trial.save()

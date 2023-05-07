@@ -17,16 +17,24 @@ jobs:
         # In future we can add [macos-latest, windows-latest]
         python-version: [3.9, '3.10']
         folder: ["client"]
+    env:
+      SERV_KEY: test
+      DB_NAME: github_actions
+      DB_SCHEMA: public
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_PORT: 5432
+      DB_HOST: localhost
     services:
       postgres:
         image: postgres
         env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
-          POSTGRES_DB: github_actions
+          POSTGRES_USER: ${{ DB_USER }}
+          POSTGRES_PASSWORD: ${{ DB_PASSWORD }}
+          POSTGRES_DB: ${{ DB_NAME }}
           POSTGRES_HOST_AUTH_METHOD: trust
         ports:
-          - 5432:5432
+          - ${{ DB_PORT }}:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -43,20 +51,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install tox
       - name: Setup API
-        env:
-          SERV_KEY: test
-          DB_NAME: github_actions
-          DB_SCHEMA: public
-          DB_USER: root
-          DB_PASSWORD: root
-          DB_PORT: 5432
-          DB_HOST: localhost
         run: |
           sudo apt-get install libpq-dev -y
           cd api_server/
           pip install -r requirements.txt
           python manage.py makemigrations core
           python manage.py migrate
+      - name: Start API
+        if: matrix.folder == 'client'
+        run: |
+          cd api_server/
           python manage.py runserver 0.0.0.0:8000 &
       - name: Test using tox environment
         shell: bash
