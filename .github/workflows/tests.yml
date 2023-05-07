@@ -23,6 +23,9 @@ jobs:
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -41,13 +44,14 @@ jobs:
       - name: Setup API
         env:
           SERV_KEY: test
-          DB_NAME: postgres
+          DB_NAME: github_actions
           DB_SCHEMA: public
           DB_USER: root
           DB_PASSWORD: root
           DB_PORT: 5432
           DB_HOST: postgres
         run: |
+          apt-get install libpq-dev -y
           cd api_server/
           pip install -r requirements.txt
           python manage.py makemigrations core
