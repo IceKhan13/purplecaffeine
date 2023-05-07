@@ -57,10 +57,6 @@ jobs:
           pip install -r requirements.txt
           python manage.py makemigrations core
           python manage.py migrate
-      - name: Start API
-        if: matrix.folder == 'client'
-        run: |
-          cd api_server/
           python manage.py runserver 0.0.0.0:8000 &
       - name: Test using tox environment
         shell: bash
