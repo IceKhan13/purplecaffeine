@@ -10,10 +10,10 @@ class Trial(models.Model):
     """
 
     name = models.CharField(max_length=255)
+    backend = models.JSONField(default=list)
     metrics = models.JSONField(default=list)
     parameters = models.JSONField(default=list)
     circuits = models.JSONField(default=list)
-    backends = models.JSONField(default=list)
     operators = models.JSONField(default=list)
     artifacts = models.JSONField(default=list)
     texts = models.JSONField(default=list)

@@ -35,7 +35,7 @@ class Trial:
     def __init__(
         self,
         name: str,
-        backend: Optional["BaseBackend"] = None,
+        backend: Optional[BaseBackend] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
         circuits: Optional[List[List[Union[str, QuantumCircuit]]]] = None,
@@ -174,15 +174,12 @@ class BaseBackend:
         Args:
             trial: encode trial to save
         """
-        try:
-            requests.post(
-                Configuration.API_FULL_URL,
-                headers=Configuration.API_HEADERS,
-                json=json.dumps(trial.__dict__, cls=TrialEncoder, indent=4),
-                timeout=Configuration.API_TIMEOUT,
-            )
-        except Exception as curl_error:  # pylint: disable=broad-except
-            raise ValueError("Bad request.") from curl_error
+        requests.post(
+            f"{Configuration.API_FULL_URL}/",
+            headers=Configuration.API_HEADERS,
+            json=json.loads(json.dumps(trial.__dict__, cls=TrialEncoder)),
+            timeout=Configuration.API_TIMEOUT,
+        )
 
         return trial.name
 
@@ -195,16 +192,19 @@ class BaseBackend:
         Returns:
             trial: object of a trial
         """
-        try:
-            curl_req = requests.get(
-                f"{Configuration.API_FULL_URL}/{trial_id}/",
-                headers=Configuration.API_HEADERS,
-                timeout=Configuration.API_TIMEOUT,
-            )
-        except Exception as curl_error:  # pylint: disable=broad-except
-            raise ValueError("Bad request.") from curl_error
+        curl_req = requests.get(
+            f"{Configuration.API_FULL_URL}/{trial_id}/",
+            headers=Configuration.API_HEADERS,
+            timeout=Configuration.API_TIMEOUT,
+        )
+        if "Not found." in str(curl_req.json()):
+            raise Exception(curl_req.json())
 
-        return Trial(**json.load(curl_req.json(), cls=TrialDecoder))
+        trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
+        if "id" in trial_json:
+            del trial_json["id"]
+
+        return Trial(**trial_json)
 
     def list(
         self,
@@ -235,7 +235,9 @@ class BaseBackend:
                     headers=Configuration.API_HEADERS,
                     timeout=Configuration.API_TIMEOUT,
                 )
-                trials.append(json.load(curl_req.json(), cls=TrialDecoder))
+                trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
+                del trial_json["id"]
+                trials.append(trial_json)
         except Exception as curl_error:  # pylint: disable=broad-except
             raise ValueError("Bad request.") from curl_error
 

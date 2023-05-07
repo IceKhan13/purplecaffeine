@@ -18,7 +18,10 @@ class TestConf(TestCase):
         self.assertTrue(
             Configuration.API_FULL_URL == "http://127.0.0.1:8000/api/trials"
         )
-        self.assertTrue(Configuration.API_HEADERS == {"Accept": "application/json"})
+        self.assertTrue(
+            Configuration.API_HEADERS
+            == {"Accept": "application/json", "Content-Type": "application/json"}
+        )
         self.assertTrue(Configuration.API_TIMEOUT == 30)
 
         self.assertTrue(isinstance(Configuration.all(), list))

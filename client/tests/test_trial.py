@@ -64,8 +64,8 @@ class TestTrial(TestCase):
         self.assertEqual(trial.arrays, [["test_array", np.array([42])]])
         self.assertEqual(trial.tags, ["qiskit", "test"])
 
-    def test_save_and_read(self):
-        """Test save and read Trial."""
+    def test_save_and_read_local(self):
+        """Test save and read Trial locally."""
         trial = dummy_trial(self.local_backend)
         trial.save()
 
@@ -74,6 +74,20 @@ class TestTrial(TestCase):
         )
 
         recovered = trial.read_trial()
+        self.assertEqual(recovered.metrics, [["test_metric", 42]])
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
+        self.assertEqual(recovered.operators, [["test_operator", Operator(XGate())]])
+        self.assertEqual(recovered.texts, [["test_text", "text"]])
+        self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
+        self.assertEqual(recovered.tags, ["qiskit", "test"])
+
+    def test_save_and_read_remote(self):
+        """Test save and read Trial remotely."""
+        trial = dummy_trial(TrialBackend())
+        trial.save()
+
+        recovered = trial.read_trial(trial_id=1)
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])

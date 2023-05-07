@@ -11,7 +11,10 @@ class Configuration:
     API_PORT: str = "8000"
     API_TRIAL_ENDPOINT: str = "api/trials"
     API_FULL_URL: str = f"{API_HTTP}://{API_URL}:{API_PORT}/{API_TRIAL_ENDPOINT}"
-    API_HEADERS: dict = {"Accept": "application/json"}
+    API_HEADERS: dict = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
     API_TIMEOUT: int = 30
 
     @classmethod

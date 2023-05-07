@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from unittest import TestCase
 
-from purplecaffeine.core import Trial, LocalBackend
+from purplecaffeine.core import Trial, LocalBackend, BaseBackend as TrialBackend
 
 
 class TestBackend(TestCase):
@@ -20,13 +20,22 @@ class TestBackend(TestCase):
         self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
         self.my_trial.add_metric("some-metrics", 2)
 
-    def test_save_and_load_backend(self):
-        """Test save trial."""
+    def test_save_and_load_local_backend(self):
+        """Test save trial locally."""
         self.local_backend.save(trial=self.my_trial)
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, "keep_trial.json")))
         recovered = self.local_backend.get(name="keep_trial")
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [])
+
+    def test_save_and_load_remote_backend(self):
+        """Test save trial remotely."""
+        TrialBackend().save(trial=self.my_trial)
+        recovered = TrialBackend().get(trial_id=1)
+        self.assertTrue(isinstance(recovered, Trial))
+
+        with self.assertRaises(Exception):
+            TrialBackend().get(trial_id=999)
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
