@@ -51,7 +51,7 @@ jobs:
           DB_PORT: 5432
           DB_HOST: postgres
         run: |
-          apt-get install libpq-dev -y
+          sudo apt-get install libpq-dev -y
           cd api_server/
           pip install -r requirements.txt
           python manage.py makemigrations core
