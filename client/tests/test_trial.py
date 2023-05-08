@@ -49,7 +49,7 @@ class TestTrial(TestCase):
         """Test train context."""
         with Trial(name="test_trial", backend=self.local_backend) as trial:
             trial.add_metric("test_metric", 42)
-        trial_id = trial.name + datetime.now().strftime('%Y%m%d%H')
+        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
         trial.read_trial(trial_id=trial_id)
         self.assertTrue(
             os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
@@ -73,7 +73,7 @@ class TestTrial(TestCase):
         trial = dummy_trial(backend=self.local_backend)
         trial.save()
 
-        trial_id = trial.name + datetime.now().strftime('%Y%m%d%H')
+        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
         self.assertTrue(
             os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )

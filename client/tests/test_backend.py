@@ -25,9 +25,11 @@ class TestBackend(TestCase):
     def test_save_and_load_local_backend(self):
         """Test save trial locally."""
         self.local_backend.save(trial=self.my_trial)
-        trial_id = self.my_trial.name + datetime.now().strftime('%Y%m%d%H')
+        trial_id = self.my_trial.name + datetime.now().strftime("%Y%m%d%H")
 
-        self.assertTrue(os.path.isfile(os.path.join(self.save_path, trial_id + ".json")))
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
+        )
         recovered = self.local_backend.get(trial_id=trial_id)
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])

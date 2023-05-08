@@ -256,7 +256,7 @@ class LocalBackend(BaseBackend):
         Returns:
             self.path: path of the trial file
         """
-        trial_id = trial.name + datetime.now().strftime('%Y%m%d%H')
+        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
         with open(
             os.path.join(self.path, trial_id + ".json"), "w", encoding="utf-8"
         ) as trial_file:
