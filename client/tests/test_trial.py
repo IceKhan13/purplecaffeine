@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase
+from datetime import datetime
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -48,9 +49,10 @@ class TestTrial(TestCase):
         """Test train context."""
         with Trial(name="test_trial", backend=self.local_backend) as trial:
             trial.add_metric("test_metric", 42)
-        trial.read_trial()
+        trial_id = trial.name + datetime.now().strftime('%Y%m%d%H')
+        trial.read_trial(trial_id=trial_id)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )
         self.assertEqual(trial.metrics, [["test_metric", 42]])
 
@@ -71,11 +73,11 @@ class TestTrial(TestCase):
         trial = dummy_trial(backend=self.local_backend)
         trial.save()
 
+        trial_id = trial.name + datetime.now().strftime('%Y%m%d%H')
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )
-
-        recovered = trial.read_trial()
+        recovered = trial.read_trial(trial_id=trial_id)
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -89,7 +91,7 @@ class TestTrial(TestCase):
         trial = dummy_trial(backend=TrialBackend())
         trial.save()
 
-        recovered = trial.read_trial(trial_id=1)
+        recovered = trial.read_trial(trial_id="1")
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])

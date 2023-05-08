@@ -4,6 +4,7 @@ from __future__ import annotations
 import glob
 import json
 import logging
+from datetime import datetime
 import os
 from typing import Optional, Union, List, Any
 import requests
@@ -148,7 +149,7 @@ class Trial:
         """Save into Backend."""
         self.backend.save(trial=self)
 
-    def read_trial(self, trial_id: Optional[int] = None) -> Trial:
+    def read_trial(self, trial_id: str) -> Trial:
         """Read a trial from Backend.
 
         Args:
@@ -157,8 +158,7 @@ class Trial:
         Returns:
             Trial dict object
         """
-        if isinstance(self.backend, LocalBackend):
-            return self.backend.get(name=self.name)
+
         return self.backend.get(trial_id=trial_id)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -183,7 +183,7 @@ class BaseBackend:
 
         return trial.name
 
-    def get(self, trial_id: int) -> Trial:
+    def get(self, trial_id: str) -> Trial:
         """Returns trial by name.
 
         Args:
@@ -211,7 +211,7 @@ class BaseBackend:
         query: Optional[str] = None,  # pylint: disable=unused-argument
         limit: Optional[int] = None,
         offset: Optional[int] = None,
-        **kwargs,  # pylint: disable=unused-argument
+        **kwargs,
     ) -> List[Trial]:
         """Returns list of trials.
 
@@ -256,30 +256,31 @@ class LocalBackend(BaseBackend):
         Returns:
             self.path: path of the trial file
         """
+        trial_id = trial.name + datetime.now().strftime('%Y%m%d%H')
         with open(
-            os.path.join(self.path, trial.name + ".json"), "w", encoding="utf-8"
+            os.path.join(self.path, trial_id + ".json"), "w", encoding="utf-8"
         ) as trial_file:
             json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         return self.path
 
-    def get(self, name: str) -> Trial:  # pylint: disable=arguments-renamed
+    def get(self, trial_id: str) -> Trial:
         """Read a given trial file.
 
         Args:
-            name: name of the trial
+            trial_id: trial id
 
         Returns:
             trial: object of a trial
         """
         with open(
-            os.path.join(self.path, name + ".json"), "r", encoding="utf-8"
+            os.path.join(self.path, trial_id + ".json"), "r", encoding="utf-8"
         ) as trial_file:
             return Trial(**json.load(trial_file, cls=TrialDecoder))
 
     def list(
         self,
-        query: Optional[str] = None,
+        query: Optional[str] = None,  # pylint: disable=unused-argument
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         **kwargs,
