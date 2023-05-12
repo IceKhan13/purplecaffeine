@@ -1,6 +1,6 @@
 # PurpleCaffeine API backend
 
-## Launch your development instance of the API
+## Launch your docker development instance of the API
 
 To run this docker you need to have a database server and docker running.
 
@@ -29,6 +29,16 @@ docker run --rm --name purplecaffeine-dev \
     purplecaffeine:dev
 ```
 Now you can open your browser into `http://localhost:8000`
+
+## Launch a local instance of the API
+
+To run the API without using docker, you need to have a database server running and to run this commands :
+```bash
+pip3 install -r requirements.txt
+python3 manage.py makemigrations core; \
+python3 manage.py migrate; \
+python3 manage.py runserver 0.0.0.0:8000
+```
 
 ## Below are commands to perform CRUD of Trials data into Backend using terminal
 

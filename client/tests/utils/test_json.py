@@ -28,6 +28,3 @@ class TestJson(TestCase):
         self.assertEqual(trial_decode.texts, my_trial.texts)
         self.assertEqual(trial_decode.arrays, my_trial.arrays)
         self.assertEqual(trial_decode.tags, my_trial.tags)
-
-
-
