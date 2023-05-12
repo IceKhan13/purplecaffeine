@@ -1,0 +1,33 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: purplecaffeine
+      POSTGRES_USER: purplecaffeine
+      POSTGRES_PASSWORD: purplecaffeinepassword
+    ports:
+      - 5432:5432
+    networks:
+      - safe-tier
+    restart:
+      always
+  api_server:
+    container_name: api_server
+    build:
+      context: ./
+      dockerfile: api_server
+    command: python manager.py runserver
+    environment:
+      DB_NAME: purplecaffeine
+      DB_USER: purplecaffeine
+      DB_PASSWORD: purplecaffeinepassword
+      DB_HOST: postgres
+      DB_PORT: 5432
+      SERV_KEY: secret
+    ports:
+      - 8000:8000
+    networks:
+      - safe-tier
+networks:
+  safe-tier:

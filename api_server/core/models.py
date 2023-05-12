@@ -1,6 +1,8 @@
 """
 Module to initialize the database
 """
+import uuid
+
 from django.db import models
 
 
@@ -9,7 +11,9 @@ class Trial(models.Model):
     Model representing a trial
     """
 
+    uuid = models.CharField(max_length=255, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
+    description = models.TextField(default="No description")
     metrics = models.JSONField(default=list)
     parameters = models.JSONField(default=list)
     circuits = models.JSONField(default=list)
