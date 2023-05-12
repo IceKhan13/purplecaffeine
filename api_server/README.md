@@ -32,7 +32,10 @@ Now you can open your browser into `http://localhost:8000`
 
 ## Launch a local instance of the API
 
-To run the API without using docker, you need to have a database server running and to run this commands :
+To run the API without using docker. You need :
+- to have a database server running
+- to export the variables [.envrc](../.envrc)
+- to run these commands :
 ```bash
 pip3 install -r requirements.txt
 python3 manage.py makemigrations core
