@@ -20,6 +20,13 @@ Step 0: install package
 
 ------------
 
+**Guides**
+
+.. toctree::
+  :maxdepth: 2
+
+  Guides <guides/index>
+
 
 **API references**
 

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Guide: Tracking quantum experiments &#8212; PurpleCaffeine 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PurpleCaffeine API References" href="../apidocs/index.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="Guide:-Tracking-quantum-experiments">
+<h1>Guide: Tracking quantum experiments<a class="headerlink" href="#Guide:-Tracking-quantum-experiments" title="Permalink to this heading">¶</a></h1>
+<p>In this guide we will show you how to keep track of your quantum experiments.</p>
+<p>First we introduce glossary: - <code class="docutils literal notranslate"><span class="pre">Trial</span></code> is a tracking class which wraps a single execution of your quantum experiment - <code class="docutils literal notranslate"><span class="pre">Backend</span></code> is a class responsible for storing trial data</p>
+<p>We will show simple example of measuring expectation value of an observable and how to track all information about this experiment.</p>
+<p>Let’s start with importing necessary modules.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.random</span> <span class="kn">import</span> <span class="n">random_circuit</span>
+<span class="kn">from</span> <span class="nn">qiskit.quantum_info.random</span> <span class="kn">import</span> <span class="n">random_pauli</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
+
+<span class="kn">from</span> <span class="nn">purplecaffeine.core</span> <span class="kn">import</span> <span class="n">Trial</span><span class="p">,</span> <span class="n">LocalBackend</span>
+</pre></div>
+</div>
+</div>
+<p>Next we need to define some variables, circuit and observable</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_qubits</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">depth</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">shots</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">random_circuit</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">fold</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">                  ┌──────┐┌───────────┐
+q_0: ─────────────┤0     ├┤ P(6.1629) ├──■───
+                  │      │└───┬───┬───┘┌─┴──┐
+q_1: ─■───────────┤  Dcx ├────┤ X ├────┤ Sx ├
+      │           │      │    └───┘    └────┘
+q_2: ─┼───────────┤1     ├──────■────────■───
+      │U1(3.4604) └──────┘      │        │
+q_3: ─■─────────────────────────■────────■───
+                                             </pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obs</span> <span class="o">=</span> <span class="n">random_pauli</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">)</span>
+<span class="n">obs</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pauli(&#39;XZYI&#39;)
+</pre></div></div>
+</div>
+<p>We also need a place where we will store data about our trials. In this example we will be using <code class="docutils literal notranslate"><span class="pre">LocalBackend</span></code> which stores information locally in a folder that you configured. We will set our folder for trials to be <code class="docutils literal notranslate"><span class="pre">./trials</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span> <span class="o">=</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="s2">&quot;./trials&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In order to track our actions we need to work with <code class="docutils literal notranslate"><span class="pre">Trial</span></code> class, give it a name <code class="docutils literal notranslate"><span class="pre">Example</span> <span class="pre">trial</span></code>, pass our <code class="docutils literal notranslate"><span class="pre">local_backend</span></code> as backend option and start context (python <code class="docutils literal notranslate"><span class="pre">with</span></code> statement).</p>
+<p>Within this context we can call list of different methods on <code class="docutils literal notranslate"><span class="pre">trial</span></code> object. Some of them are: - <code class="docutils literal notranslate"><span class="pre">add_parameter</span></code> adds parameters to the trial, which can be backend names, depth, number of qubits, etc. - <code class="docutils literal notranslate"><span class="pre">add_metric</span></code> adds metric to the trial, which can represent measurable outcome of this trial. Ex: history of vqe iterations, results of measurement, etc. - <code class="docutils literal notranslate"><span class="pre">add_circuit</span></code> adds circuit to the trial to understand what circuits where used in your work - <code class="docutils literal notranslate"><span class="pre">add_operator</span></code> adds operator to the
+trial to understand what observables/operators where used in your work</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Trial</span><span class="p">(</span><span class="s2">&quot;Example trial&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">local_backend</span><span class="p">)</span> <span class="k">as</span> <span class="n">trial</span><span class="p">:</span>
+    <span class="c1"># track some parameters</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="s2">&quot;qiskit.primitives.Estimator&quot;</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;n_qubits&quot;</span><span class="p">,</span> <span class="n">n_qubits</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;shots&quot;</span><span class="p">,</span> <span class="n">shots</span><span class="p">)</span>
+
+    <span class="c1"># track objects of interest</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_circuit</span><span class="p">(</span><span class="s2">&quot;circuit&quot;</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_operator</span><span class="p">(</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
+
+    <span class="c1"># run</span>
+    <span class="n">exp_value</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+    <span class="c1"># track results of run</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_metric</span><span class="p">(</span><span class="s2">&quot;exp_value&quot;</span><span class="p">,</span> <span class="n">exp_value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We can quiery existing experiments by name by calling <code class="docutils literal notranslate"><span class="pre">get</span></code> method on backend object and passing name of your example</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Example trial&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Trial: Example trial&gt;
+</pre></div></div>
+</div>
+<p>Or we get list of all experiments by calling <code class="docutils literal notranslate"><span class="pre">list</span></code> method on backend object.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;name&#39;: &#39;Example trial&#39;,
+  &#39;backend&#39;: None,
+  &#39;metrics&#39;: [[&#39;exp_value&#39;, -0.01761901873137989]],
+  &#39;parameters&#39;: [[&#39;estimator&#39;, &#39;qiskit.primitives.Estimator&#39;],
+   [&#39;depth&#39;, 3],
+   [&#39;n_qubits&#39;, 4],
+   [&#39;shots&#39;, 2000]],
+  &#39;circuits&#39;: [[&#39;circuit&#39;,
+    &lt;qiskit.circuit.quantumcircuit.QuantumCircuit at 0x7fe5820466d0&gt;]],
+  &#39;operators&#39;: [[&#39;obs&#39;, Pauli(&#39;XZYI&#39;)]],
+  &#39;artifacts&#39;: [],
+  &#39;texts&#39;: [],
+  &#39;arrays&#39;: [],
+  &#39;tags&#39;: []}]
+</pre></div></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PurpleCaffeine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide: Tracking quantum experiments</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">&lt;no title&gt;</a></li>
+      <li>Next: <a href="../apidocs/index.html" title="next chapter">PurpleCaffeine API References</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/guides/01_tracking_quantum_experiments.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
