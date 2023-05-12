@@ -35,8 +35,8 @@ Now you can open your browser into `http://localhost:8000`
 To run the API without using docker, you need to have a database server running and to run this commands :
 ```bash
 pip3 install -r requirements.txt
-python3 manage.py makemigrations core; \
-python3 manage.py migrate; \
+python3 manage.py makemigrations core
+python3 manage.py migrate
 python3 manage.py runserver 0.0.0.0:8000
 ```
 
