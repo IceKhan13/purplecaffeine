@@ -326,6 +326,12 @@ class LocalBackend(BaseBackend):
         Returns:
             trial: object of a trial
         """
+        if not os.path.isfile(os.path.join(self.path, trial_id + ".json")):
+            logging.warning(
+                "Your file %s does not exist.",
+                os.path.join(self.path, trial_id + ".json"),
+            )
+            raise ValueError(trial_id)
         with open(
             os.path.join(self.path, trial_id + ".json"), "r", encoding="utf-8"
         ) as trial_file:

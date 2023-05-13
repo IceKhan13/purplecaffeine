@@ -34,6 +34,8 @@ class TestBackend(TestCase):
         recovered = self.local_backend.get(trial_id=trial_id)
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        with self.assertRaises(ValueError):
+            self.local_backend.get(trial_id="999")
         # List
         list_trials = self.local_backend.list()
         self.assertTrue(isinstance(list_trials, list))
@@ -47,11 +49,11 @@ class TestBackend(TestCase):
         # Save
         ApiBackend().save(trial=self.my_trial)
         # Get
-        recovered = ApiBackend().get(trial_id=1)
+        recovered = ApiBackend().get(trial_id="1")
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         with self.assertRaises(ValueError):
-            ApiBackend().get(trial_id=999)
+            ApiBackend().get(trial_id="999")
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
