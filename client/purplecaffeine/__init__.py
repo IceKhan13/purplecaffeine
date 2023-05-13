@@ -5,6 +5,7 @@
     Trial
     BaseBackend
     LocalBackend
+    ApiBackend
 """
 
-from .core import Trial, LocalBackend, BaseBackend
+from .core import Trial, LocalBackend, ApiBackend, BaseBackend

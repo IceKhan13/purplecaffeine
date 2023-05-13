@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest import TestCase
 from datetime import datetime
 
-from purplecaffeine.core import Trial, LocalBackend, BaseBackend as TrialBackend
+from purplecaffeine.core import Trial, LocalBackend, ApiBackend
 
 from .test_trial import dummy_trial
 
@@ -36,13 +36,13 @@ class TestBackend(TestCase):
 
     def test_save_and_load_remote_backend(self):
         """Test save trial remotely."""
-        TrialBackend().save(trial=self.my_trial)
-        recovered = TrialBackend().get(trial_id=1)
+        ApiBackend().save(trial=self.my_trial)
+        recovered = ApiBackend().get(trial_id=1)
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
 
         with self.assertRaises(ValueError):
-            TrialBackend().get(trial_id=999)
+            ApiBackend().get(trial_id=999)
 
     def tearDown(self) -> None:
         """TearDown Backend object."""

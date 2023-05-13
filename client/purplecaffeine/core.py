@@ -174,6 +174,49 @@ class BaseBackend:
         Args:
             trial: encode trial to save
         """
+        raise NotImplementedError
+
+    def list(
+        self,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        **kwargs,
+    ) -> List[Trial]:
+        """Returns list of trails.
+
+        Args:
+            query: search query
+            limit: limit
+            offset: offset
+            **kwargs: other filtering criteria
+
+        Returns:
+            list of trials
+        """
+        raise NotImplementedError
+
+    def get(self, trial_id: str) -> Trial:
+        """Returns trail by id.
+
+        Args:
+            trial_id: trial id
+
+        Returns:
+            trial: object of a trial
+        """
+        raise NotImplementedError
+
+
+class ApiBackend(BaseBackend):
+    """API backend class."""
+
+    def save(self, trial: Trial):
+        """Saves given trial.
+
+        Args:
+            trial: encode trial to save
+        """
         requests.post(
             f"{Configuration.API_FULL_URL}/",
             headers=Configuration.API_HEADERS,
@@ -203,12 +246,14 @@ class BaseBackend:
         trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
         if "id" in trial_json:
             del trial_json["id"]
+        if "uuid" in trial_json:
+            del trial_json["uuid"]
 
         return Trial(**trial_json)
 
     def list(
         self,
-        query: Optional[str] = None,  # pylint: disable=unused-argument
+        query: Optional[str] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         **kwargs,
@@ -228,14 +273,17 @@ class BaseBackend:
         limit = limit or 10
         trials = []
 
-        for to_get in range(offset, limit):
-            curl_req = requests.get(
-                f"{Configuration.API_FULL_URL}/{to_get}/",
-                headers=Configuration.API_HEADERS,
-                timeout=Configuration.API_TIMEOUT,
-            )
-            trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
-            del trial_json["id"]
+        curl_req = requests.get(
+            f"{Configuration.API_FULL_URL}/?query={query}&offset={offset}&limit={limit}/",
+            headers=Configuration.API_HEADERS,
+            timeout=Configuration.API_TIMEOUT,
+        )
+        for elem in curl_req.json():
+            trial_json = json.loads(json.dumps(elem), cls=TrialDecoder)
+            if "id" in trial_json:
+                del trial_json["id"]
+            if "uuid" in trial_json:
+                del trial_json["uuid"]
             trials.append(trial_json)
 
         return trials
@@ -245,6 +293,11 @@ class LocalBackend(BaseBackend):
     """Local backend."""
 
     def __init__(self, path: str):
+        """Init Local backend.
+
+        Args:
+            path: path for the local storage folder
+        """
         self.path = path
 
     def save(self, trial: Trial) -> str:

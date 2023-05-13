@@ -11,7 +11,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
-from purplecaffeine import Trial, LocalBackend, BaseBackend as TrialBackend
+from purplecaffeine import Trial, LocalBackend, ApiBackend, BaseBackend as TrialBackend
 
 
 def dummy_trial(
@@ -88,7 +88,7 @@ class TestTrial(TestCase):
 
     def test_save_and_read_remote_trial(self):
         """Test save and read Trial remotely."""
-        trial = dummy_trial(backend=TrialBackend())
+        trial = dummy_trial(backend=ApiBackend())
         trial.save()
 
         recovered = trial.read_trial(trial_id="1")
