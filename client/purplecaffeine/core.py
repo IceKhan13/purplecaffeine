@@ -149,7 +149,7 @@ class Trial:
         """Save into Backend."""
         self.backend.save(trial=self)
 
-    def read_trial(self, trial_id: str) -> Trial:
+    def read(self, trial_id: str) -> Trial:
         """Read a trial from Backend.
 
         Args:

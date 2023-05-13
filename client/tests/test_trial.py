@@ -50,7 +50,7 @@ class TestTrial(TestCase):
         with Trial(name="test_trial", backend=self.local_backend) as trial:
             trial.add_metric("test_metric", 42)
         trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
-        trial.read_trial(trial_id=trial_id)
+        trial.read(trial_id=trial_id)
         self.assertTrue(
             os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )
@@ -68,7 +68,7 @@ class TestTrial(TestCase):
         self.assertEqual(trial.arrays, [["test_array", np.array([42])]])
         self.assertEqual(trial.tags, ["qiskit", "test"])
 
-    def test_save_and_read_local_trial(self):
+    def test_save_read_local_trial(self):
         """Test save and read Trial locally."""
         trial = dummy_trial(backend=self.local_backend)
         trial.save()
@@ -77,7 +77,7 @@ class TestTrial(TestCase):
         self.assertTrue(
             os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )
-        recovered = trial.read_trial(trial_id=trial_id)
+        recovered = trial.read(trial_id=trial_id)
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -86,12 +86,12 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
 
-    def test_save_and_read_remote_trial(self):
+    def test_save_read_remote_trial(self):
         """Test save and read Trial remotely."""
         trial = dummy_trial(backend=ApiBackend())
         trial.save()
 
-        recovered = trial.read_trial(trial_id="1")
+        recovered = trial.read(trial_id="1")
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
