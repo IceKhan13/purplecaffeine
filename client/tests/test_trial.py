@@ -86,7 +86,7 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
 
-    def test_save_read_remote_trial(self):
+    def test_save_read_api_trial(self):
         """Test save and read Trial remotely."""
         trial = dummy_trial(backend=ApiBackend())
         trial.save()

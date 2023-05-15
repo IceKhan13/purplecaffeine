@@ -44,7 +44,7 @@ class TestBackend(TestCase):
             ite_trial = Trial(Trial(**trial_dict))
             self.assertTrue(isinstance(ite_trial, Trial))
 
-    def test_save_get_remote_backend(self):
+    def test_save_get_api_backend(self):
         """Test save trial remotely."""
         # Save
         ApiBackend().save(trial=self.my_trial)
