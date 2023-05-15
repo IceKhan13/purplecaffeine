@@ -288,8 +288,53 @@ class S3Backend(BaseBackend):
             trial: encode trial to save
 
         Returns:
-            self.path: path of the trial file
+            name: name of the saved trial
         """
         trial_data = json.dumps(trial.__dict__, cls=TrialEncoder, indent=4)
         self.s3.put_object(Bucket=self.bucket_name, Key=name, Body=trial_data)
         return name
+
+    def get(self, name: str) -> "Trial":
+        """Loads a trial by name.
+
+        Args:
+            name: name of the trial to load
+
+        Returns:
+            Loaded trial
+        """
+        trial_data = self.s3.get_object(Bucket=self.bucket_name, Key=name)
+        return Trial(**json.loads(trial_data['Body'].read(), cls=TrialDecoder))
+    
+    def list(
+        self,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        **kwargs,
+    ) -> List[Trial]:
+        """Returns list of trials.
+
+        Args:
+            query: search query
+            limit: limit
+            offset: offset
+            **kwargs: other filtering criteria
+
+        Returns:
+            list of trials
+        """
+        offset = offset or 0
+        limit = limit or 10
+
+        trials = []
+        paginator = self.s3.get_paginator('list_objects_v2')
+        for result in paginator.paginate(Bucket=self.bucket_name):
+            if "Contents" in result:
+                for s3_object in result["Contents"]:
+                    if s3_object["Key"].endswith(".json"):
+                        trial = self.get(s3_object["Key"])
+                        trials.append(trial)
+
+        return trials[offset:offset+limit]
+    
