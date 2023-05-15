@@ -4,6 +4,8 @@ import json
 import logging
 import os
 from typing import Optional, Union, List, Any
+import boto3
+from botocore.exceptions import ClientError
 
 import numpy as np
 from pympler import asizeof
@@ -265,3 +267,29 @@ class LocalBackend(BaseBackend):
             with open(path, "r", encoding="utf-8") as trial_file:
                 trials.append(json.load(trial_file, cls=TrialDecoder))
         return trials
+
+class S3Backend(BaseBackend):
+    """S3 backend."""
+
+    def __init__(self, bucket_name, key, access_key):
+        s3 = boto3.client(
+                    's3',
+                    aws_access_key_id= key,
+                    aws_secret_access_key= access_key
+                )
+        self.s3 = s3
+        self.bucket_name = bucket_name
+
+    def save(self, name: str, trial) -> str:
+        """Saves given trial.
+
+        Args:
+            name: name of the trial
+            trial: encode trial to save
+
+        Returns:
+            self.path: path of the trial file
+        """
+        trial_data = json.dumps(trial.__dict__, cls=TrialEncoder, indent=4)
+        self.s3.put_object(Bucket=self.bucket_name, Key=name, Body=trial_data)
+        return name
