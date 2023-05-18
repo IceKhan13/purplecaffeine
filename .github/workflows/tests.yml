@@ -55,7 +55,6 @@ jobs:
           sudo apt-get install libpq-dev -y
           cd api_server/
           pip install -r requirements.txt
-          python manage.py makemigrations core
           python manage.py migrate
       - name: Start API
         if: matrix.folder == 'client'
