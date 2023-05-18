@@ -4,22 +4,25 @@ import shutil
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase
+from datetime import datetime
 
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
-from purplecaffeine import Trial, LocalBackend, BaseBackend as TrialBackend
+from purplecaffeine import Trial, LocalBackend, ApiBackend, BaseBackend as TrialBackend
 
 
-def dummy_trial(backend: Optional[TrialBackend] = None):
+def dummy_trial(
+    name: Optional[TrialBackend] = "test_trial", backend: Optional[TrialBackend] = None
+):
     """Returns dummy trial for tests.
 
     Returns:
         dummy trial
     """
-    trial = Trial("test_trial", backend=backend)
+    trial = Trial(name=name, backend=backend)
     trial.add_metric("test_metric", 42)
     trial.add_parameter("test_parameter", "parameter")
     trial.add_circuit("test_circuit", QuantumCircuit(2))
@@ -46,9 +49,10 @@ class TestTrial(TestCase):
         """Test train context."""
         with Trial(name="test_trial", backend=self.local_backend) as trial:
             trial.add_metric("test_metric", 42)
-        trial.read_trial()
+        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
+        trial.read(trial_id=trial_id)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )
         self.assertEqual(trial.metrics, [["test_metric", 42]])
 
@@ -64,16 +68,16 @@ class TestTrial(TestCase):
         self.assertEqual(trial.arrays, [["test_array", np.array([42])]])
         self.assertEqual(trial.tags, ["qiskit", "test"])
 
-    def test_save_and_read(self):
-        """Test save and read Trial."""
-        trial = dummy_trial(self.local_backend)
+    def test_save_read_local_trial(self):
+        """Test save and read Trial locally."""
+        trial = dummy_trial(backend=self.local_backend)
         trial.save()
 
+        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
         )
-
-        recovered = self.local_backend.get(trial.name)
+        recovered = trial.read(trial_id=trial_id)
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -81,6 +85,40 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.texts, [["test_text", "text"]])
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
+
+    def test_save_read_api_trial(self):
+        """Test save and read Trial remotely."""
+        trial = dummy_trial(backend=ApiBackend())
+        trial.save()
+
+        recovered = trial.read(trial_id="1")
+        self.assertEqual(recovered.metrics, [["test_metric", 42]])
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
+        self.assertEqual(recovered.operators, [["test_operator", Operator(XGate())]])
+        self.assertEqual(recovered.texts, [["test_text", "text"]])
+        self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
+        self.assertEqual(recovered.tags, ["qiskit", "test"])
+
+    def test_export_import(self):
+        """Test export and import Trial from shared file."""
+        trial = dummy_trial()
+        # Export
+        trial.export_to_shared_file(path=self.save_path)
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+        )
+        # Import
+        new_trial = Trial("test_import").import_from_shared_file(
+            os.path.join(self.save_path, trial.name + ".json")
+        )
+        self.assertEqual(new_trial.metrics, [["test_metric", 42]])
+        self.assertEqual(new_trial.parameters, [["test_parameter", "parameter"]])
+        self.assertEqual(new_trial.circuits, [["test_circuit", QuantumCircuit(2)]])
+        self.assertEqual(new_trial.operators, [["test_operator", Operator(XGate())]])
+        self.assertEqual(new_trial.texts, [["test_text", "text"]])
+        self.assertEqual(new_trial.arrays, [["test_array", np.array([42])]])
+        self.assertEqual(new_trial.tags, ["qiskit", "test"])
 
     def tearDown(self) -> None:
         """TearDown Trial object."""

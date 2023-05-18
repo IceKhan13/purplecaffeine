@@ -3,8 +3,11 @@ import os
 import shutil
 from pathlib import Path
 from unittest import TestCase
+from datetime import datetime
 
-from purplecaffeine.core import Trial, LocalBackend
+from purplecaffeine.core import Trial, LocalBackend, ApiBackend
+
+from .test_trial import dummy_trial
 
 
 class TestBackend(TestCase):
@@ -17,16 +20,40 @@ class TestBackend(TestCase):
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
-        self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
-        self.my_trial.add_metric("some-metrics", 2)
+        self.my_trial = dummy_trial(name="keep_trial", backend=self.local_backend)
 
-    def test_save_and_load_backend(self):
-        """Test save trial."""
-        self.local_backend.save(name="keep_trial", trial=self.my_trial)
-        self.assertTrue(os.path.isfile(os.path.join(self.save_path, "keep_trial.json")))
-        recovered = self.local_backend.get(name="keep_trial")
+    def test_save_get_list_local_backend(self):
+        """Test save trial locally."""
+        # Save
+        self.local_backend.save(trial=self.my_trial)
+        trial_id = self.my_trial.name + datetime.now().strftime("%Y%m%d%H")
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
+        )
+        # Get
+        recovered = self.local_backend.get(trial_id=trial_id)
         self.assertTrue(isinstance(recovered, Trial))
-        self.assertEqual(recovered.parameters, [])
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        with self.assertRaises(ValueError):
+            self.local_backend.get(trial_id="999")
+        # List
+        list_trials = self.local_backend.list()
+        self.assertTrue(isinstance(list_trials, list))
+        self.assertTrue(isinstance(list_trials[0], dict))
+        for trial_dict in list_trials:
+            ite_trial = Trial(Trial(**trial_dict))
+            self.assertTrue(isinstance(ite_trial, Trial))
+
+    def test_save_get_api_backend(self):
+        """Test save trial remotely."""
+        # Save
+        ApiBackend().save(trial=self.my_trial)
+        # Get
+        recovered = ApiBackend().get(trial_id="1")
+        self.assertTrue(isinstance(recovered, Trial))
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        with self.assertRaises(ValueError):
+            ApiBackend().get(trial_id="999")
 
     def tearDown(self) -> None:
         """TearDown Backend object."""

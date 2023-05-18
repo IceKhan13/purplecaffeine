@@ -1,9 +1,13 @@
 """Core."""
+from __future__ import annotations
+
 import glob
 import json
 import logging
+from datetime import datetime
 import os
 from typing import Optional, Union, List, Any
+import requests
 
 import numpy as np
 from pympler import asizeof
@@ -32,7 +36,7 @@ class Trial:
     def __init__(
         self,
         name: str,
-        backend: Optional["BaseBackend"] = None,
+        backend: Optional[BaseBackend] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
         circuits: Optional[List[List[Union[str, QuantumCircuit]]]] = None,
@@ -143,15 +147,53 @@ class Trial:
 
     def save(self):
         """Save into Backend."""
-        self.backend.save(name=self.name, trial=self)
+        self.backend.save(trial=self)
 
-    def read_trial(self) -> "Trial":
+    def read(self, trial_id: str) -> Trial:
         """Read a trial from Backend.
+
+        Args:
+            trial_id: if backend is the remote api, you need the trial id find in database.
 
         Returns:
             Trial dict object
         """
-        return self.backend.get(name=self.name)
+
+        return self.backend.get(trial_id=trial_id)
+
+    @staticmethod
+    def import_from_shared_file(path) -> "Trial":
+        """Import Trial for shared file.
+
+        Args:
+            path: full path of the file
+
+        Returns:
+            Trial dict object
+        """
+        with open(os.path.join(path), "r", encoding="utf-8") as trial_file:
+            trial_json = json.load(trial_file, cls=TrialDecoder)
+            if "id" in trial_json:
+                del trial_json["id"]
+            if "uuid" in trial_json:
+                del trial_json["uuid"]
+            return Trial(**trial_json)
+
+    def export_to_shared_file(self, path) -> str:
+        """Export trial to shared file.
+
+        Args:
+            path: path directory for the file
+
+        Returns:
+            Full path of the file
+        """
+        with open(
+            os.path.join(path, self.name + ".json"), "w", encoding="utf-8"
+        ) as trial_file:
+            json.dump(self.__dict__, trial_file, cls=TrialEncoder, indent=4)
+
+        return os.path.join(path, self.name + ".json")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save()
@@ -160,11 +202,10 @@ class Trial:
 class BaseBackend:
     """Base backend class."""
 
-    def save(self, name: str, trial: Trial):
+    def save(self, trial: Trial):
         """Saves given trial.
 
         Args:
-            name: name of the trial
             trial: encode trial to save
         """
         raise NotImplementedError
@@ -175,7 +216,7 @@ class BaseBackend:
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         **kwargs,
-    ) -> List["Trial"]:
+    ) -> List[Trial]:
         """Returns list of trails.
 
         Args:
@@ -189,54 +230,60 @@ class BaseBackend:
         """
         raise NotImplementedError
 
-    def get(self, name: str) -> "Trial":
-        """Returns trail by name.
+    def get(self, trial_id: str) -> Trial:
+        """Returns trail by id.
 
         Args:
-            name: trail name
-
-        Returns:
-            trial by given name
-        """
-        raise NotImplementedError
-
-
-class LocalBackend(BaseBackend):
-    """Local backend."""
-
-    def __init__(self, path: str):
-        self.path = path
-
-    def save(self, name: str, trial) -> str:
-        """Saves given trial.
-
-        Args:
-            name: name of the trial
-            trial: encode trial to save
-
-        Returns:
-            self.path: path of the trial file
-        """
-        with open(
-            os.path.join(self.path, name + ".json"), "w", encoding="utf-8"
-        ) as trial_file:
-            json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
-
-        return self.path
-
-    def get(self, name: str) -> "Trial":
-        """Read a given trial file.
-
-        Args:
-            name: name of the trial
+            trial_id: trial id
 
         Returns:
             trial: object of a trial
         """
-        with open(
-            os.path.join(self.path, name + ".json"), "r", encoding="utf-8"
-        ) as trial_file:
-            return Trial(**json.load(trial_file, cls=TrialDecoder))
+        raise NotImplementedError
+
+
+class ApiBackend(BaseBackend):
+    """API backend class."""
+
+    def save(self, trial: Trial):
+        """Saves given trial.
+
+        Args:
+            trial: encode trial to save
+        """
+        requests.post(
+            f"{Configuration.API_FULL_URL}/",
+            headers=Configuration.API_HEADERS,
+            json=json.loads(json.dumps(trial.__dict__, cls=TrialEncoder)),
+            timeout=Configuration.API_TIMEOUT,
+        )
+
+        return trial.name
+
+    def get(self, trial_id: str) -> Trial:
+        """Returns trial by name.
+
+        Args:
+            trial_id: trial id
+
+        Returns:
+            trial: object of a trial
+        """
+        curl_req = requests.get(
+            f"{Configuration.API_FULL_URL}/{trial_id}/",
+            headers=Configuration.API_HEADERS,
+            timeout=Configuration.API_TIMEOUT,
+        )
+        if "Not found." in str(curl_req.json()):
+            raise ValueError(curl_req.json())
+
+        trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
+        if "id" in trial_json:
+            del trial_json["id"]
+        if "uuid" in trial_json:
+            del trial_json["uuid"]
+
+        return Trial(**trial_json)
 
     def list(
         self,
@@ -244,8 +291,94 @@ class LocalBackend(BaseBackend):
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         **kwargs,
-    ) -> List["Trial"]:
-        """Returns list of trails.
+    ) -> List[Trial]:
+        """Returns list of trials.
+
+        Args:
+            query: search query
+            limit: limit
+            offset: offset
+            **kwargs: other filtering criteria
+
+        Returns:
+            list of trials
+        """
+        offset = offset or 0
+        limit = limit or 10
+        trials = []
+
+        curl_req = requests.get(
+            f"{Configuration.API_FULL_URL}/?query={query}&offset={offset}&limit={limit}/",
+            headers=Configuration.API_HEADERS,
+            timeout=Configuration.API_TIMEOUT,
+        )
+        for elem in curl_req.json():
+            trial_json = json.loads(json.dumps(elem), cls=TrialDecoder)
+            if "id" in trial_json:
+                del trial_json["id"]
+            if "uuid" in trial_json:
+                del trial_json["uuid"]
+            trials.append(trial_json)
+
+        return trials
+
+
+class LocalBackend(BaseBackend):
+    """Local backend."""
+
+    def __init__(self, path: str):
+        """Init Local backend.
+
+        Args:
+            path: path for the local storage folder
+        """
+        self.path = path
+
+    def save(self, trial: Trial) -> str:
+        """Saves given trial.
+
+        Args:
+            trial: encode trial to save
+
+        Returns:
+            self.path: path of the trial file
+        """
+        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
+        with open(
+            os.path.join(self.path, trial_id + ".json"), "w", encoding="utf-8"
+        ) as trial_file:
+            json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
+
+        return self.path
+
+    def get(self, trial_id: str) -> Trial:
+        """Read a given trial file.
+
+        Args:
+            trial_id: trial id
+
+        Returns:
+            trial: object of a trial
+        """
+        if not os.path.isfile(os.path.join(self.path, trial_id + ".json")):
+            logging.warning(
+                "Your file %s does not exist.",
+                os.path.join(self.path, trial_id + ".json"),
+            )
+            raise ValueError(trial_id)
+        with open(
+            os.path.join(self.path, trial_id + ".json"), "r", encoding="utf-8"
+        ) as trial_file:
+            return Trial(**json.load(trial_file, cls=TrialDecoder))
+
+    def list(
+        self,
+        query: Optional[str] = None,  # pylint: disable=unused-argument
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        **kwargs,
+    ) -> List[Trial]:
+        """Returns list of trials.
 
         Args:
             query: search query
