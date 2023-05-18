@@ -22,6 +22,8 @@
       ~Trial.add_parameter
       ~Trial.add_tag
       ~Trial.add_text
+      ~Trial.export_to_shared_file
+      ~Trial.import_from_shared_file
       ~Trial.read_trial
       ~Trial.save
    
