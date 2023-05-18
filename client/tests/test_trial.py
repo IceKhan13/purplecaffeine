@@ -82,6 +82,26 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
 
+    def test_export_import(self):
+        """Test export and import Trial from shared file."""
+        trial = dummy_trial()
+        # Export
+        trial.export_to_shared_file(path=self.save_path)
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+        )
+        # Import
+        new_trial = Trial("test_import").import_from_shared_file(
+            os.path.join(self.save_path, trial.name + ".json")
+        )
+        self.assertEqual(new_trial.metrics, [["test_metric", 42]])
+        self.assertEqual(new_trial.parameters, [["test_parameter", "parameter"]])
+        self.assertEqual(new_trial.circuits, [["test_circuit", QuantumCircuit(2)]])
+        self.assertEqual(new_trial.operators, [["test_operator", Operator(XGate())]])
+        self.assertEqual(new_trial.texts, [["test_text", "text"]])
+        self.assertEqual(new_trial.arrays, [["test_array", np.array([42])]])
+        self.assertEqual(new_trial.tags, ["qiskit", "test"])
+
     def tearDown(self) -> None:
         """TearDown Trial object."""
         file_to_remove = os.path.join(self.save_path)

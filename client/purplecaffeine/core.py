@@ -153,6 +153,40 @@ class Trial:
         """
         return self.backend.get(name=self.name)
 
+    @staticmethod
+    def import_from_shared_file(path) -> "Trial":
+        """Import Trial for shared file.
+
+        Args:
+            path: full path of the file
+
+        Returns:
+            Trial dict object
+        """
+        with open(os.path.join(path), "r", encoding="utf-8") as trial_file:
+            trial_json = json.load(trial_file, cls=TrialDecoder)
+            if "id" in trial_json:
+                del trial_json["id"]
+            if "uuid" in trial_json:
+                del trial_json["uuid"]
+            return Trial(**trial_json)
+
+    def export_to_shared_file(self, path) -> str:
+        """Export trial to shared file.
+
+        Args:
+            path: path directory for the file
+
+        Returns:
+            Full path of the file
+        """
+        with open(
+            os.path.join(path, self.name + ".json"), "w", encoding="utf-8"
+        ) as trial_file:
+            json.dump(self.__dict__, trial_file, cls=TrialEncoder, indent=4)
+
+        return os.path.join(path, self.name + ".json")
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save()
 
