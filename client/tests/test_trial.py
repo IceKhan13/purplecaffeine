@@ -3,7 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import Optional
-from unittest import TestCase
+from unittest import TestCase, skip
 from datetime import datetime
 
 import numpy as np
@@ -15,7 +15,7 @@ from purplecaffeine import Trial, LocalBackend, ApiBackend, BaseBackend as Trial
 
 
 def dummy_trial(
-    name: Optional[TrialBackend] = "test_trial", backend: Optional[TrialBackend] = None
+    name: Optional[str] = "test_trial", backend: Optional[TrialBackend] = None
 ):
     """Returns dummy trial for tests.
 
@@ -86,6 +86,7 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
 
+    @skip("Remote call")
     def test_save_read_api_trial(self):
         """Test save and read Trial remotely."""
         trial = dummy_trial(backend=ApiBackend())
