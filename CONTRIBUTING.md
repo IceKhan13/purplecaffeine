@@ -24,6 +24,10 @@ export FOLDER="client"
 #export FOLDER="api_server"
 ```
 
+### Unit tests
+
+In order to fully run the unit tests, you need to setup the API (refer to the [README.md](api_server/README.md) of `api_server` folder).
+
 ### Project Code Style
 
 Code in this repository should conform to PEP8 standards. Style/lint checks are run to validate this. Line length must be limited to no more than 88 characters.
