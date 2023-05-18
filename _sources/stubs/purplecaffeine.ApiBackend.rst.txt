@@ -1,0 +1,25 @@
+﻿purplecaffeine.ApiBackend
+=========================
+
+.. currentmodule:: purplecaffeine
+
+.. autoclass:: ApiBackend
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ApiBackend.__init__
+      ~ApiBackend.get
+      ~ApiBackend.list
+      ~ApiBackend.save
+   
+   
+
+   
+   
+   
