@@ -13,7 +13,7 @@ class Trial(models.Model):
     metrics = models.JSONField(default=list)
     parameters = models.JSONField(default=list)
     circuits = models.JSONField(default=list)
-    backends = models.JSONField(default=list)
+    backend = models.JSONField(default=list)
     operators = models.JSONField(default=list)
     artifacts = models.JSONField(default=list)
     texts = models.JSONField(default=list)
