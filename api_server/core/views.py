@@ -16,6 +16,7 @@ class TrialViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TrialSerializer
+    queryset = Trial.objects.all()
 
     def get_queryset(self):
         query_params = self.request.query_params
