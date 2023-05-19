@@ -75,7 +75,10 @@ analyses, reproducible research, and accelerated progress in the field.
 
 The proposed software package utilizes a variation of the client-server 
 architecture, consisting of a client-side component and multiple backend 
-options for storing experimental data.
+options for storing experimental data \autoref{fig:architecture}.
+
+![Architecture.\label{fig:architecture}](./images/architecture.png)
+
 
 The client component is a Python library specifically designed for 
 tracking experimental data in quantum computing research, covering essential
