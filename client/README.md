@@ -61,8 +61,6 @@ with Trial("Example trial", backend=local_backend) as trial:
     
     # track results of run
     trial.add_metric("exp_value", exp_value)
-
-local_backend.get("Example trial")
 ```
 
 ----------------------------------------------------------------------------------------------------
