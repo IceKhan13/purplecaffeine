@@ -254,10 +254,7 @@ class BaseBackend:
 class ApiBackend(BaseBackend):
     """API backend class."""
 
-    def __init__(self,
-                 username: str,
-                 password: str,
-                 host: str):
+    def __init__(self, username: str, password: str, host: str):
         """Creates backend for APIServer.
 
         Example:

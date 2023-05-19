@@ -50,9 +50,7 @@ class TestTrial(TestCase):
         with Trial(name="test_trial", backend=self.local_backend, uuid=uuid) as trial:
             trial.add_metric("test_metric", 42)
         trial.read(trial_id=uuid)
-        self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, f"{uuid}.json"))
-        )
+        self.assertTrue(os.path.isfile(os.path.join(self.save_path, f"{uuid}.json")))
         self.assertEqual(trial.metrics, [["test_metric", 42]])
 
     def test_add_trial(self):
@@ -87,11 +85,7 @@ class TestTrial(TestCase):
     @skip("Remote call")
     def test_save_read_api_trial(self):
         """Test save and read Trial remotely."""
-        backend = ApiBackend(
-            username="",
-            password="",
-            host=""
-        )
+        backend = ApiBackend(username="", password="", host="")
         trial = dummy_trial(backend=backend)
         trial.save()
 

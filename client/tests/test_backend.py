@@ -42,11 +42,7 @@ class TestBackend(TestCase):
     def test_save_get_api_backend(self):
         """Test save trial remotely."""
         # Save
-        backend = ApiBackend(
-            host="",
-            username="",
-            password=""
-        )
+        backend = ApiBackend(host="", username="", password="")
         backend.save(trial=self.my_trial)
         # Get
         recovered = backend.get(trial_id="1")
