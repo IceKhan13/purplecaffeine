@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase, skip
-from datetime import datetime
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -47,12 +46,12 @@ class TestTrial(TestCase):
 
     def test_trial_context(self):
         """Test train context."""
-        with Trial(name="test_trial", backend=self.local_backend) as trial:
+        uuid = "some_uuid"
+        with Trial(name="test_trial", backend=self.local_backend, uuid=uuid) as trial:
             trial.add_metric("test_metric", 42)
-        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
-        trial.read(trial_id=trial_id)
+        trial.read(trial_id=uuid)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
+            os.path.isfile(os.path.join(self.save_path, f"{uuid}.json"))
         )
         self.assertEqual(trial.metrics, [["test_metric", 42]])
 
@@ -73,11 +72,10 @@ class TestTrial(TestCase):
         trial = dummy_trial(backend=self.local_backend)
         trial.save()
 
-        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial_id + ".json"))
+            os.path.isfile(os.path.join(self.save_path, f"{trial.uuid}.json"))
         )
-        recovered = trial.read(trial_id=trial_id)
+        recovered = trial.read(trial_id=trial.uuid)
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -89,7 +87,12 @@ class TestTrial(TestCase):
     @skip("Remote call")
     def test_save_read_api_trial(self):
         """Test save and read Trial remotely."""
-        trial = dummy_trial(backend=ApiBackend())
+        backend = ApiBackend(
+            username="",
+            password="",
+            host=""
+        )
+        trial = dummy_trial(backend=backend)
         trial.save()
 
         recovered = trial.read(trial_id="1")
@@ -107,11 +110,11 @@ class TestTrial(TestCase):
         # Export
         trial.export_to_shared_file(path=self.save_path)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, trial.name + ".json"))
+            os.path.isfile(os.path.join(self.save_path, f"{trial.uuid}.json"))
         )
         # Import
         new_trial = Trial("test_import").import_from_shared_file(
-            os.path.join(self.save_path, trial.name + ".json")
+            os.path.join(self.save_path, f"{trial.uuid}.json")
         )
         self.assertEqual(new_trial.metrics, [["test_metric", 42]])
         self.assertEqual(new_trial.parameters, [["test_parameter", "parameter"]])

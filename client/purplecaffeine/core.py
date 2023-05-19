@@ -4,12 +4,13 @@ from __future__ import annotations
 import glob
 import json
 import logging
-from datetime import datetime
 import os
+from pathlib import Path
 from typing import Optional, Union, List, Any
-import requests
+from uuid import uuid4
 
 import numpy as np
+import requests
 from pympler import asizeof
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
@@ -36,6 +37,7 @@ class Trial:
     def __init__(
         self,
         name: str,
+        uuid: Optional[str] = None,
         backend: Optional[BaseBackend] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
@@ -49,9 +51,17 @@ class Trial:
         """Trial class for tracking experiments data.
 
         Args:
-            name: name of trial
-            backend: backend to store data of trial. Default: local storage.
+            metrics (List[(str, Union[int, float])]): list of metric, like number of qubits
+            parameters (List[(str, str)]): list of parameter, like env details
+            circuits (List[(str, QuantumCircuit)]): list of quantum circuit
+            operators (List[(str, Operator)]): list of operator, like Pauli operators
+            artifacts (List[(str, Any)]): list of artifact, any external files
+            texts (List[(str, str)]): list of text, any descriptions
+            arrays (List[(str, Union[np.ndarray, List[Any]])]):
+                list of array, like quantum circuit results
+            tags (List[str]): list of tags in string format
         """
+        self.uuid = uuid or str(uuid4())
         self.name = name
         self.backend = backend or LocalBackend(path="./")
 
@@ -65,7 +75,7 @@ class Trial:
         self.tags = tags or []
 
     def __repr__(self):
-        return f"<Trial: {self.name}>"
+        return f"<Trial [{self.name}] {self.uuid}>"
 
     def __enter__(self):
         return self
@@ -188,12 +198,11 @@ class Trial:
         Returns:
             Full path of the file
         """
-        with open(
-            os.path.join(path, self.name + ".json"), "w", encoding="utf-8"
-        ) as trial_file:
+        filename = os.path.join(path, f"{self.uuid}.json")
+        with open(filename, "w", encoding="utf-8") as trial_file:
             json.dump(self.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
-        return os.path.join(path, self.name + ".json")
+        return filename
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.save()
@@ -244,6 +253,37 @@ class BaseBackend:
 
 class ApiBackend(BaseBackend):
     """API backend class."""
+
+    def __init__(self,
+                 username: str,
+                 password: str,
+                 host: str):
+        """Creates backend for APIServer.
+
+        Example:
+            >>> backend = ApiBackend(
+            >>>     host="http://localhost:8000/",
+            >>>     username="admin",
+            >>>     password="123"
+            >>> )
+
+        Args:
+            username: username
+            password: password
+            host: host of api server
+        """
+        self.username = username
+        self.host = host
+
+        self.token = self._get_token(username, password)
+
+    def _get_token(self, username: str, password: str) -> str:
+        """Returns token based on username and password
+
+        Returns:
+            authorization token
+        """
+        raise NotImplementedError
 
     def save(self, trial: Trial):
         """Saves given trial.
@@ -327,12 +367,18 @@ class LocalBackend(BaseBackend):
     """Local backend."""
 
     def __init__(self, path: str):
-        """Init Local backend.
+        """Creates local backend for storing trial data
+        at local folder.
+
+        Example:
+            >>> backend = LocalBackend("./")
 
         Args:
             path: path for the local storage folder
         """
         self.path = path
+        if not os.path.exists(self.path):
+            Path(self.path).mkdir(parents=True, exist_ok=True)
 
     def save(self, trial: Trial) -> str:
         """Saves given trial.
@@ -343,10 +389,8 @@ class LocalBackend(BaseBackend):
         Returns:
             self.path: path of the trial file
         """
-        trial_id = trial.name + datetime.now().strftime("%Y%m%d%H")
-        with open(
-            os.path.join(self.path, trial_id + ".json"), "w", encoding="utf-8"
-        ) as trial_file:
+        save_path = os.path.join(self.path, f"{trial.uuid}.json")
+        with open(save_path, "w", encoding="utf-8") as trial_file:
             json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         return self.path
@@ -360,15 +404,14 @@ class LocalBackend(BaseBackend):
         Returns:
             trial: object of a trial
         """
-        if not os.path.isfile(os.path.join(self.path, trial_id + ".json")):
+        trial_path = os.path.join(self.path, f"{trial_id}.json")
+        if not os.path.isfile(trial_path):
             logging.warning(
                 "Your file %s does not exist.",
-                os.path.join(self.path, trial_id + ".json"),
+                trial_path,
             )
             raise ValueError(trial_id)
-        with open(
-            os.path.join(self.path, trial_id + ".json"), "r", encoding="utf-8"
-        ) as trial_file:
+        with open(trial_path, "r", encoding="utf-8") as trial_file:
             return Trial(**json.load(trial_file, cls=TrialDecoder))
 
     def list(
@@ -396,5 +439,6 @@ class LocalBackend(BaseBackend):
         trials = []
         for path in trails_path:
             with open(path, "r", encoding="utf-8") as trial_file:
-                trials.append(json.load(trial_file, cls=TrialDecoder))
+                trial_dict = json.load(trial_file, cls=TrialDecoder)
+                trials.append(Trial(**trial_dict))
         return trials
