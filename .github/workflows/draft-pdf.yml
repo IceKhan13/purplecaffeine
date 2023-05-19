@@ -1,6 +1,10 @@
 name: Build JoSS paper
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'docs/paper/**'
 
 jobs:
   paper:
