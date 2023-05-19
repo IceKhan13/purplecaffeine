@@ -21,25 +21,27 @@ docker build . -f docker/Dockerfile.dev --tag purplecaffeine:dev
 #### Run
 ```bash
 docker run --rm --name purplecaffeine-dev \
-    -v $PWD:/opt/api_server \
+    -v "$PWD":/opt/api_server \
     -p 8000:8000 \
     -e SERV_KEY="${SERV_KEY}" \
     -e DB_NAME="${DB_NAME}" -e DB_USER="${DB_USER}" -e DB_PASSWORD="${DB_PASSWORD}" \
     -e DB_PORT="${DB_PORT}" -e DB_HOST="${DB_HOST}" \
+    -e DJANGO_SUPERUSER_USERNAME="${DJANGO_SUPERUSER_USERNAME}" -e DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD}" \
+    -e DJANGO_SUPERUSER_EMAIL="${DJANGO_SUPERUSER_EMAIL}" \
     purplecaffeine:dev
 ```
 Now you can open your browser into `http://localhost:8000`
 
 ## Launch a local instance of the API
 
-To run the API without using docker. You need :
+To launch the API without using docker. You need :
 - to have a database server running
 - to export the variables [.envrc](../.envrc)
 - to run these commands :
 ```bash
 pip3 install -r requirements.txt
-python3 manage.py makemigrations core
 python3 manage.py migrate
+python3 manage.py createsuperuser --no-input
 python3 manage.py runserver 0.0.0.0:8000
 ```
 

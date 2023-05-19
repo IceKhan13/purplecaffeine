@@ -18,13 +18,13 @@ ENV PYTHONUNBUFFERED=1
 ENV env="prod"
 
 LABEL org.opencontainers.image.title="${PROJECT_NAME}" \
-      org.opencontainers.image.authors=${GITHUB_ACTOR} \
-      org.opencontainers.image.vendor=${GITHUB_REPOSITORY} \
+      org.opencontainers.image.authors="${GITHUB_ACTOR}" \
+      org.opencontainers.image.vendor="${GITHUB_REPOSITORY}" \
       org.opencontainers.image.source="https://github.com/${GITHUB_ACTOR}/purplecaffeine" \
       org.opencontainers.image.url="https://github.com/${GITHUB_ACTOR}/purplecaffeine/tags" \
       org.opencontainers.image.description="API for quantum experiment tracking." \
       org.opencontainers.image.os="Ubuntu" \
-      org.opencontainers.image.version=${GITHUB_REF}
+      org.opencontainers.image.version="${GITHUB_REF}"
 
 RUN apt-get update -yq \
 && apt-get install python3-pip -y
@@ -40,6 +40,6 @@ RUN pip3 install -r /opt/api_server/requirements.txt
 EXPOSE 8000
 
 CMD cd /opt/api_server; \
-    python3 manage.py makemigrations core; \
     python3 manage.py migrate; \
+    python3 manage.py createsuperuser --no-input; \
     gunicorn --bind 0.0.0.0:8000 purplecaffeine.wsgi
