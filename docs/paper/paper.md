@@ -1,5 +1,5 @@
 ---
-title: 'Gala: A Python package for galactic dynamics'
+title: 'PurpleCaffeine: tracking of quantum programs and experiments'
 tags:
   - quantum computing
   - qiskit
