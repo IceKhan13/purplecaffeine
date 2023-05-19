@@ -2,3 +2,29 @@
   background-color: lightseagreen;
   padding: 0px 2px;
 }
+
+.header {
+  text-align: center;
+}
+
+.trial_button{
+  flex: 1;
+  flex-direction: row;
+}
+
+.search_bar{
+  flex: 0 0 50%;
+  flex-grow: 1;
+}
+
+.search_bar_and_button{
+  display: flex;
+}
+
+.list_of_trials{
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+
+}
