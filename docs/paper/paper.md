@@ -11,19 +11,22 @@ authors:
     corresponding: true 
     affiliation: 1
   - name: Michaël Rollin
+    orcid: 0000-0001-8619-8190
     affiliation: 2
   - name: Ansah Mohammad Kuriyodath
+    orcid: 0009-0005-5517-5363
     affiliation: 3
   - name: Luis Eduardo Martínez Hérnandez
+    orcid: 0000-0003-0354-5092
     affiliation: 4
 affiliations:
  - name: IBM Quantum, T.J. Watson Research Center, Yorktown Heights, NY 10598, USA
    index: 1
- - name: Institution Name, Country
+ - name: Shape-IT, France
    index: 2
- - name: Institution Name, Country
+ - name: Sardar Vallabhbhai National Institute of Technology, Surat, India
    index: 3
- - name: Institution Name, Country
+ - name: Netcracker, Mexico
    index: 4
 date: 18 May 2023
 bibliography: paper.bib
