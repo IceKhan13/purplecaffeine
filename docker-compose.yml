@@ -1,0 +1,16 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-purplecaffeine}
+      POSTGRES_USER: ${DB_USER:-purplecaffeine}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-purplecaffeinepassword}
+    ports:
+      - 5432:5432
+    networks:
+      - safe-tier
+    restart:
+      always
+networks:
+  safe-tier:
