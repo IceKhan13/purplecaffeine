@@ -7,6 +7,8 @@ PurpleCaffeine: tracking of quantum programs and experiments
 [![License](https://img.shields.io/github/license/qiskit-community/quantum-prototype-template?label=License)](https://github.com/IceKhan13/purplecaffeine/blob/main/LICENSE)
 [![Code style: Black](https://img.shields.io/badge/Code%20style-Black-000.svg)](https://github.com/psf/black)
 
+![Logo](./docs/images/readme_logo.png)
+
 Tracking experiments and programs is known problem in scientific community.
 This project is aimed to create simple general interface to track quantum experiments, store and search them in an easy way.
 
@@ -14,26 +16,58 @@ This project is aimed to create simple general interface to track quantum experi
 
 ##### For Users
 
-1. [About the Project](docs/project_overview.md)
-2. [Beginner's Guide](docs/beginners_guide.md)
-3. [Installation](INSTALL.md)
-4. [Quickstart Guide](docs/quickstart_guide.md)
-5. [Tutorials](docs/tutorials/example_tutorial.ipynb)
-6. [How-Tos](docs/how_tos/example_how_to.ipynb)
-7. [How to Give Feedback](#how-to-give-feedback)
-8. [Contribution Guidelines](#contribution-guidelines)
-9. [References and Acknowledgements](#references-and-acknowledgements)
-10. [License](#license)
+1. [Quickstart](#quickstart)
+2. [Documentation](#documentation)
+3. [Guides](docs/guides)
+4. [How to Give Feedback](#how-to-give-feedback)
+5. [Contribution Guidelines](#contribution-guidelines)
+6. [References and Acknowledgements](#references-and-acknowledgements)
+7. [License](#license)
 
 
 ----------------------------------------------------------------------------------------------------
 
-### Project organization
+### Quickstart
 
-The repository is split in 2 parts :
-- `client` folder who contains the python lib
-- `api_server` folder who contains the remote api
+```python
+from qiskit.circuit.random import random_circuit
+from qiskit.quantum_info.random import random_pauli
+from qiskit.primitives import Estimator
 
+from purplecaffeine.core import Trial, LocalBackend
+
+n_qubits = 4
+depth = 3
+shots = 2000
+
+circuit = random_circuit(n_qubits, depth)
+obs = random_pauli(n_qubits)
+
+local_backend = LocalBackend("./")
+
+with Trial("Example trial", backend=local_backend) as trial:
+    # track some parameters
+    trial.add_parameter("estimator", "qiskit.primitives.Estimator")
+    trial.add_parameter("depth", depth)
+    trial.add_parameter("n_qubits", n_qubits)
+    trial.add_parameter("shots", shots)
+    
+    # track objects of interest
+    trial.add_circuit("circuit", circuit)
+    trial.add_operator("obs", obs)
+
+    # run
+    exp_value = Estimator().run(circuit, obs, shots=shots).result().values.item()
+    
+    # track results of run
+    trial.add_metric("exp_value", exp_value)
+```
+
+----------------------------------------------------------------------------------------------------
+
+### Documentation
+
+Documentation for project is hosted at https://icekhan13.github.io/purplecaffeine/
 
 ----------------------------------------------------------------------------------------------------
 
