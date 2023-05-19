@@ -1,3 +1,5 @@
+name: Build JoSS paper
+
 on: [push]
 
 jobs:
