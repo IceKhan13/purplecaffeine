@@ -50,7 +50,7 @@
 <p>We will show simple example of measuring expectation value of an observable and how to track all information about this experiment.</p>
 <p>Let’s start with importing necessary modules.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.circuit.random</span> <span class="kn">import</span> <span class="n">random_circuit</span>
@@ -63,7 +63,7 @@
 </div>
 <p>Next we need to define some variables, circuit and observable</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_qubits</span> <span class="o">=</span> <span class="mi">4</span>
@@ -76,22 +76,22 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
-<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">                  ┌──────┐┌───────────┐
-q_0: ─────────────┤0     ├┤ P(6.1629) ├──■───
-                  │      │└───┬───┬───┘┌─┴──┐
-q_1: ─■───────────┤  Dcx ├────┤ X ├────┤ Sx ├
-      │           │      │    └───┘    └────┘
-q_2: ─┼───────────┤1     ├──────■────────■───
-      │U1(3.4604) └──────┘      │        │
-q_3: ─■─────────────────────────■────────■───
-                                             </pre></div>
+<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">                                                      ┌────┐
+q_0: ────────────────────────────■────────────────────┤ √X ├──────■────────
+     ┌────────────┐              │                    ├───┬┘      │ ┌─────┐
+q_1: ┤ Rz(4.2568) ├──────────────┼────────────────────┤ S ├───────┼─┤ Tdg ├
+     ├────────────┤              │               ┌────┴───┴─────┐ │ └─────┘
+q_2: ┤ Rz(3.9296) ├──────────────┼───────────────┤0             ├─■────────
+     └────────────┘┌─────────────┴──────────────┐│  Ryy(5.7992) │ │
+q_3: ──────────────┤ U3(0.057242,4.0814,3.8183) ├┤1             ├─■────────
+                   └────────────────────────────┘└──────────────┘          </pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obs</span> <span class="o">=</span> <span class="n">random_pauli</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">)</span>
@@ -100,17 +100,17 @@ q_3: ─■───────────────────────
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Pauli(&#39;XZYI&#39;)
+Pauli(&#39;YIIZ&#39;)
 </pre></div></div>
 </div>
 <p>We also need a place where we will store data about our trials. In this example we will be using <code class="docutils literal notranslate"><span class="pre">LocalBackend</span></code> which stores information locally in a folder that you configured. We will set our folder for trials to be <code class="docutils literal notranslate"><span class="pre">./trials</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span> <span class="o">=</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="s2">&quot;./trials&quot;</span><span class="p">)</span>
@@ -121,7 +121,7 @@ Pauli(&#39;XZYI&#39;)
 <p>Within this context we can call list of different methods on <code class="docutils literal notranslate"><span class="pre">trial</span></code> object. Some of them are: - <code class="docutils literal notranslate"><span class="pre">add_parameter</span></code> adds parameters to the trial, which can be backend names, depth, number of qubits, etc. - <code class="docutils literal notranslate"><span class="pre">add_metric</span></code> adds metric to the trial, which can represent measurable outcome of this trial. Ex: history of vqe iterations, results of measurement, etc. - <code class="docutils literal notranslate"><span class="pre">add_circuit</span></code> adds circuit to the trial to understand what circuits where used in your work - <code class="docutils literal notranslate"><span class="pre">add_operator</span></code> adds operator to the
 trial to understand what observables/operators where used in your work</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Trial</span><span class="p">(</span><span class="s2">&quot;Example trial&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">local_backend</span><span class="p">)</span> <span class="k">as</span> <span class="n">trial</span><span class="p">:</span>
@@ -143,27 +143,9 @@ trial to understand what observables/operators where used in your work</p>
 </pre></div>
 </div>
 </div>
-<p>We can quiery existing experiments by name by calling <code class="docutils literal notranslate"><span class="pre">get</span></code> method on backend object and passing name of your example</p>
+<p>We can get list of all experiments by calling <code class="docutils literal notranslate"><span class="pre">list</span></code> method on backend object.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Example trial&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;Trial: Example trial&gt;
-</pre></div></div>
-</div>
-<p>Or we get list of all experiments by calling <code class="docutils literal notranslate"><span class="pre">list</span></code> method on backend object.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
@@ -171,25 +153,33 @@ trial to understand what observables/operators where used in your work</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[{&#39;name&#39;: &#39;Example trial&#39;,
-  &#39;backend&#39;: None,
-  &#39;metrics&#39;: [[&#39;exp_value&#39;, -0.01761901873137989]],
-  &#39;parameters&#39;: [[&#39;estimator&#39;, &#39;qiskit.primitives.Estimator&#39;],
-   [&#39;depth&#39;, 3],
-   [&#39;n_qubits&#39;, 4],
-   [&#39;shots&#39;, 2000]],
-  &#39;circuits&#39;: [[&#39;circuit&#39;,
-    &lt;qiskit.circuit.quantumcircuit.QuantumCircuit at 0x7fe5820466d0&gt;]],
-  &#39;operators&#39;: [[&#39;obs&#39;, Pauli(&#39;XZYI&#39;)]],
-  &#39;artifacts&#39;: [],
-  &#39;texts&#39;: [],
-  &#39;arrays&#39;: [],
-  &#39;tags&#39;: []}]
+[&lt;Trial [Example trial] 88b5ef54-a66b-45e1-aed8-c7db7ad82594&gt;,
+ &lt;Trial [Example trial] b418c1d2-11d7-424a-bef8-8c5c8d9976aa&gt;,
+ &lt;Trial [Example trial] b47737a7-deac-46ae-af11-5bd587c0b688&gt;,
+ &lt;Trial [Example trial] 2ef8eaca-0fd5-4e21-9257-1e080ed85ed2&gt;]
+</pre></div></div>
+</div>
+<p>We can quiery existing experiments by name by calling <code class="docutils literal notranslate"><span class="pre">get</span></code> method on backend object and passing name of your example</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;88b5ef54-a66b-45e1-aed8-c7db7ad82594&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Trial [Example trial] 88b5ef54-a66b-45e1-aed8-c7db7ad82594&gt;
 </pre></div></div>
 </div>
 </section>
