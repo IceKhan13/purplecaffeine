@@ -450,7 +450,7 @@ class S3Backend(BaseBackend):
             aws_access_key_id=key,
             aws_secret_access_key=access_key
         )
-        self.s3 = s3_client
+        self.s3_client = s3_client
         self.bucket_name = bucket_name
 
     def save(self, trial: Trial) -> str:
@@ -463,7 +463,7 @@ class S3Backend(BaseBackend):
             trial.uuid: key of the trial
         """
         trial_data = json.dumps(trial.__dict__, cls=TrialEncoder, indent=4)
-        self.s3.put_object(Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data)
+        self.s3_client.put_object(Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data)
         return trial.uuid
 
     def get(self, trial_id: str) -> Trial:
@@ -475,7 +475,7 @@ class S3Backend(BaseBackend):
         Returns:
             trial: object of a trial
         """
-        trial_data = self.s3.get_object(Bucket=self.bucket_name, Key=trial_id)
+        trial_data = self.s3_client.get_object(Bucket=self.bucket_name, Key=trial_id)
         return Trial(**json.loads(trial_data['Body'].read(), cls=TrialDecoder))
 
     def list(
@@ -500,7 +500,7 @@ class S3Backend(BaseBackend):
         limit = limit or 10
 
         trials = []
-        paginator = self.s3.get_paginator('list_objects_v2')
+        paginator = self.s3_client.get_paginator('list_objects_v2')
         for result in paginator.paginate(Bucket=self.bucket_name):
             if "Contents" in result:
                 for s3_object in result["Contents"]:
