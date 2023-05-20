@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest import TestCase, skip
 
 from purplecaffeine.core import Trial, LocalBackend, S3Backend, ApiBackend
+from purplecaffeine.exception import PurpleCaffeineException
 from .test_trial import dummy_trial
 
 
@@ -51,23 +52,22 @@ class TestBackend(TestCase):
         with self.assertRaises(ValueError):
             backend.get(trial_id="999")
 
+    @skip("Requires access tokens")
     def test_save_and_load_s3_backend(self) -> None:
         """Test of S3Backend object."""
-        self.s3_backend = S3Backend('test_bucket', key="", access_key="")
+        s3_backend = S3Backend("bucket")
         # save
-        self.s3_backend.save(trial=self.my_trial)
+        uuid = s3_backend.save(trial=self.my_trial)
         # get
-        recovered = self.s3_backend.get(trial_id=self.my_trial.uuid)
+        recovered = s3_backend.get(trial_id=uuid)
         self.assertTrue(isinstance(recovered, Trial))
-        with self.assertRaises(ValueError):
-            self.local_backend.get(trial_id="999")
+        with self.assertRaises(PurpleCaffeineException):
+            s3_backend.get(trial_id="999")
         # list
-        list_trials = self.s3_backend.list()
+        list_trials = s3_backend.list()
         self.assertTrue(isinstance(list_trials, list))
-        self.assertTrue(isinstance(list_trials[0], Trial))
-        for trial_dict in list_trials:
-            temp_trial = Trial(**trial_dict)
-            self.assertTrue(isinstance(temp_trial, Trial))
+        for trial in list_trials:
+            self.assertTrue(isinstance(trial, Trial))
 
     def tearDown(self) -> None:
         """TearDown Backend object."""

@@ -6,16 +6,17 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Optional, Union, List, Any
-import requests
+from typing import Optional, Union, List, Any, Dict
 from uuid import uuid4
-import boto3
 
+import boto3
 import numpy as np
+import requests
 from pympler import asizeof
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 
+from purplecaffeine.exception import PurpleCaffeineException
 from purplecaffeine.helpers import Configuration
 from purplecaffeine.utils import TrialEncoder, TrialDecoder
 
@@ -441,17 +442,36 @@ class LocalBackend(BaseBackend):
                 trials.append(Trial(**trial_dict))
         return trials
 
+
 class S3Backend(BaseBackend):
     """S3 backend."""
 
-    def __init__(self, bucket_name, key, access_key):
-        s3 = boto3.client(
-                    's3',
-                    aws_access_key_id= key,
-                    aws_secret_access_key= access_key
-                )
-        self.s3 = s3
+    def __init__(
+        self,
+        bucket_name: str,
+        access_key: Optional[str] = None,
+        secret_access_key: Optional[str] = None,
+        directory: Optional[str] = None,
+    ):
+        """Storage backend for s3 buckets.
+
+        Allows to store trial data inside s3 buckets.
+
+        Example:
+            >>> backend = S3Backend("my_bucket", key="<AWS_KEY>", access_key="<AWS_ACCESS_KEY>")
+
+        Args:
+            bucket_name: bucket name
+            access_key: aws key
+            secret_access_key: aws access key
+            directory: optional directory within bucket
+        """
+        client_s3 = boto3.client(
+            "s3", aws_access_key_id=access_key, aws_secret_access_key=secret_access_key
+        )
+        self.client_s3 = client_s3
         self.bucket_name = bucket_name
+        self.directory = directory
 
     def save(self, trial: Trial) -> str:
         """Saves given trial.
@@ -463,7 +483,14 @@ class S3Backend(BaseBackend):
             trial.uuid: key of the trial
         """
         trial_data = json.dumps(trial.__dict__, cls=TrialEncoder, indent=4)
-        self.s3.put_object(Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data)
+        response: Dict[str, Any] = self.client_s3.put_object(
+            Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data
+        )
+        status = response.get("ResponseMetadata", {}).get("HTTPStatusCode", 500)
+        if status != 200:
+            raise PurpleCaffeineException(
+                f"Error response from boto client on attempt to write trial: {response}"
+            )
         return trial.uuid
 
     def get(self, trial_id: str) -> Trial:
@@ -475,8 +502,18 @@ class S3Backend(BaseBackend):
         Returns:
             trial: object of a trial
         """
-        trial_data = self.s3.get_object(Bucket=self.bucket_name, Key=trial_id)
-        return Trial(**json.loads(trial_data['Body'].read(), cls=TrialDecoder))
+        try:
+            response: Dict[str, Any] = self.client_s3.get_object(
+                Bucket=self.bucket_name, Key=trial_id
+            )
+            status = response.get("ResponseMetadata", {}).get("HTTPStatusCode", 500)
+            if status != 200:
+                raise PurpleCaffeineException(
+                    f"Error response from boto client on attempt to read trial: {response}"
+                )
+            return Trial(**json.loads(response["Body"].read(), cls=TrialDecoder))
+        except Exception as get_exception:
+            raise PurpleCaffeineException from get_exception
 
     def list(
         self,
@@ -500,13 +537,17 @@ class S3Backend(BaseBackend):
         limit = limit or 10
 
         trials = []
-        paginator = self.s3.get_paginator('list_objects_v2')
-        for result in paginator.paginate(Bucket=self.bucket_name):
+        paginator = self.client_s3.get_paginator("list_objects_v2")
+        page_iterator = paginator.paginate(
+            Bucket=self.bucket_name,
+            PaginationConfig={"MaxItems": offset + limit, "PageSize": limit},
+        )
+        for page, result in enumerate(page_iterator):
             if "Contents" in result:
-                for s3_object in result["Contents"]:
-                    if s3_object["Key"].endswith(".json"):
+                for idx, s3_object in enumerate(result["Contents"]):
+                    file_offset = page * limit + idx
+                    if file_offset >= offset:
                         trial = self.get(s3_object["Key"])
                         trials.append(trial)
 
-        return trials[offset:offset+limit]
-    
+        return trials
