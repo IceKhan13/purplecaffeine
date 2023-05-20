@@ -453,30 +453,29 @@ class S3Backend(BaseBackend):
         self.s3 = s3
         self.bucket_name = bucket_name
 
-    def save(self, name: str, trial) -> str:
+    def save(self, trial: Trial) -> str:
         """Saves given trial.
 
         Args:
-            name: name of the trial
-            trial: encode trial to save
+            trial: trial to save
 
         Returns:
-            name: name of the saved trial
+            trial.uuid: key of the trial
         """
         trial_data = json.dumps(trial.__dict__, cls=TrialEncoder, indent=4)
-        self.s3.put_object(Bucket=self.bucket_name, Key=name, Body=trial_data)
-        return name
+        self.s3.put_object(Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data)
+        return trial.uuid
 
-    def get(self, name: str) -> Trial:
-        """Loads a trial by name.
+    def get(self, trial_id: str) -> Trial:
+        """Read a given trial file.
 
         Args:
-            name: name of the trial to load
+            trial_id: trial id
 
         Returns:
-            Loaded trial
+            trial: object of a trial
         """
-        trial_data = self.s3.get_object(Bucket=self.bucket_name, Key=name)
+        trial_data = self.s3.get_object(Bucket=self.bucket_name, Key=trial_id)
         return Trial(**json.loads(trial_data['Body'].read(), cls=TrialDecoder))
 
     def list(

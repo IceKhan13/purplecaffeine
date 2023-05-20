@@ -53,20 +53,21 @@ class TestBackend(TestCase):
 
     def test_save_and_load_s3_backend(self) -> None:
         """Test of S3Backend object."""
-        self.s3_backend = S3Backend('hello', key="", access_key="")
+        self.s3_backend = S3Backend('test_bucket', key="", access_key="")
         # save
-        self.s3_backend.save(name="keep_trial", trial=self.my_trial)
+        self.s3_backend.save(trial=self.my_trial)
         # get
-        recovered = self.s3_backend.get(name="keep_trial")
+        recovered = self.s3_backend.get(trial_id=self.my_trial.uuid)
         self.assertTrue(isinstance(recovered, Trial))
-        self.assertEqual(recovered.parameters, [])
+        with self.assertRaises(ValueError):
+            self.local_backend.get(trial_id="999")
         # list
         list_trials = self.s3_backend.list()
         self.assertTrue(isinstance(list_trials, list))
         self.assertTrue(isinstance(list_trials[0], Trial))
         for trial_dict in list_trials:
-            ite_trial = Trial(**trial_dict)
-            self.assertTrue(isinstance(ite_trial, Trial))
+            temp_trial = Trial(**trial_dict)
+            self.assertTrue(isinstance(temp_trial, Trial))
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
