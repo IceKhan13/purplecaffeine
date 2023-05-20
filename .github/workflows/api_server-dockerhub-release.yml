@@ -2,9 +2,7 @@ name: Release to DockerHub
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
+
 jobs:
 
   release-docker-image:
