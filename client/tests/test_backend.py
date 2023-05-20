@@ -4,7 +4,8 @@ import shutil
 from pathlib import Path
 from unittest import TestCase, skip
 
-from purplecaffeine.core import Trial, LocalBackend, ApiBackend
+from purplecaffeine.core import Trial, LocalBackend, S3Backend, ApiBackend
+from purplecaffeine.exception import PurpleCaffeineException
 from .test_trial import dummy_trial
 
 
@@ -50,6 +51,23 @@ class TestBackend(TestCase):
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         with self.assertRaises(ValueError):
             backend.get(trial_id="999")
+
+    @skip("Requires access tokens")
+    def test_save_and_load_s3_backend(self) -> None:
+        """Test of S3Backend object."""
+        s3_backend = S3Backend("bucket")
+        # save
+        uuid = s3_backend.save(trial=self.my_trial)
+        # get
+        recovered = s3_backend.get(trial_id=uuid)
+        self.assertTrue(isinstance(recovered, Trial))
+        with self.assertRaises(PurpleCaffeineException):
+            s3_backend.get(trial_id="999")
+        # list
+        list_trials = s3_backend.list()
+        self.assertTrue(isinstance(list_trials, list))
+        for trial in list_trials:
+            self.assertTrue(isinstance(trial, Trial))
 
     def tearDown(self) -> None:
         """TearDown Backend object."""
