@@ -17,3 +17,4 @@ black[jupyter]~=22.1
 qiskit-terra>=0.21.1
 sphinx-copybutton>=0.5.0
 qiskit-ibm-runtime==0.9.3
+boto3==1.26.133
