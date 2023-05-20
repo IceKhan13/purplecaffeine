@@ -2,9 +2,10 @@
 import os
 import shutil
 from pathlib import Path
-from unittest import TestCase
+from unittest import TestCase, skip
 
-from purplecaffeine.core import Trial, LocalBackend, S3Backend
+from purplecaffeine.core import Trial, LocalBackend, S3Backend, ApiBackend
+from .test_trial import dummy_trial
 
 
 class TestBackend(TestCase):
@@ -17,16 +18,38 @@ class TestBackend(TestCase):
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
-        self.my_trial = Trial(name="keep_trial", backend=self.local_backend)
-        self.my_trial.add_metric("some-metrics", 2)
+        self.my_trial = dummy_trial(name="keep_trial", backend=self.local_backend)
 
-    def test_save_and_load_backend(self):
-        """Test save trial."""
-        self.local_backend.save(name="keep_trial", trial=self.my_trial)
-        self.assertTrue(os.path.isfile(os.path.join(self.save_path, "keep_trial.json")))
-        recovered = self.local_backend.get(name="keep_trial")
+    def test_save_get_list_local_backend(self):
+        """Test save trial locally."""
+        # Save
+        self.local_backend.save(trial=self.my_trial)
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.save_path, f"{self.my_trial.uuid}.json"))
+        )
+        # Get
+        recovered = self.local_backend.get(trial_id=self.my_trial.uuid)
         self.assertTrue(isinstance(recovered, Trial))
-        self.assertEqual(recovered.parameters, [])
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        with self.assertRaises(ValueError):
+            self.local_backend.get(trial_id="999")
+        # List
+        list_trials = self.local_backend.list()
+        self.assertTrue(isinstance(list_trials, list))
+        self.assertTrue(isinstance(list_trials[0], Trial))
+
+    @skip("Remote call.")
+    def test_save_get_api_backend(self):
+        """Test save trial remotely."""
+        # Save
+        backend = ApiBackend(host="", username="", password="")
+        backend.save(trial=self.my_trial)
+        # Get
+        recovered = backend.get(trial_id="1")
+        self.assertTrue(isinstance(recovered, Trial))
+        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        with self.assertRaises(ValueError):
+            backend.get(trial_id="999")
 
     def test_save_and_load_s3_backend(self) -> None:
         """Test of S3Backend object."""
