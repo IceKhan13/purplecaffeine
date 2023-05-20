@@ -7,12 +7,11 @@ import logging
 import os
 from pathlib import Path
 from typing import Optional, Union, List, Any
-import boto3
 import requests
 from uuid import uuid4
+import boto3
 
 import numpy as np
-import requests
 from pympler import asizeof
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
@@ -479,7 +478,7 @@ class S3Backend(BaseBackend):
         """
         trial_data = self.s3.get_object(Bucket=self.bucket_name, Key=name)
         return Trial(**json.loads(trial_data['Body'].read(), cls=TrialDecoder))
-    
+
     def list(
         self,
         query: Optional[str] = None,
