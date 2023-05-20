@@ -441,14 +441,13 @@ class LocalBackend(BaseBackend):
                 trials.append(Trial(**trial_dict))
         return trials
 
+
 class S3Backend(BaseBackend):
     """S3 backend."""
 
     def __init__(self, bucket_name, key, access_key):
         s3_client = boto3.client(
-            's3',
-            aws_access_key_id=key,
-            aws_secret_access_key=access_key
+            "s3", aws_access_key_id=key, aws_secret_access_key=access_key
         )
         self.s3_client = s3_client
         self.bucket_name = bucket_name
@@ -463,7 +462,9 @@ class S3Backend(BaseBackend):
             trial.uuid: key of the trial
         """
         trial_data = json.dumps(trial.__dict__, cls=TrialEncoder, indent=4)
-        self.s3_client.put_object(Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data)
+        self.s3_client.put_object(
+            Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data
+        )
         return trial.uuid
 
     def get(self, trial_id: str) -> Trial:
@@ -476,7 +477,7 @@ class S3Backend(BaseBackend):
             trial: object of a trial
         """
         trial_data = self.s3_client.get_object(Bucket=self.bucket_name, Key=trial_id)
-        return Trial(**json.loads(trial_data['Body'].read(), cls=TrialDecoder))
+        return Trial(**json.loads(trial_data["Body"].read(), cls=TrialDecoder))
 
     def list(
         self,
@@ -500,7 +501,7 @@ class S3Backend(BaseBackend):
         limit = limit or 10
 
         trials = []
-        paginator = self.s3_client.get_paginator('list_objects_v2')
+        paginator = self.s3_client.get_paginator("list_objects_v2")
         for result in paginator.paginate(Bucket=self.bucket_name):
             if "Contents" in result:
                 for s3_object in result["Contents"]:
@@ -508,5 +509,4 @@ class S3Backend(BaseBackend):
                         trial = self.get(s3_object["Key"])
                         trials.append(trial)
 
-        return trials[offset:offset+limit]
-    
+        return trials[offset : offset + limit]

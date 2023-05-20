@@ -53,7 +53,7 @@ class TestBackend(TestCase):
 
     def test_save_and_load_s3_backend(self) -> None:
         """Test of S3Backend object."""
-        s3_backend = S3Backend('test_bucket', key="", access_key="")
+        s3_backend = S3Backend("test_bucket", key="", access_key="")
         # Save
         s3_backend.save(trial=self.my_trial)
         # Get
