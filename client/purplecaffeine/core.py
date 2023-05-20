@@ -7,8 +7,8 @@ import logging
 import os
 from pathlib import Path
 from typing import Optional, Union, List, Any
-import requests
 from uuid import uuid4
+import requests
 import boto3
 
 import numpy as np
@@ -445,12 +445,12 @@ class S3Backend(BaseBackend):
     """S3 backend."""
 
     def __init__(self, bucket_name, key, access_key):
-        s3 = boto3.client(
-                    's3',
-                    aws_access_key_id= key,
-                    aws_secret_access_key= access_key
-                )
-        self.s3 = s3
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=key,
+            aws_secret_access_key=access_key
+        )
+        self.s3 = s3_client
         self.bucket_name = bucket_name
 
     def save(self, trial: Trial) -> str:
