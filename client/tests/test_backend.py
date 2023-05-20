@@ -54,15 +54,12 @@ class TestBackend(TestCase):
     def test_save_and_load_s3_backend(self) -> None:
         """Test of S3Backend object."""
         self.s3_backend = S3Backend('hello', os.getenv("S3_KEY"), os.getenv("S3_ACCESS_KEY"))
-        
         # save
         self.s3_backend.save(name="keep_trial", trial=self.my_trial)
-        
         # get
         recovered = self.s3_backend.get(name="keep_trial")
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [])
-        
         # list
         list_trials = self.s3_backend.list()
         self.assertTrue(isinstance(list_trials, list))

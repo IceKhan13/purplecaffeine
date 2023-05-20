@@ -8,7 +8,6 @@ import os
 from pathlib import Path
 from typing import Optional, Union, List, Any
 import boto3
-from botocore.exceptions import ClientError
 from uuid import uuid4
 
 import numpy as np
@@ -468,7 +467,7 @@ class S3Backend(BaseBackend):
         self.s3.put_object(Bucket=self.bucket_name, Key=name, Body=trial_data)
         return name
 
-    def get(self, name: str) -> "Trial":
+    def get(self, name: str) -> Trial:
         """Loads a trial by name.
 
         Args:
