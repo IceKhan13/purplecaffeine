@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 from typing import Optional, Union, List, Any
 import boto3
+import requests
 from uuid import uuid4
 
 import numpy as np
