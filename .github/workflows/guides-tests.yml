@@ -14,17 +14,16 @@ jobs:
       matrix:
         python-version: [3.9, '3.10']
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        cd client
-        python -m pip install --upgrade pip
-        pip install .
-    - name: Update analysis notebook
-      run: |
-        python -m pip install jupyter nbconvert nbformat
-        jupyter nbconvert --to notebook --execute docs/guides/*.ipynb --inplace
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jupyter nbconvert nbformat
+      - name: Install purplecaffeine from client folder
+        run: cd client && pip install .
+      - name: Test jupyter guides
+        run: jupyter nbconvert --to notebook --execute docs/guides/*.ipynb --inplace
