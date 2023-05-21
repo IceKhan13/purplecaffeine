@@ -1,0 +1,31 @@
+name: Release to DockerHub
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  release-docker-image:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ github.event.repository.name }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set image tag
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: Build docker image and push to DockerHub
+      env:
+        DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: |
+        cd api_server
+        docker build . -f docker/Dockerfile --tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${RELEASE_VERSION}
+        docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${RELEASE_VERSION} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+        docker login --username=${DOCKERHUB_USER} --password=${DOCKERHUB_PASS}
+        docker push ${DOCKERHUB_USER}/${IMAGE_NAME} --all-tags
+    - uses: peter-evans/dockerhub-description@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+        readme-filepath: ./api_server/README.md
