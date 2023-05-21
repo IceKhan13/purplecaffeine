@@ -3,9 +3,9 @@ name: Tests jupyter guides
 on:
   workflow_dispatch:
   push:
-    #paths:
-    #  - 'docs/guides/**'
-    #  - 'client/purplecaffeine/**'
+    paths:
+      - 'docs/guides/**'
+      - 'client/purplecaffeine/**'
 
 jobs:
   guides_tests:
