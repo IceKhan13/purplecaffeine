@@ -53,7 +53,7 @@ class TestBackend(TestCase):
             backend.get(trial_id="999")
 
     @skip("Requires access tokens")
-    def test_save_and_load_s3_backend(self) -> None:
+    def test_save_get_list_s3_backend(self) -> None:
         """Test of S3Backend object."""
         s3_backend = S3Backend("bucket")
         # save

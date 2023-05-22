@@ -40,6 +40,7 @@ class Trial:
         self,
         name: str,
         uuid: Optional[str] = None,
+        description: str = None,
         backend: Optional[BaseBackend] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
@@ -65,6 +66,7 @@ class Trial:
         """
         self.uuid = uuid or str(uuid4())
         self.name = name
+        self.description = description or ""
         self.backend = backend or LocalBackend(path="./")
 
         self.metrics = metrics or []
@@ -81,6 +83,14 @@ class Trial:
 
     def __enter__(self):
         return self
+
+    def add_description(self, description: str):
+        """Add description to trial data.
+
+        Args:
+            description: short description of the trial
+        """
+        self.description = description
 
     def add_metric(self, name: str, value: Union[int, float]):
         """Adds metric to trial data.
