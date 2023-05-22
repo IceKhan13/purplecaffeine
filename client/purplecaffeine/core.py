@@ -25,6 +25,7 @@ class Trial:
     """Trial class.
 
     Attributes:
+        description (str): short description of the trial
         metrics (List[(str, Union[int, float])]): list of metric, like number of qubits
         parameters (List[(str, str)]): list of parameter, like env details
         circuits (List[(str, QuantumCircuit)]): list of quantum circuit
@@ -54,6 +55,7 @@ class Trial:
         """Trial class for tracking experiments data.
 
         Args:
+            description (str): short description of the trial
             metrics (List[(str, Union[int, float])]): list of metric, like number of qubits
             parameters (List[(str, str)]): list of parameter, like env details
             circuits (List[(str, QuantumCircuit)]): list of quantum circuit
