@@ -17,6 +17,7 @@
       ~Trial.add_array
       ~Trial.add_artifact
       ~Trial.add_circuit
+      ~Trial.add_description
       ~Trial.add_metric
       ~Trial.add_operator
       ~Trial.add_parameter
