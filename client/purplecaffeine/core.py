@@ -41,8 +41,8 @@ class Trial:
         self,
         name: str,
         uuid: Optional[str] = None,
-        description: Optional[str] = None,
         backend: Optional[BaseBackend] = None,
+        description: Optional[str] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
         circuits: Optional[List[List[Union[str, QuantumCircuit]]]] = None,
@@ -68,9 +68,9 @@ class Trial:
         """
         self.uuid = uuid or str(uuid4())
         self.name = name
-        self.description = description or ""
         self.backend = backend or LocalBackend(path="./")
 
+        self.description = description or ""
         self.metrics = metrics or []
         self.parameters = parameters or []
         self.circuits = circuits or []
