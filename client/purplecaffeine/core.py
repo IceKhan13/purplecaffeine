@@ -272,7 +272,7 @@ class ApiBackend(BaseBackend):
 
         Example:
             >>> backend = ApiBackend(
-            >>>     host="http://localhost:8000/",
+            >>>     host="http://localhost:8000",
             >>>     username="admin",
             >>>     password="123"
             >>> )
@@ -293,7 +293,18 @@ class ApiBackend(BaseBackend):
         Returns:
             authorization token
         """
-        raise NotImplementedError
+        payload = {
+            "username": f"{username}",
+            "password": f"{password}"
+        }
+        curl_req = requests.post(
+            f"{self.host}/{Configuration.API_TOKEN_ENDPOINT}/",
+            headers=Configuration.API_HEADERS,
+            json=payload,
+            timeout=Configuration.API_TIMEOUT,
+        )
+
+        return curl_req.json()["access"]
 
     def save(self, trial: Trial):
         """Saves given trial.
@@ -302,8 +313,8 @@ class ApiBackend(BaseBackend):
             trial: encode trial to save
         """
         requests.post(
-            f"{Configuration.API_FULL_URL}/",
-            headers=Configuration.API_HEADERS,
+            f"{self.host}/{Configuration.API_TRIAL_ENDPOINT}/",
+            headers={**Configuration.API_HEADERS, "Authorization": f"Bearer {self.token}"},
             json=json.loads(json.dumps(trial.__dict__, cls=TrialEncoder)),
             timeout=Configuration.API_TIMEOUT,
         )
@@ -320,8 +331,8 @@ class ApiBackend(BaseBackend):
             trial: object of a trial
         """
         curl_req = requests.get(
-            f"{Configuration.API_FULL_URL}/{trial_id}/",
-            headers=Configuration.API_HEADERS,
+            f"{self.host}/{Configuration.API_TRIAL_ENDPOINT}/{trial_id}/",
+            headers={**Configuration.API_HEADERS, "Authorization": f"Bearer {self.token}"},
             timeout=Configuration.API_TIMEOUT,
         )
         if "Not found." in str(curl_req.json()):
@@ -330,6 +341,8 @@ class ApiBackend(BaseBackend):
         trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
         if "id" in trial_json:
             del trial_json["id"]
+
+        print("Trial json : ", trial_json)
 
         return Trial(**trial_json)
 
