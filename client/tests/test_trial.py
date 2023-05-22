@@ -87,8 +87,8 @@ class TestTrial(TestCase):
 
     @skip("Remote call")
     def test_save_read_api_trial(self):
-        """Test save and read Trial remotely."""
-        backend = ApiBackend(username="", password="", host="")
+        """Test save and read Trial from API."""
+        backend = ApiBackend(host="http://127.0.0.1:8000", username="admin", password="admin")
         trial = dummy_trial(backend=backend)
         trial.save()
 
