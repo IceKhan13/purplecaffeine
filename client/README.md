@@ -7,7 +7,7 @@ PurpleCaffeine: tracking of quantum programs and experiments
 [![License](https://img.shields.io/github/license/qiskit-community/quantum-prototype-template?label=License)](https://github.com/IceKhan13/purplecaffeine/blob/main/LICENSE)
 [![Code style: Black](https://img.shields.io/badge/Code%20style-Black-000.svg)](https://github.com/psf/black)
 
-![Logo](./docs/images/readme_logo.png)
+![Logo](https://raw.githubusercontent.com/IceKhan13/purplecaffeine/main/docs/images/readme_logo.png)
 
 Tracking experiments and programs is known problem in scientific community.
 This project is aimed to create simple general interface to track quantum experiments, store and search them in an easy way.

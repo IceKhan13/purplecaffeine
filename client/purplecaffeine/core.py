@@ -25,6 +25,7 @@ class Trial:
     """Trial class.
 
     Attributes:
+        description (str): short description of the trial
         metrics (List[(str, Union[int, float])]): list of metric, like number of qubits
         parameters (List[(str, str)]): list of parameter, like env details
         circuits (List[(str, QuantumCircuit)]): list of quantum circuit
@@ -41,6 +42,7 @@ class Trial:
         name: str,
         uuid: Optional[str] = None,
         backend: Optional[BaseBackend] = None,
+        description: Optional[str] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
         circuits: Optional[List[List[Union[str, QuantumCircuit]]]] = None,
@@ -53,6 +55,7 @@ class Trial:
         """Trial class for tracking experiments data.
 
         Args:
+            description (str): short description of the trial
             metrics (List[(str, Union[int, float])]): list of metric, like number of qubits
             parameters (List[(str, str)]): list of parameter, like env details
             circuits (List[(str, QuantumCircuit)]): list of quantum circuit
@@ -67,6 +70,7 @@ class Trial:
         self.name = name
         self.backend = backend or LocalBackend(path="./")
 
+        self.description = description or ""
         self.metrics = metrics or []
         self.parameters = parameters or []
         self.circuits = circuits or []
@@ -81,6 +85,14 @@ class Trial:
 
     def __enter__(self):
         return self
+
+    def add_description(self, description: str):
+        """Add description to trial data.
+
+        Args:
+            description: short description of the trial
+        """
+        self.description = description
 
     def add_metric(self, name: str, value: Union[int, float]):
         """Adds metric to trial data.
@@ -165,7 +177,8 @@ class Trial:
         """Read a trial from Backend.
 
         Args:
-            trial_id: if backend is the remote api, you need the trial id find in database.
+            trial_id: if backend is the remote api, you need the trial id find in database,
+                else you have to use the uuid.
 
         Returns:
             Trial dict object
@@ -174,7 +187,7 @@ class Trial:
         return self.backend.get(trial_id=trial_id)
 
     @staticmethod
-    def import_from_shared_file(path) -> "Trial":
+    def import_from_shared_file(path) -> Trial:
         """Import Trial for shared file.
 
         Args:
@@ -261,7 +274,7 @@ class ApiBackend(BaseBackend):
 
         Example:
             >>> backend = ApiBackend(
-            >>>     host="http://localhost:8000/",
+            >>>     host="http://localhost:8000",
             >>>     username="admin",
             >>>     password="123"
             >>> )
@@ -282,7 +295,15 @@ class ApiBackend(BaseBackend):
         Returns:
             authorization token
         """
-        raise NotImplementedError
+        payload = {"username": f"{username}", "password": f"{password}"}
+        curl_req = requests.post(
+            f"{self.host}/{Configuration.API_TOKEN_ENDPOINT}/",
+            headers=Configuration.API_HEADERS,
+            json=payload,
+            timeout=Configuration.API_TIMEOUT,
+        )
+
+        return curl_req.json()["access"]
 
     def save(self, trial: Trial):
         """Saves given trial.
@@ -291,8 +312,11 @@ class ApiBackend(BaseBackend):
             trial: encode trial to save
         """
         requests.post(
-            f"{Configuration.API_FULL_URL}/",
-            headers=Configuration.API_HEADERS,
+            f"{self.host}/{Configuration.API_TRIAL_ENDPOINT}/",
+            headers={
+                **Configuration.API_HEADERS,
+                "Authorization": f"Bearer {self.token}",
+            },
             json=json.loads(json.dumps(trial.__dict__, cls=TrialEncoder)),
             timeout=Configuration.API_TIMEOUT,
         )
@@ -309,8 +333,11 @@ class ApiBackend(BaseBackend):
             trial: object of a trial
         """
         curl_req = requests.get(
-            f"{Configuration.API_FULL_URL}/{trial_id}/",
-            headers=Configuration.API_HEADERS,
+            f"{self.host}/{Configuration.API_TRIAL_ENDPOINT}/{trial_id}/",
+            headers={
+                **Configuration.API_HEADERS,
+                "Authorization": f"Bearer {self.token}",
+            },
             timeout=Configuration.API_TIMEOUT,
         )
         if "Not found." in str(curl_req.json()):
@@ -319,8 +346,6 @@ class ApiBackend(BaseBackend):
         trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
         if "id" in trial_json:
             del trial_json["id"]
-        if "uuid" in trial_json:
-            del trial_json["uuid"]
 
         return Trial(**trial_json)
 
@@ -347,8 +372,14 @@ class ApiBackend(BaseBackend):
         trials = []
 
         curl_req = requests.get(
-            f"{Configuration.API_FULL_URL}/?query={query}&offset={offset}&limit={limit}/",
-            headers=Configuration.API_HEADERS,
+            f"""
+                {self.host}/{Configuration.API_TRIAL_ENDPOINT}/
+                ?query={query}&offset={offset}&limit={limit}/
+            """,
+            headers={
+                **Configuration.API_HEADERS,
+                "Authorization": f"Bearer {self.token}",
+            },
             timeout=Configuration.API_TIMEOUT,
         )
         for elem in curl_req.json():
@@ -398,7 +429,7 @@ class LocalBackend(BaseBackend):
         """Read a given trial file.
 
         Args:
-            trial_id: trial id
+            trial_id: trial uuid
 
         Returns:
             trial: object of a trial
