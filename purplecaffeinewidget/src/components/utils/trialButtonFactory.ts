@@ -8,16 +8,8 @@ export class trialButtonFactory {
         new trial_button(
           'button',
           ['btn', 'btn-light', 'btn-md', 'trial_button'],
-          [
-            ['id', 'mybutton'],
-            [
-              'onclick',
-              `
-              alert("you clicked trial #1");
-              `,
-            ],
-          ],
-          'Trial #' + trial
+          [['id', 'mybutton']],
+          trial
         )
       );
     });

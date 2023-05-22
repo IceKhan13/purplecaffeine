@@ -12,5 +12,6 @@ export class trial_button extends Atomic_Component {
     inner_html_label?: string
   ) {
     super(html_type, css_classes, html_properties, inner_html_label);
+    this.html_element.onclick = this.action;
   }
 }

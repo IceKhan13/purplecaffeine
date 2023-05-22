@@ -12,8 +12,6 @@ import { MODULE_NAME, MODULE_VERSION } from './version';
 // Import the CSS
 import '../css/widget.css';
 
-import '../css/trial_button.css';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import 'bootstrap';
@@ -34,7 +32,7 @@ export class WidgetModel extends DOMWidgetModel {
       _view_name: WidgetModel.view_name,
       _view_module: WidgetModel.view_module,
       _view_module_version: WidgetModel.view_module_version,
-      value: 'Hello World',
+      value: {},
     };
   }
 
@@ -52,41 +50,25 @@ export class WidgetModel extends DOMWidgetModel {
 }
 
 export class WidgetView extends DOMWidgetView {
+  listOfTrials: list_of_trial_buttons;
+  trial_button_factory = new trialButtonFactory();
   render(): void {
     const header = new Atomic_Component(
       'h1',
       ['header'],
       undefined,
-      'TRIAL #1'
+      'PurpleCaffeine tracked trials'
     );
-    const trial_button_factory = new trialButtonFactory();
-    const listOfTrials = new list_of_trial_buttons(
-      trial_button_factory.create([
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-      ]),
+
+    this.listOfTrials = new list_of_trial_buttons(
+      this.trial_button_factory.create(this.model.get('value')),
       ['list_of_trials']
     );
     const searchtools = new search_tools(
       new search_button(
         'button',
         ['btn', 'btn-primary', 'btn-lg'],
-        [
-          ['id', 'mybutton'],
-          [
-            'onclick',
-            `
-          alert("you clicked on search button");
-          `,
-          ],
-        ],
+        [['id', 'mybutton']],
         'Search'
       ),
       new search_bar(
@@ -108,9 +90,17 @@ export class WidgetView extends DOMWidgetView {
     );
     this.el.appendChild(header.html_element);
     this.el.appendChild(searchtools.div.html_element);
-    this.el.appendChild(listOfTrials.div.html_element);
+    this.el.appendChild(this.listOfTrials.div.html_element);
 
-    //this.value_changed();
-    //this.model.on('change:value', this.value_changed, this);
+    this.model.on('change:value', this.value_changed, this);
+  }
+
+  value_changed(): void {
+    this.el.removeChild(this.listOfTrials.div.html_element);
+    this.listOfTrials = new list_of_trial_buttons(
+      this.trial_button_factory.create(this.model.get('value')),
+      ['list_of_trials']
+    );
+    this.el.appendChild(this.listOfTrials.div.html_element);
   }
 }

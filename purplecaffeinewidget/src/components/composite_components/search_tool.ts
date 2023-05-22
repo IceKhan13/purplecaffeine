@@ -9,6 +9,6 @@ export class search_tools extends composite_component {
     css_clases?: Array<string>
   ) {
     super(css_clases);
-    this.appendChildren([input_text.html_element, searchButton.html_element]);
+    this.appendChildren([searchButton.html_element, input_text.html_element]);
   }
 }
