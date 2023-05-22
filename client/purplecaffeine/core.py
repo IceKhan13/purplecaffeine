@@ -175,7 +175,8 @@ class Trial:
         """Read a trial from Backend.
 
         Args:
-            trial_id: if backend is the remote api, you need the trial id find in database.
+            trial_id: if backend is the remote api, you need the trial id find in database,
+                else you have to use the uuid.
 
         Returns:
             Trial dict object
@@ -184,7 +185,7 @@ class Trial:
         return self.backend.get(trial_id=trial_id)
 
     @staticmethod
-    def import_from_shared_file(path) -> "Trial":
+    def import_from_shared_file(path) -> Trial:
         """Import Trial for shared file.
 
         Args:
@@ -329,8 +330,6 @@ class ApiBackend(BaseBackend):
         trial_json = json.loads(json.dumps(curl_req.json()), cls=TrialDecoder)
         if "id" in trial_json:
             del trial_json["id"]
-        if "uuid" in trial_json:
-            del trial_json["uuid"]
 
         return Trial(**trial_json)
 
@@ -408,7 +407,7 @@ class LocalBackend(BaseBackend):
         """Read a given trial file.
 
         Args:
-            trial_id: trial id
+            trial_id: trial uuid
 
         Returns:
             trial: object of a trial
