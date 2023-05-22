@@ -293,10 +293,7 @@ class ApiBackend(BaseBackend):
         Returns:
             authorization token
         """
-        payload = {
-            "username": f"{username}",
-            "password": f"{password}"
-        }
+        payload = {"username": f"{username}", "password": f"{password}"}
         curl_req = requests.post(
             f"{self.host}/{Configuration.API_TOKEN_ENDPOINT}/",
             headers=Configuration.API_HEADERS,
@@ -314,7 +311,10 @@ class ApiBackend(BaseBackend):
         """
         requests.post(
             f"{self.host}/{Configuration.API_TRIAL_ENDPOINT}/",
-            headers={**Configuration.API_HEADERS, "Authorization": f"Bearer {self.token}"},
+            headers={
+                **Configuration.API_HEADERS,
+                "Authorization": f"Bearer {self.token}",
+            },
             json=json.loads(json.dumps(trial.__dict__, cls=TrialEncoder)),
             timeout=Configuration.API_TIMEOUT,
         )
@@ -332,7 +332,10 @@ class ApiBackend(BaseBackend):
         """
         curl_req = requests.get(
             f"{self.host}/{Configuration.API_TRIAL_ENDPOINT}/{trial_id}/",
-            headers={**Configuration.API_HEADERS, "Authorization": f"Bearer {self.token}"},
+            headers={
+                **Configuration.API_HEADERS,
+                "Authorization": f"Bearer {self.token}",
+            },
             timeout=Configuration.API_TIMEOUT,
         )
         if "Not found." in str(curl_req.json()):
