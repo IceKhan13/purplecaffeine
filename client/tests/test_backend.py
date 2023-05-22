@@ -41,13 +41,9 @@ class TestBackend(TestCase):
 
     @skip("Remote call.")
     def test_save_get_api_backend(self):
-        """Test save trial remotely."""
+        """Test save trial in API."""
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
-        )
-        # get token
-        self.assertTrue(
-            isinstance(backend._get_token(username="admin", password="admin"), str)
         )
         # Save
         backend.save(trial=self.my_trial)

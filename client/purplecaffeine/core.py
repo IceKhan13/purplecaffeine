@@ -40,7 +40,7 @@ class Trial:
         self,
         name: str,
         uuid: Optional[str] = None,
-        description: str = None,
+        description: Optional[str] = None,
         backend: Optional[BaseBackend] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
@@ -345,8 +345,6 @@ class ApiBackend(BaseBackend):
         if "id" in trial_json:
             del trial_json["id"]
 
-        print("Trial json : ", trial_json)
-
         return Trial(**trial_json)
 
     def list(
@@ -372,8 +370,14 @@ class ApiBackend(BaseBackend):
         trials = []
 
         curl_req = requests.get(
-            f"{Configuration.API_FULL_URL}/?query={query}&offset={offset}&limit={limit}/",
-            headers=Configuration.API_HEADERS,
+            f"""
+                {self.host}/{Configuration.API_TRIAL_ENDPOINT}/
+                ?query={query}&offset={offset}&limit={limit}/
+            """,
+            headers={
+                **Configuration.API_HEADERS,
+                "Authorization": f"Bearer {self.token}",
+            },
             timeout=Configuration.API_TIMEOUT,
         )
         for elem in curl_req.json():
