@@ -170,11 +170,12 @@ trial to understand what observables/operators where used in your work</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># list all files in ./trials folder</span>
-<span class="n">trials_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;./trials&#39;</span><span class="p">))]</span>
-<span class="c1"># read the first one</span>
-<span class="n">local_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trials_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="c1"># same as local_backend.get(&quot;88b5ef54-a66b-45e1-aed8-c7db7ad82594&quot;)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trials</span> <span class="o">=</span> <span class="n">local_backend</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+
+<span class="n">random_trial</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">trial_uuid</span> <span class="o">=</span> <span class="n">random_trial</span><span class="o">.</span><span class="n">uuid</span>
+
+<span class="n">local_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trial_uuid</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
