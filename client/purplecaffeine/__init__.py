@@ -3,9 +3,9 @@
     :toctree: ../stubs/
 
     Trial
-    BaseBackend
-    LocalBackend
-    ApiBackend
+    BaseStorage
+    LocalStorage
+    ApiStorage
 """
 
-from .core import Trial, LocalBackend, ApiBackend, BaseBackend
+from .core import Trial, LocalStorage, ApiStorage, BaseStorage

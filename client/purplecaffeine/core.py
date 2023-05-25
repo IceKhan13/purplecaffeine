@@ -40,7 +40,7 @@ class Trial:
         self,
         name: str,
         uuid: Optional[str] = None,
-        backend: Optional[BaseBackend] = None,
+        storage: Optional[BaseStorage] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
         circuits: Optional[List[List[Union[str, QuantumCircuit]]]] = None,
@@ -65,7 +65,7 @@ class Trial:
         """
         self.uuid = uuid or str(uuid4())
         self.name = name
-        self.backend = backend or LocalBackend(path="./")
+        self.storage = storage or LocalStorage(path="./")
 
         self.metrics = metrics or []
         self.parameters = parameters or []
@@ -158,20 +158,20 @@ class Trial:
         self.tags.append(tag)
 
     def save(self):
-        """Save into Backend."""
-        self.backend.save(trial=self)
+        """Save into Storage."""
+        self.storage.save(trial=self)
 
     def read(self, trial_id: str) -> Trial:
-        """Read a trial from Backend.
+        """Read a trial from Storage.
 
         Args:
-            trial_id: if backend is the remote api, you need the trial id find in database.
+            trial_id: if storage is the remote api, you need the trial id find in database.
 
         Returns:
             Trial dict object
         """
 
-        return self.backend.get(trial_id=trial_id)
+        return self.storage.get(trial_id=trial_id)
 
     @staticmethod
     def import_from_shared_file(path) -> "Trial":
@@ -210,8 +210,8 @@ class Trial:
         self.save()
 
 
-class BaseBackend:
-    """Base backend class."""
+class BaseStorage:
+    """Base storage class."""
 
     def save(self, trial: Trial):
         """Saves given trial.
@@ -253,14 +253,14 @@ class BaseBackend:
         raise NotImplementedError
 
 
-class ApiBackend(BaseBackend):
-    """API backend class."""
+class ApiStorage(BaseStorage):
+    """API storage class."""
 
     def __init__(self, username: str, password: str, host: str):
-        """Creates backend for APIServer.
+        """Creates storage for APIServer.
 
         Example:
-            >>> backend = ApiBackend(
+            >>> storage = ApiStorage(
             >>>     host="http://localhost:8000/",
             >>>     username="admin",
             >>>     password="123"
@@ -362,15 +362,15 @@ class ApiBackend(BaseBackend):
         return trials
 
 
-class LocalBackend(BaseBackend):
-    """Local backend."""
+class LocalStorage(BaseStorage):
+    """Local storage."""
 
     def __init__(self, path: str):
-        """Creates local backend for storing trial data
+        """Creates local storage for storing trial data
         at local folder.
 
         Example:
-            >>> backend = LocalBackend("./")
+            >>> storage = LocalStorage("./")
 
         Args:
             path: path for the local storage folder
@@ -443,8 +443,8 @@ class LocalBackend(BaseBackend):
         return trials
 
 
-class S3Backend(BaseBackend):
-    """S3 backend."""
+class S3Storage(BaseStorage):
+    """S3 storage."""
 
     def __init__(
         self,
@@ -453,12 +453,12 @@ class S3Backend(BaseBackend):
         secret_access_key: Optional[str] = None,
         directory: Optional[str] = None,
     ):
-        """Storage backend for s3 buckets.
+        """Storage storage for s3 buckets.
 
         Allows to store trial data inside s3 buckets.
 
         Example:
-            >>> backend = S3Backend("my_bucket", key="<AWS_KEY>", access_key="<AWS_ACCESS_KEY>")
+            >>> storage = S3Storage("my_bucket", key="<AWS_KEY>", access_key="<AWS_ACCESS_KEY>")
 
         Args:
             bucket_name: bucket name
