@@ -24,4 +24,6 @@ docker run --rm --name purplecaffeine-dev \
     -e SERV_KEY="${SERV_KEY}" \
     -e DB_NAME="${DB_NAME}" -e DB_USER="${DB_USER}" -e DB_PASSWORD="${DB_PASSWORD}" \
     -e DB_SCHEMA="${DB_SCHEMA}" -e DB_PORT="${DB_PORT}" -e DB_HOST="${DB_HOST}" \
+    -e DJANGO_SUPERUSER_USERNAME="${DJANGO_SUPERUSER_USERNAME}" -e DJANGO_SUPERUSER_PASSWORD="${DJANGO_SUPERUSER_PASSWORD}" \
+    -e DJANGO_SUPERUSER_EMAIL="${DJANGO_SUPERUSER_EMAIL}" \
     purplecaffeine:dev

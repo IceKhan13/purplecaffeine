@@ -41,9 +41,11 @@ class TestStorage(TestCase):
 
     @skip("Remote call.")
     def test_save_get_api_storage(self):
-        """Test save trial remotely."""
+        """Test save trial in API."""
+        storage = ApiStorage(
+            host="http://127.0.0.1:8000", username="admin", password="admin"
+        )
         # Save
-        storage = ApiStorage(host="", username="", password="")
         storage.save(trial=self.my_trial)
         # Get
         recovered = storage.get(trial_id="1")
@@ -53,7 +55,7 @@ class TestStorage(TestCase):
             storage.get(trial_id="999")
 
     @skip("Requires access tokens")
-    def test_save_and_load_s3_storage(self) -> None:
+    def test_save_get_list_s3_storage(self) -> None:
         """Test of S3Storage object."""
         s3_storage = S3Storage("bucket")
         # save

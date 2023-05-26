@@ -22,6 +22,7 @@ def dummy_trial(
         dummy trial
     """
     trial = Trial(name=name, storage=storage)
+    trial.add_description("Short desc")
     trial.add_metric("test_metric", 42)
     trial.add_parameter("test_parameter", "parameter")
     trial.add_circuit("test_circuit", QuantumCircuit(2))
@@ -57,6 +58,7 @@ class TestTrial(TestCase):
         """Test adding stuff into Trial."""
         trial = dummy_trial()
 
+        self.assertEqual(trial.description, "Short desc")
         self.assertEqual(trial.metrics, [["test_metric", 42]])
         self.assertEqual(trial.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(trial.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -74,6 +76,7 @@ class TestTrial(TestCase):
             os.path.isfile(os.path.join(self.save_path, f"{trial.uuid}.json"))
         )
         recovered = trial.read(trial_id=trial.uuid)
+        self.assertEqual(recovered.description, "Short desc")
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -84,12 +87,15 @@ class TestTrial(TestCase):
 
     @skip("Remote call")
     def test_save_read_api_trial(self):
-        """Test save and read Trial remotely."""
-        storage = ApiStorage(username="", password="", host="")
+        """Test save and read Trial from API."""
+        storage = ApiStorage(
+            host="http://127.0.0.1:8000", username="admin", password="admin"
+        )
         trial = dummy_trial(storage=storage)
         trial.save()
 
         recovered = trial.read(trial_id="1")
+        self.assertEqual(recovered.description, "Short desc")
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
@@ -110,6 +116,7 @@ class TestTrial(TestCase):
         new_trial = Trial("test_import").import_from_shared_file(
             os.path.join(self.save_path, f"{trial.uuid}.json")
         )
+        self.assertEqual(new_trial.description, "Short desc")
         self.assertEqual(new_trial.metrics, [["test_metric", 42]])
         self.assertEqual(new_trial.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(new_trial.circuits, [["test_circuit", QuantumCircuit(2)]])
