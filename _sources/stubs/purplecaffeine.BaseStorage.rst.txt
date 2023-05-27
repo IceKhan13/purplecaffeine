@@ -1,9 +1,9 @@
-﻿purplecaffeine.BaseBackend
+﻿purplecaffeine.BaseStorage
 ==========================
 
 .. currentmodule:: purplecaffeine
 
-.. autoclass:: BaseBackend
+.. autoclass:: BaseStorage
 
    
    .. automethod:: __init__
@@ -13,10 +13,10 @@
 
    .. autosummary::
    
-      ~BaseBackend.__init__
-      ~BaseBackend.get
-      ~BaseBackend.list
-      ~BaseBackend.save
+      ~BaseStorage.__init__
+      ~BaseStorage.get
+      ~BaseStorage.list
+      ~BaseStorage.save
    
    
 

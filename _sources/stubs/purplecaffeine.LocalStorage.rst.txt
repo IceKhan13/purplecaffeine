@@ -1,9 +1,9 @@
-﻿purplecaffeine.LocalBackend
+﻿purplecaffeine.LocalStorage
 ===========================
 
 .. currentmodule:: purplecaffeine
 
-.. autoclass:: LocalBackend
+.. autoclass:: LocalStorage
 
    
    .. automethod:: __init__
@@ -13,10 +13,10 @@
 
    .. autosummary::
    
-      ~LocalBackend.__init__
-      ~LocalBackend.get
-      ~LocalBackend.list
-      ~LocalBackend.save
+      ~LocalStorage.__init__
+      ~LocalStorage.get
+      ~LocalStorage.list
+      ~LocalStorage.save
    
    
 

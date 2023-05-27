@@ -46,7 +46,7 @@
   <section id="Guide:-Tracking-quantum-experiments">
 <h1>Guide: Tracking quantum experiments<a class="headerlink" href="#Guide:-Tracking-quantum-experiments" title="Permalink to this heading">¶</a></h1>
 <p>In this guide we will show you how to keep track of your quantum experiments.</p>
-<p>First we introduce glossary: - <code class="docutils literal notranslate"><span class="pre">Trial</span></code> is a tracking class which wraps a single execution of your quantum experiment - <code class="docutils literal notranslate"><span class="pre">Backend</span></code> is a class responsible for storing trial data</p>
+<p>First we introduce glossary: - <code class="docutils literal notranslate"><span class="pre">Trial</span></code> is a tracking class which wraps a single execution of your quantum experiment - <code class="docutils literal notranslate"><span class="pre">Storage</span></code> is a class responsible for storing trial data</p>
 <p>We will show simple example of measuring expectation value of an observable and how to track all information about this experiment.</p>
 <p>Let’s start with importing necessary modules.</p>
 <div class="nbinput nblast docutils container">
@@ -58,7 +58,7 @@
 <span class="kn">from</span> <span class="nn">qiskit.quantum_info.random</span> <span class="kn">import</span> <span class="n">random_pauli</span>
 <span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
 
-<span class="kn">from</span> <span class="nn">purplecaffeine.core</span> <span class="kn">import</span> <span class="n">Trial</span><span class="p">,</span> <span class="n">LocalBackend</span>
+<span class="kn">from</span> <span class="nn">purplecaffeine.core</span> <span class="kn">import</span> <span class="n">Trial</span><span class="p">,</span> <span class="n">LocalStorage</span>
 </pre></div>
 </div>
 </div>
@@ -109,23 +109,23 @@ q_3: ──────────────┤ U3(0.057242,4.0814,3.8183) �
 Pauli(&#39;YIIZ&#39;)
 </pre></div></div>
 </div>
-<p>We also need a place where we will store data about our trials. In this example we will be using <code class="docutils literal notranslate"><span class="pre">LocalBackend</span></code> which stores information locally in a folder that you configured. We will set our folder for trials to be <code class="docutils literal notranslate"><span class="pre">./trials</span></code>.</p>
+<p>We also need a place where we will store data about our trials. In this example we will be using <code class="docutils literal notranslate"><span class="pre">LocalStorage</span></code> which stores information locally in a folder that you configured. We will set our folder for trials to be <code class="docutils literal notranslate"><span class="pre">./trials</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span> <span class="o">=</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="s2">&quot;./trials&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_storage</span> <span class="o">=</span> <span class="n">LocalStorage</span><span class="p">(</span><span class="s2">&quot;./trials&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>In order to track our actions we need to work with <code class="docutils literal notranslate"><span class="pre">Trial</span></code> class, give it a name <code class="docutils literal notranslate"><span class="pre">Example</span> <span class="pre">trial</span></code>, pass our <code class="docutils literal notranslate"><span class="pre">local_backend</span></code> as backend option and start context (python <code class="docutils literal notranslate"><span class="pre">with</span></code> statement).</p>
-<p>Within this context we can call list of different methods on <code class="docutils literal notranslate"><span class="pre">trial</span></code> object. Some of them are: - <code class="docutils literal notranslate"><span class="pre">add_parameter</span></code> adds parameters to the trial, which can be backend names, depth, number of qubits, etc. - <code class="docutils literal notranslate"><span class="pre">add_metric</span></code> adds metric to the trial, which can represent measurable outcome of this trial. Ex: history of vqe iterations, results of measurement, etc. - <code class="docutils literal notranslate"><span class="pre">add_circuit</span></code> adds circuit to the trial to understand what circuits where used in your work - <code class="docutils literal notranslate"><span class="pre">add_operator</span></code> adds operator to the
+<p>In order to track our actions we need to work with <code class="docutils literal notranslate"><span class="pre">Trial</span></code> class, give it a name <code class="docutils literal notranslate"><span class="pre">Example</span> <span class="pre">trial</span></code>, pass our <code class="docutils literal notranslate"><span class="pre">local_storage</span></code> as storage option and start context (python <code class="docutils literal notranslate"><span class="pre">with</span></code> statement).</p>
+<p>Within this context we can call list of different methods on <code class="docutils literal notranslate"><span class="pre">trial</span></code> object. Some of them are: - <code class="docutils literal notranslate"><span class="pre">add_parameter</span></code> adds parameters to the trial, which can be storage names, depth, number of qubits, etc. - <code class="docutils literal notranslate"><span class="pre">add_metric</span></code> adds metric to the trial, which can represent measurable outcome of this trial. Ex: history of vqe iterations, results of measurement, etc. - <code class="docutils literal notranslate"><span class="pre">add_circuit</span></code> adds circuit to the trial to understand what circuits where used in your work - <code class="docutils literal notranslate"><span class="pre">add_operator</span></code> adds operator to the
 trial to understand what observables/operators where used in your work</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Trial</span><span class="p">(</span><span class="s2">&quot;Example trial&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">local_backend</span><span class="p">)</span> <span class="k">as</span> <span class="n">trial</span><span class="p">:</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Trial</span><span class="p">(</span><span class="s2">&quot;Example trial&quot;</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">local_storage</span><span class="p">)</span> <span class="k">as</span> <span class="n">trial</span><span class="p">:</span>
     <span class="c1"># track some parameters</span>
     <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="s2">&quot;qiskit.primitives.Estimator&quot;</span><span class="p">)</span>
     <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
@@ -144,12 +144,12 @@ trial to understand what observables/operators where used in your work</p>
 </pre></div>
 </div>
 </div>
-<p>We can get list of all experiments by calling <code class="docutils literal notranslate"><span class="pre">list</span></code> method on backend object.</p>
+<p>We can get list of all experiments by calling <code class="docutils literal notranslate"><span class="pre">list</span></code> method on storage object.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_backend</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_storage</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -165,17 +165,17 @@ trial to understand what observables/operators where used in your work</p>
  &lt;Trial [Example trial] 2ef8eaca-0fd5-4e21-9257-1e080ed85ed2&gt;]
 </pre></div></div>
 </div>
-<p>We can quiery existing experiments by name by calling <code class="docutils literal notranslate"><span class="pre">get</span></code> method on backend object and passing name of your example</p>
+<p>We can quiery existing experiments by name by calling <code class="docutils literal notranslate"><span class="pre">get</span></code> method on storage object and passing name of your example</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trials</span> <span class="o">=</span> <span class="n">local_backend</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trials</span> <span class="o">=</span> <span class="n">local_storage</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
 
 <span class="n">random_trial</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">trial_uuid</span> <span class="o">=</span> <span class="n">random_trial</span><span class="o">.</span><span class="n">uuid</span>
 
-<span class="n">local_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trial_uuid</span><span class="p">)</span>
+<span class="n">local_storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trial_uuid</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

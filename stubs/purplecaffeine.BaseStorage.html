@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>purplecaffeine.LocalBackend &#8212; PurpleCaffeine 0.0.0 documentation</title>
+    <title>purplecaffeine.BaseStorage &#8212; PurpleCaffeine 0.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
@@ -22,8 +22,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="purplecaffeine.ApiBackend" href="purplecaffeine.ApiBackend.html" />
-    <link rel="prev" title="purplecaffeine.BaseBackend" href="purplecaffeine.BaseBackend.html" />
+    <link rel="next" title="purplecaffeine.LocalStorage" href="purplecaffeine.LocalStorage.html" />
+    <link rel="prev" title="purplecaffeine.Trial" href="purplecaffeine.Trial.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -40,50 +40,28 @@
 
           <div class="body" role="main">
             
-  <section id="purplecaffeine-localbackend">
-<h1>purplecaffeine.LocalBackend<a class="headerlink" href="#purplecaffeine-localbackend" title="Permalink to this heading">¶</a></h1>
+  <section id="purplecaffeine-basestorage">
+<h1>purplecaffeine.BaseStorage<a class="headerlink" href="#purplecaffeine-basestorage" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="purplecaffeine.LocalBackend">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#LocalBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.LocalBackend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Local backend.</p>
-<p>Creates local backend for storing trial data
-at local folder.</p>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">backend</span> <span class="o">=</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path for the local storage folder</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="purplecaffeine.BaseStorage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseStorage</span></span><a class="reference internal" href="../_modules/purplecaffeine/core.html#BaseStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.BaseStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base storage class.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="purplecaffeine.LocalBackend.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#LocalBackend.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.LocalBackend.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates local backend for storing trial data
-at local folder.</p>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">backend</span> <span class="o">=</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path for the local storage folder</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="purplecaffeine.BaseStorage.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#purplecaffeine.BaseStorage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.LocalBackend.__init__" title="purplecaffeine.LocalBackend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(path)</p></td>
-<td><p>Creates local backend for storing trial data at local folder.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.BaseStorage.__init__" title="purplecaffeine.BaseStorage.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(trial_id)</p></td>
-<td><p>Read a given trial file.</p></td>
+<td><p>Returns trail by id.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>([query, limit, offset])</p></td>
-<td><p>Returns list of trials.</p></td>
+<td><p>Returns list of trails.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(trial)</p></td>
 <td><p>Saves given trial.</p></td>
@@ -117,9 +95,9 @@ at local folder.</p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="purplecaffeine.Trial.html">purplecaffeine.Trial</a></li>
-<li class="toctree-l2"><a class="reference internal" href="purplecaffeine.BaseBackend.html">purplecaffeine.BaseBackend</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">purplecaffeine.LocalBackend</a></li>
-<li class="toctree-l2"><a class="reference internal" href="purplecaffeine.ApiBackend.html">purplecaffeine.ApiBackend</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">purplecaffeine.BaseStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purplecaffeine.LocalStorage.html">purplecaffeine.LocalStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purplecaffeine.ApiStorage.html">purplecaffeine.ApiStorage</a></li>
 </ul>
 </li>
 </ul>
@@ -129,8 +107,8 @@ at local folder.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../apidocs/index.html">PurpleCaffeine API References</a><ul>
-      <li>Previous: <a href="purplecaffeine.BaseBackend.html" title="previous chapter">purplecaffeine.BaseBackend</a></li>
-      <li>Next: <a href="purplecaffeine.ApiBackend.html" title="next chapter">purplecaffeine.ApiBackend</a></li>
+      <li>Previous: <a href="purplecaffeine.Trial.html" title="previous chapter">purplecaffeine.Trial</a></li>
+      <li>Next: <a href="purplecaffeine.LocalStorage.html" title="next chapter">purplecaffeine.LocalStorage</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -165,7 +143,7 @@ at local folder.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
-      <a href="../_sources/stubs/purplecaffeine.LocalBackend.rst.txt"
+      <a href="../_sources/stubs/purplecaffeine.BaseStorage.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

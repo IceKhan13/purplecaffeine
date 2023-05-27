@@ -1,9 +1,9 @@
-﻿purplecaffeine.ApiBackend
+﻿purplecaffeine.ApiStorage
 =========================
 
 .. currentmodule:: purplecaffeine
 
-.. autoclass:: ApiBackend
+.. autoclass:: ApiStorage
 
    
    .. automethod:: __init__
@@ -13,10 +13,10 @@
 
    .. autosummary::
    
-      ~ApiBackend.__init__
-      ~ApiBackend.get
-      ~ApiBackend.list
-      ~ApiBackend.save
+      ~ApiStorage.__init__
+      ~ApiStorage.get
+      ~ApiStorage.list
+      ~ApiStorage.save
    
    
 

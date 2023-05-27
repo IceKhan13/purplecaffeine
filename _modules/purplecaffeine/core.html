@@ -81,7 +81,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseBackend</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">storage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseStorage</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -108,7 +108,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">or</span> <span class="n">LocalBackend</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span> <span class="ow">or</span> <span class="n">LocalStorage</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -210,21 +210,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save into Backend.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save into Storage.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trial</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a trial from Backend.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a trial from Storage.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            trial_id: if backend is the remote api, you need the trial id find in database,</span>
+<span class="sd">            trial_id: if storage is the remote api, you need the trial id find in database,</span>
 <span class="sd">                else you have to use the uuid.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Trial dict object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trial_id</span><span class="o">=</span><span class="n">trial_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">trial_id</span><span class="o">=</span><span class="n">trial_id</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">import_from_shared_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trial</span><span class="p">:</span>
@@ -263,8 +263,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="BaseBackend"><a class="viewcode-back" href="../../stubs/purplecaffeine.BaseBackend.html#purplecaffeine.BaseBackend">[docs]</a><span class="k">class</span> <span class="nc">BaseBackend</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base backend class.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BaseStorage"><a class="viewcode-back" href="../../stubs/purplecaffeine.BaseStorage.html#purplecaffeine.BaseStorage">[docs]</a><span class="k">class</span> <span class="nc">BaseStorage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base storage class.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="n">Trial</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves given trial.</span>
@@ -306,15 +306,15 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="ApiBackend"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiBackend.html#purplecaffeine.ApiBackend">[docs]</a><span class="k">class</span> <span class="nc">ApiBackend</span><span class="p">(</span><span class="n">BaseBackend</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;API backend class.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ApiStorage"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiStorage.html#purplecaffeine.ApiStorage">[docs]</a><span class="k">class</span> <span class="nc">ApiStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API storage class.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ApiBackend.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiBackend.html#purplecaffeine.ApiBackend.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates backend for APIServer.</span>
+<div class="viewcode-block" id="ApiStorage.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiStorage.html#purplecaffeine.ApiStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates storage for APIServer.</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; backend = ApiBackend(</span>
-<span class="sd">            &gt;&gt;&gt;     host=&quot;http://localhost:8000&quot;,</span>
+<span class="sd">            &gt;&gt;&gt; storage = ApiStorage(</span>
+<span class="sd">            &gt;&gt;&gt;     host=&quot;http://localhost:8000/&quot;,</span>
 <span class="sd">            &gt;&gt;&gt;     username=&quot;admin&quot;,</span>
 <span class="sd">            &gt;&gt;&gt;     password=&quot;123&quot;</span>
 <span class="sd">            &gt;&gt;&gt; )</span>
@@ -433,15 +433,15 @@
         <span class="k">return</span> <span class="n">trials</span></div>
 
 
-<div class="viewcode-block" id="LocalBackend"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalBackend.html#purplecaffeine.LocalBackend">[docs]</a><span class="k">class</span> <span class="nc">LocalBackend</span><span class="p">(</span><span class="n">BaseBackend</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Local backend.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LocalStorage"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalStorage.html#purplecaffeine.LocalStorage">[docs]</a><span class="k">class</span> <span class="nc">LocalStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Local storage.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LocalBackend.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalBackend.html#purplecaffeine.LocalBackend.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates local backend for storing trial data</span>
+<div class="viewcode-block" id="LocalStorage.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalStorage.html#purplecaffeine.LocalStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates local storage for storing trial data</span>
 <span class="sd">        at local folder.</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; backend = LocalBackend(&quot;./&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; storage = LocalStorage(&quot;./&quot;)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path: path for the local storage folder</span>
@@ -514,8 +514,8 @@
         <span class="k">return</span> <span class="n">trials</span></div>
 
 
-<span class="k">class</span> <span class="nc">S3Backend</span><span class="p">(</span><span class="n">BaseBackend</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;S3 backend.&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">S3Storage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;S3 storage.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -524,12 +524,12 @@
         <span class="n">secret_access_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Storage backend for s3 buckets.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Storage storage for s3 buckets.</span>
 
 <span class="sd">        Allows to store trial data inside s3 buckets.</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; backend = S3Backend(&quot;my_bucket&quot;, key=&quot;&lt;AWS_KEY&gt;&quot;, access_key=&quot;&lt;AWS_ACCESS_KEY&gt;&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; storage = S3Storage(&quot;my_bucket&quot;, key=&quot;&lt;AWS_KEY&gt;&quot;, access_key=&quot;&lt;AWS_ACCESS_KEY&gt;&quot;)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bucket_name: bucket name</span>
