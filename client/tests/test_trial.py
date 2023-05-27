@@ -1,10 +1,9 @@
 """Tests for Trial."""
 import os
-import time
 import shutil
 from pathlib import Path
 from typing import Optional
-from unittest import TestCase, skip
+from unittest import TestCase
 from testcontainers.compose import DockerCompose
 
 import numpy as np
@@ -96,8 +95,7 @@ class TestTrial(TestCase):
     def test_save_read_api_trial(self):
         """Test save and read Trial from API."""
         self.compose.start()
-        #self.compose.wait_for("http://127.0.0.1:8000/health_check/")
-        time.sleep(10)
+        self.compose.wait_for("http://127.0.0.1:8000/health_check/")
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )
