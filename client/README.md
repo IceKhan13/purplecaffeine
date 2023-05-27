@@ -34,7 +34,7 @@ from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info.random import random_pauli
 from qiskit.primitives import Estimator
 
-from purplecaffeine.core import Trial, LocalBackend
+from purplecaffeine.core import Trial, LocalStorage
 
 n_qubits = 4
 depth = 3
@@ -43,9 +43,9 @@ shots = 2000
 circuit = random_circuit(n_qubits, depth)
 obs = random_pauli(n_qubits)
 
-local_backend = LocalBackend("./")
+local_storage = LocalStorage("./")
 
-with Trial("Example trial", backend=local_backend) as trial:
+with Trial("Example trial", storage=local_storage) as trial:
     # track some parameters
     trial.add_parameter("estimator", "qiskit.primitives.Estimator")
     trial.add_parameter("depth", depth)

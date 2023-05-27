@@ -11,15 +11,15 @@ class TrialEncoder(RuntimeEncoder):
     """Json encoder for trial."""
 
     def default(self, obj: Any) -> Any:
-        from purplecaffeine.core import BaseBackend
+        from purplecaffeine.core import BaseStorage
 
         if isinstance(obj, Backend):
             return {
                 "__type__": "Backend",
                 "__value__": pickle.dumps(obj),
             }
-        elif isinstance(obj, BaseBackend):
-            return {"__type__": "PurpleCaffeineBackend"}
+        elif isinstance(obj, BaseStorage):
+            return {"__type__": "PurpleCaffeineStorage"}
         return super().default(obj)
 
 
@@ -32,7 +32,7 @@ class TrialDecoder(RuntimeDecoder):
 
             if obj_type == "Backend":
                 return pickle.loads(obj["__value__"])
-            elif obj_type == "PurpleCaffeineBackend":
+            elif obj_type == "PurpleCaffeineStorage":
                 # we should not recover trial backend
                 return None
             return super().object_hook(obj)

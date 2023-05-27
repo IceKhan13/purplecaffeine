@@ -10,18 +10,18 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
-from purplecaffeine import Trial, LocalBackend, ApiBackend, BaseBackend as TrialBackend
+from purplecaffeine import Trial, LocalStorage, ApiStorage, BaseStorage as TrialStorage
 
 
 def dummy_trial(
-    name: Optional[str] = "test_trial", backend: Optional[TrialBackend] = None
+    name: Optional[str] = "test_trial", storage: Optional[TrialStorage] = None
 ):
     """Returns dummy trial for tests.
 
     Returns:
         dummy trial
     """
-    trial = Trial(name=name, backend=backend)
+    trial = Trial(name=name, storage=storage)
     trial.add_description("Short desc")
     trial.add_metric("test_metric", 42)
     trial.add_parameter("test_parameter", "parameter")
@@ -43,12 +43,12 @@ class TestTrial(TestCase):
         self.save_path = os.path.join(current_directory, "resources")
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
-        self.local_backend = LocalBackend(path=self.save_path)
+        self.local_storage = LocalStorage(path=self.save_path)
 
     def test_trial_context(self):
         """Test train context."""
         uuid = "some_uuid"
-        with Trial(name="test_trial", backend=self.local_backend, uuid=uuid) as trial:
+        with Trial(name="test_trial", storage=self.local_storage, uuid=uuid) as trial:
             trial.add_metric("test_metric", 42)
         trial.read(trial_id=uuid)
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, f"{uuid}.json")))
@@ -69,7 +69,7 @@ class TestTrial(TestCase):
 
     def test_save_read_local_trial(self):
         """Test save and read Trial locally."""
-        trial = dummy_trial(backend=self.local_backend)
+        trial = dummy_trial(storage=self.local_storage)
         trial.save()
 
         self.assertTrue(
@@ -88,10 +88,10 @@ class TestTrial(TestCase):
     @skip("Remote call")
     def test_save_read_api_trial(self):
         """Test save and read Trial from API."""
-        backend = ApiBackend(
+        storage = ApiStorage(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )
-        trial = dummy_trial(backend=backend)
+        trial = dummy_trial(storage=storage)
         trial.save()
 
         recovered = trial.read(trial_id="1")
