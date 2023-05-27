@@ -41,7 +41,7 @@ class Trial:
         self,
         name: str,
         uuid: Optional[str] = None,
-        backend: Optional[BaseBackend] = None,
+        storage: Optional[BaseStorage] = None,
         description: Optional[str] = None,
         metrics: Optional[List[List[Union[str, float]]]] = None,
         parameters: Optional[List[List[str]]] = None,
