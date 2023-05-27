@@ -1,5 +1,6 @@
 """Tests for Backend."""
 import os
+import time
 import shutil
 from pathlib import Path
 from unittest import TestCase, skip
@@ -49,7 +50,8 @@ class TestBackend(TestCase):
     def test_save_get_api_backend(self):
         """Test save trial in API."""
         self.compose.start()
-        self.compose.wait_for("http://127.0.0.1:8000/health_check/")
+        time(10)
+        #self.compose.wait_for("http://127.0.0.1:8000/health_check/")
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )

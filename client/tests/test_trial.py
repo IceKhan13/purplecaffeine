@@ -1,5 +1,6 @@
 """Tests for Trial."""
 import os
+import time
 import shutil
 from pathlib import Path
 from typing import Optional
@@ -96,7 +97,8 @@ class TestTrial(TestCase):
     def test_save_read_api_trial(self):
         """Test save and read Trial from API."""
         self.compose.start()
-        self.compose.wait_for("http://127.0.0.1:8000/health_check/")
+        #self.compose.wait_for("http://127.0.0.1:8000/health_check/")
+        time(10)
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )
