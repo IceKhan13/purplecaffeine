@@ -34,6 +34,13 @@ The role of this API is to support the PurpleCaffeine python library by allowing
 
 To start this image you first need to have a Postgress database running.
 The expose port of the API is `8000`.
+
+#### Automatically
+
+A full [`docker-compose.yml](../docker-compose.yml) is provided. It's containing postgres and the api.
+
+#### Manually
+
 Then you need to set some variables :
 
 ```bash
@@ -74,18 +81,17 @@ services:
         container_name: purplecaffeine
         image: purplecaffeine
         environment:
-            SERV_KEY=${SERV_KEY:-test}
-            DEBUG=${DEBUG:-0}
-            ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost}
-            DB_NAME=${DB_NAME:-postgres}
-            DB_USER=${DB_USER:-root}
-            DB_PASSWORD=${DB_PASSWORD:-root}
-            DB_HOST=${DB_HOST:-localhost}
-            DB_PORT=${DB_PORT:-5432}
-            DB_SCHEMA=${DB_SCHEMA:-public}
-            DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}
-            DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-admin}
-            DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-"admin@admin.admin"}
+          SERV_KEY: ${SERV_KEY:-test}
+          DEBUG: ${DEBUG:-0}
+          DB_NAME: ${DB_NAME:-purplecaffeine}
+          DB_USER: ${DB_USER:-purplecaffeine}
+          DB_PASSWORD: ${DB_PASSWORD:-purplecaffeinepassword}
+          DB_HOST: ${DB_HOST:-"host.docker.internal"}
+          DB_PORT: ${DB_PORT:-5432}
+          DB_SCHEMA: ${DB_SCHEMA:-public}
+          DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
+          DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-admin}
+          DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-"admin@admin.admin"}
         ports:
             - 8000:8000
 ```

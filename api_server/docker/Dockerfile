@@ -42,4 +42,4 @@ EXPOSE 8000
 CMD cd /opt/api_server; \
     python3 manage.py migrate; \
     python3 manage.py createsuperuser --no-input; \
-    gunicorn --bind 0.0.0.0:8000 purplecaffeine.wsgi
+    exec gunicorn --bind 0.0.0.0:8000 purplecaffeine.wsgi

@@ -1,8 +1,10 @@
 """Tests for Backend."""
 import os
+import time
 import shutil
 from pathlib import Path
 from unittest import TestCase, skip
+from testcontainers.compose import DockerCompose
 
 from purplecaffeine.core import Trial, LocalBackend, S3Backend, ApiBackend
 from purplecaffeine.exception import PurpleCaffeineException
@@ -20,6 +22,12 @@ class TestBackend(TestCase):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
         self.my_trial = dummy_trial(name="keep_trial", backend=self.local_backend)
+
+        self.compose = DockerCompose(
+            filepath=os.path.join(current_directory, "../.."),
+            compose_file_name="docker-compose.yml",
+            build=True,
+        )
 
     def test_save_get_list_local_backend(self):
         """Test save trial locally."""
@@ -39,9 +47,11 @@ class TestBackend(TestCase):
         self.assertTrue(isinstance(list_trials, list))
         self.assertTrue(isinstance(list_trials[0], Trial))
 
-    @skip("Remote call.")
+    # @skip("Remote call.")
     def test_save_get_api_backend(self):
         """Test save trial in API."""
+        self.compose.start()
+        self.compose.wait_for("http://127.0.0.1:8000/health_check/")
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )
@@ -53,6 +63,7 @@ class TestBackend(TestCase):
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         with self.assertRaises(ValueError):
             backend.get(trial_id="999")
+        self.compose.stop()
 
     @skip("Requires access tokens")
     def test_save_get_list_s3_backend(self) -> None:
