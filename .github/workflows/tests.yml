@@ -9,7 +9,6 @@ on:
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
-    container: docker
     timeout-minutes: 60
     strategy:
       max-parallel: 2
