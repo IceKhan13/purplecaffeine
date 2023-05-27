@@ -93,12 +93,11 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
 
-    @skip("Remote call")
     def test_save_read_api_trial(self):
         """Test save and read Trial from API."""
         self.compose.start()
         #self.compose.wait_for("http://127.0.0.1:8000/health_check/")
-        time(10)
+        time.sleep(10)
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )
