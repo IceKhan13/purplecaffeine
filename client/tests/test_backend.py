@@ -1,6 +1,5 @@
 """Tests for Backend."""
 import os
-import time
 import shutil
 from pathlib import Path
 from unittest import TestCase, skip
@@ -47,7 +46,6 @@ class TestBackend(TestCase):
         self.assertTrue(isinstance(list_trials, list))
         self.assertTrue(isinstance(list_trials[0], Trial))
 
-    # @skip("Remote call.")
     def test_save_get_api_backend(self):
         """Test save trial in API."""
         self.compose.start()

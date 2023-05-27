@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase, skip
+from testcontainers.compose import DockerCompose
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -44,6 +45,12 @@ class TestTrial(TestCase):
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
+
+        self.compose = DockerCompose(
+            filepath=os.path.join(current_directory, "../.."),
+            compose_file_name="docker-compose.yml",
+            build=True,
+        )
 
     def test_trial_context(self):
         """Test train context."""
@@ -88,6 +95,8 @@ class TestTrial(TestCase):
     @skip("Remote call")
     def test_save_read_api_trial(self):
         """Test save and read Trial from API."""
+        self.compose.start()
+        self.compose.wait_for("http://127.0.0.1:8000/health_check/")
         backend = ApiBackend(
             host="http://127.0.0.1:8000", username="admin", password="admin"
         )
@@ -103,6 +112,7 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.texts, [["test_text", "text"]])
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
+        self.compose.stop()
 
     def test_export_import(self):
         """Test export and import Trial from shared file."""
