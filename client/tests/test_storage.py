@@ -1,5 +1,6 @@
 """Tests for Storage."""
 import os
+import time
 import shutil
 from pathlib import Path
 from unittest import TestCase, skip
@@ -48,6 +49,7 @@ class TestStorage(TestCase):
             build=True,
         ) as compose:
             compose.wait_for("http://127.0.0.1:8000/health_check/")
+            time.sleep(10)
             storage = ApiStorage(
                 host="http://127.0.0.1:8000", username="admin", password="admin"
             )
