@@ -77,4 +77,5 @@ jobs:
       - name: Coverage check
         env:
           FOLDER: ${{ matrix.folder }}
+          SKIP_CONTAINER: True
         run: tox -ecoverage
