@@ -65,7 +65,7 @@ jobs:
         if: matrix.folder == 'client'
         run: |
           cd api_server/
-          gunicorn --bind 0.0.0.0:8000 purplecaffeine.wsgi
+          gunicorn --bind 0.0.0.0:8000 purplecaffeine.wsgi &
       - name: Test using tox environment
         shell: bash
         env:
