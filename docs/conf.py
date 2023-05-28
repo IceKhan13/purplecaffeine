@@ -7,7 +7,7 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.append(os.path.abspath('../client'))
+sys.path.append(os.path.abspath("../client"))
 
 project = "PurpleCaffeine"
 copyright = "2023"  # pylint: disable=redefined-builtin

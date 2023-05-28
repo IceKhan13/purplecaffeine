@@ -77,7 +77,7 @@ analyses, reproducible research, and accelerated progress in the field.
 # Architecture
 
 The proposed software package utilizes a variation of the client-server 
-architecture, consisting of a client-side component and multiple backend 
+architecture, consisting of a client-side component and multiple storage 
 options for storing experimental data \autoref{fig:architecture}.
 
 ![Architecture.\label{fig:architecture}](./images/architecture.png)
@@ -87,22 +87,22 @@ The client component is a Python library specifically designed for
 tracking experimental data in quantum computing research, covering essential
 Qiskit [@Qiskit] objects like QuantumCircuit, Operators, Backends, etc.
 
-To cater to diverse needs, the package provides three flavors of backend 
+To cater to diverse needs, the package provides three flavors of storage 
 options for storing experimental data:
-1. Local Backend: The local backend allows researchers to store 
+1. Local Storage: The local storage allows researchers to store 
     their experimental data locally on their machines. 
     This option offers convenience and data privacy, as 
     researchers have direct control over their data storage. 
     It is an excellent choice for individual researchers or 
     small-scale projects where data sharing and collaboration 
     are not a primary concern. 
-2. API Backend: The API backend is a RESTful API service that  
+2. API Storage: The API storage is a RESTful API service that  
     functions as a multi-tenant storage solution. 
-    Researchers can utilize this backend to store their experimental 
+    Researchers can utilize this storage to store their experimental 
     data in a centralized and scalable manner. 
     It is particularly beneficial for collaborative research projects or 
     environments where data sharing and team collaboration are essential. 
-3. S3 Backend: The S3 backend provides the option to store experimental 
+3. S3 Storage: The S3 storage provides the option to store experimental 
     data in S3 buckets, which are highly scalable and reliable storage 
     containers. Researchers can leverage the power and versatility of 
     S3 to securely store and access their experimental data. 
@@ -124,10 +124,10 @@ they want to gather and track. It acts as a blueprint for capturing information
 such as experimental parameters, circuit configurations, measurement results, 
 and any other relevant data points.
 
-2. Backend: The Backend abstraction is responsible for the storage functionality 
+2. Storage: The Storage abstraction is responsible for the storage functionality 
 of the software. It provides a unified interface to store and retrieve experimental 
-data. The software offers three different flavors of backend options, as previously
-discussed: local backend, API backend, and S3 backend.
+data. The software offers three different flavors of storage options, as previously
+discussed: local storage, API storage, and S3 storage.
 
 3. Widget: The Widget \autoref{fig:widget} is a visualization tool that enhances the user experience by acting 
 as a user interface for searching, viewing, and analyzing previous trials. 
