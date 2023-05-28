@@ -2,8 +2,9 @@
 import os
 import shutil
 from pathlib import Path
-from unittest import TestCase, skip
+from unittest import TestCase
 from testcontainers.compose import DockerCompose
+from testcontainers.localstack import LocalStackContainer
 
 from purplecaffeine.core import Trial, LocalStorage, S3Storage, ApiStorage
 from purplecaffeine.exception import PurpleCaffeineException
@@ -68,22 +69,30 @@ class TestStorage(TestCase):
         if not os.environ.get("SKIP_CONTAINER", False):
             compose.stop()
 
-    @skip("Requires access tokens")
     def test_save_get_list_s3_storage(self) -> None:
         """Test of S3Storage object."""
-        s3_storage = S3Storage("bucket")
-        # save
-        uuid = s3_storage.save(trial=self.my_trial)
-        # get
-        recovered = s3_storage.get(trial_id=uuid)
-        self.assertTrue(isinstance(recovered, Trial))
-        with self.assertRaises(PurpleCaffeineException):
-            s3_storage.get(trial_id="999")
-        # list
-        list_trials = s3_storage.list()
-        self.assertTrue(isinstance(list_trials, list))
-        for trial in list_trials:
-            self.assertTrue(isinstance(trial, Trial))
+        with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
+            localstack.with_services("s3")
+            s3_storage = S3Storage(
+                "bucket",
+                access_key="",
+                secret_access_key="",
+                endpoint_url=localstack.get_url(),
+            )
+            s3_storage.client_s3.create_bucket(Bucket=s3_storage.bucket_name)
+
+            # save
+            uuid = s3_storage.save(trial=self.my_trial)
+            # get
+            recovered = s3_storage.get(trial_id=uuid)
+            self.assertTrue(isinstance(recovered, Trial))
+            with self.assertRaises(PurpleCaffeineException):
+                s3_storage.get(trial_id="999")
+            # list
+            list_trials = s3_storage.list()
+            self.assertTrue(isinstance(list_trials, list))
+            for trial in list_trials:
+                self.assertTrue(isinstance(trial, Trial))
 
     def tearDown(self) -> None:
         """TearDown Storage object."""
