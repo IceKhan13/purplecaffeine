@@ -38,6 +38,11 @@ services:
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-"admin@admin.admin"}
     ports:
       - 8000:8000
+    healthcheck:
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8000/health_check/"
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - safe-tier
     depends_on:

@@ -11,7 +11,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
-from purplecaffeine import Trial, LocalStorage, ApiStorage, BaseStorage as TrialStorage
+from purplecaffeine import Trial, LocalStorage, BaseStorage as TrialStorage
 
 
 def dummy_trial(

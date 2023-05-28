@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ("metrics", models.JSONField(default=list)),
                 ("parameters", models.JSONField(default=list)),
                 ("circuits", models.JSONField(default=list)),
-                ("backend", models.JSONField(default=list)),
+                ("storage", models.JSONField(default=list)),
                 ("operators", models.JSONField(default=list)),
                 ("artifacts", models.JSONField(default=list)),
                 ("texts", models.JSONField(default=list)),
