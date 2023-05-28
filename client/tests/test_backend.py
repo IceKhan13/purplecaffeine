@@ -15,18 +15,12 @@ class TestBackend(TestCase):
 
     def setUp(self) -> None:
         """SetUp Backend object."""
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        self.save_path = os.path.join(current_directory, "test_backend")
+        self.current_directory = os.path.dirname(os.path.abspath(__file__))
+        self.save_path = os.path.join(self.current_directory, "test_backend")
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_backend = LocalBackend(path=self.save_path)
         self.my_trial = dummy_trial(name="keep_trial", backend=self.local_backend)
-
-        self.compose = DockerCompose(
-            filepath=os.path.join(current_directory, "../.."),
-            compose_file_name="docker-compose.yml",
-            build=True,
-        )
 
     def test_save_get_list_local_backend(self):
         """Test save trial locally."""
@@ -48,20 +42,23 @@ class TestBackend(TestCase):
 
     def test_save_get_api_backend(self):
         """Test save trial in API."""
-        self.compose.start()
-        self.compose.wait_for("http://127.0.0.1:8000/health_check/")
-        backend = ApiBackend(
-            host="http://127.0.0.1:8000", username="admin", password="admin"
-        )
-        # Save
-        backend.save(trial=self.my_trial)
-        # Get
-        recovered = backend.get(trial_id="1")
-        self.assertTrue(isinstance(recovered, Trial))
-        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
-        with self.assertRaises(ValueError):
-            backend.get(trial_id="999")
-        self.compose.stop()
+        with DockerCompose(
+            filepath=os.path.join(self.current_directory, "../.."),
+            compose_file_name="docker-compose.yml",
+            build=True,
+        ) as compose:
+            compose.wait_for("http://127.0.0.1:8000/health_check/")
+            backend = ApiBackend(
+                host="http://127.0.0.1:8000", username="admin", password="admin"
+            )
+            # Save
+            backend.save(trial=self.my_trial)
+            # Get
+            recovered = backend.get(trial_id="1")
+            self.assertTrue(isinstance(recovered, Trial))
+            self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+            with self.assertRaises(ValueError):
+                backend.get(trial_id="999")
 
     @skip("Requires access tokens")
     def test_save_get_list_s3_backend(self) -> None:
