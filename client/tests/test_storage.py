@@ -48,10 +48,11 @@ class TestStorage(TestCase):
             compose_file_name="docker-compose.yml",
             build=True,
         ) as compose:
-            compose.wait_for("http://127.0.0.1:8000/health_check/")
-            time.sleep(10)
+            host = compose.get_service_host("api_server", 8000)
+            port = compose.get_service_port("api_server", 8000)
+            compose.wait_for(f"http://{host}:{port}/health_check/")
             storage = ApiStorage(
-                host="http://127.0.0.1:8000", username="admin", password="admin"
+                host=f"http://{host}:{port}", username="admin", password="admin"
             )
             # Save
             storage.save(trial=self.my_trial)
