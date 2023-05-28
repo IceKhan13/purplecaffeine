@@ -465,7 +465,7 @@ class LocalStorage(BaseStorage):
         offset = offset or 0
         limit = limit or 10
 
-        trails_path = glob.glob(f"{self.path}/**.json")[offset:limit]
+        trails_path = glob.glob(f"{self.path}/**.json")[offset:offset + limit]
         trials = []
         for path in trails_path:
             with open(path, "r", encoding="utf-8") as trial_file:
