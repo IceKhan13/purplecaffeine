@@ -471,6 +471,9 @@ class LocalStorage(BaseStorage):
             with open(path, "r", encoding="utf-8") as trial_file:
                 trial_dict = json.load(trial_file, cls=TrialDecoder)
                 trials.append(Trial(**trial_dict))
+
+        if query:
+            trials = [trial for trial in trials if trial.name.find(query) != -1]
         return trials
 
 
