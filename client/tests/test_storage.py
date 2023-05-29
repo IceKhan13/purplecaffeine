@@ -47,6 +47,7 @@ class TestStorage(TestCase):
             filepath=os.path.join(self.current_directory, "../.."),
             compose_file_name="docker-compose.yml",
             build=True,
+            env_file=os.path.join(self.current_directory, "../../.envrc")
         ) as compose:
             host = compose.get_service_host("api_server", 8000)
             port = compose.get_service_port("api_server", 8000)
