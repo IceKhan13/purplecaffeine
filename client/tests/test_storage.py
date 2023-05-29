@@ -53,7 +53,7 @@ class TestStorage(TestCase):
             compose.wait_for(f"http://{host}:{port}/health_check/")
 
             storage = ApiStorage(
-                host=f"http://{host}:{port}", username="admin", password="admin"
+                host="http://127.0.0.1:8000", username="admin", password="admin"
             )
             # Save
             storage.save(trial=self.my_trial)
