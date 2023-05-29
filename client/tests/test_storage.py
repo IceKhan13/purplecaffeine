@@ -47,14 +47,13 @@ class TestStorage(TestCase):
             filepath=os.path.join(self.current_directory, "../.."),
             compose_file_name="docker-compose.yml",
             build=True,
-            env_file=os.path.join(self.current_directory, "../../.envrc")
         ) as compose:
             host = compose.get_service_host("api_server", 8000)
             port = compose.get_service_port("api_server", 8000)
             compose.wait_for(f"http://{host}:{port}/health_check/")
 
             storage = ApiStorage(
-                host="http://127.0.0.1:8000", username="admin", password="admin"
+                host=f"http://{host}:{port}", username="admin", password="admin"
             )
             # Save
             storage.save(trial=self.my_trial)
