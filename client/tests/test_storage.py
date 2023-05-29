@@ -43,32 +43,26 @@ class TestStorage(TestCase):
 
     def test_save_get_api_storage(self):
         """Test save trial in API."""
-        # Check container usability
-        if not os.environ.get("SKIP_CONTAINER", False):
-            compose = DockerCompose(
-                filepath=os.path.join(self.current_directory, "../.."),
-                compose_file_name="docker-compose.yml",
-                build=True,
-                env_file=os.path.join(self.current_directory, "../../.envrc"),
-            )
-            compose.start()
+        with DockerCompose(
+            filepath=os.path.join(self.current_directory, "../.."),
+            compose_file_name="docker-compose.yml",
+            build=True,
+        ) as compose:
             host = compose.get_service_host("api_server", 8000)
             port = compose.get_service_port("api_server", 8000)
             compose.wait_for(f"http://{host}:{port}/health_check/")
 
-        storage = ApiStorage(
-            host="http://127.0.0.1:8000", username="admin", password="admin"
-        )
-        # Save
-        storage.save(trial=self.my_trial)
-        # Get
-        recovered = storage.get(trial_id="1")
-        self.assertTrue(isinstance(recovered, Trial))
-        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
-        with self.assertRaises(ValueError):
-            storage.get(trial_id="999")
-        if not os.environ.get("SKIP_CONTAINER", False):
-            compose.stop()
+            storage = ApiStorage(
+                host=f"http://{host}:{port}", username="admin", password="admin"
+            )
+            # Save
+            storage.save(trial=self.my_trial)
+            # Get
+            recovered = storage.get(trial_id="1")
+            self.assertTrue(isinstance(recovered, Trial))
+            self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+            with self.assertRaises(ValueError):
+                storage.get(trial_id="999")
 
     def test_save_get_list_s3_storage(self) -> None:
         """Test of S3Storage object."""

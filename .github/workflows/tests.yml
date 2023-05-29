@@ -17,32 +17,6 @@ jobs:
         # In future we can add [macos-latest, windows-latest]
         python-version: [3.9, '3.10']
         folder: ["client"]
-#    env:
-#      SERV_KEY: test
-#      DB_NAME: github_actions
-#      DB_SCHEMA: public
-#      DB_USER: root
-#      DB_PASSWORD: root
-#      DB_PORT: 5432
-#      DB_HOST: localhost
-#      DJANGO_SUPERUSER_USERNAME: admin
-#      DJANGO_SUPERUSER_PASSWORD: admin
-#      DJANGO_SUPERUSER_EMAIL: "admin@admin.admin"
-#    services:
-#      postgres:
-#        image: postgres
-#        env:
-#          POSTGRES_USER: root
-#          POSTGRES_PASSWORD: root
-#          POSTGRES_DB: github_actions
-#          POSTGRES_HOST_AUTH_METHOD: trust
-#        ports:
-#          - 5432:5432
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -53,29 +27,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install tox
-#      - name: Setup API
-#        run: |
-#          sudo apt-get install libpq-dev -y
-#          cd api_server/
-#          pip install -r requirements.txt
-#          python manage.py migrate
-#          python manage.py createsuperuser --no-input
-#          python manage.py collectstatic
-#      - name: Start API
-#        if: matrix.folder == 'client'
-#        run: |
-#          cd api_server/
-#          gunicorn --bind 0.0.0.0:8000 purplecaffeine.wsgi &
       - name: Test using tox environment
         shell: bash
         env:
           FOLDER: ${{ matrix.folder }}
-          #SKIP_CONTAINER: True
         run: |
           pver=${{ matrix.python-version }}
           tox -epy${pver/./}
       - name: Coverage check
         env:
           FOLDER: ${{ matrix.folder }}
-          SKIP_CONTAINER: True
         run: tox -ecoverage
