@@ -70,7 +70,7 @@ jobs:
         shell: bash
         env:
           FOLDER: ${{ matrix.folder }}
-          SKIP_CONTAINER: True
+          #SKIP_CONTAINER: True
         run: |
           pver=${{ matrix.python-version }}
           tox -epy${pver/./}
