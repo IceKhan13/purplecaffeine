@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase
-from testcontainers.compose import DockerCompose
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -45,12 +44,6 @@ class TestTrial(TestCase):
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_storage = LocalStorage(path=self.save_path)
-
-        self.compose = DockerCompose(
-            filepath=os.path.join(current_directory, "../.."),
-            compose_file_name="docker-compose.yml",
-            build=True,
-        )
 
     def test_trial_context(self):
         """Test train context."""
