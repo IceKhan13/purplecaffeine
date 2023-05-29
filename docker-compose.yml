@@ -30,7 +30,7 @@ services:
       DB_NAME: ${DB_NAME:-purplecaffeine}
       DB_USER: ${DB_USER:-purplecaffeine}
       DB_PASSWORD: ${DB_PASSWORD:-purplecaffeinepassword}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: ${DB_HOST:-localhost}
       DB_PORT: ${DB_PORT:-5432}
       DB_SCHEMA: ${DB_SCHEMA:-public}
       DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
