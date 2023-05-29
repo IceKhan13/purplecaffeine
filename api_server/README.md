@@ -181,7 +181,7 @@ curl -X POST "http://localhost:8000/api/trials/" \
     -H "Content-Type: application/json" -H "accept: application/json" \
     --data-raw  '{
         "name": "My super experiment",
-        "description": "My super experiments desciption"
+        "description": "My super experiments desciption",
         "backend": {"__type__": "PurpleCaffeineBackend"},
         "metrics": [["nb_qubits", 2]],
         "parameters": [["OS", "ubuntu"]],
@@ -202,7 +202,7 @@ curl -X PUT "http://localhost:8000/api/trials/1/" \
     -H "Content-Type: application/json" -H "accept: application/json" \
     --data-raw  '{
         "name": "My super experiment",
-        "description": "My super experiments desciption"
+        "description": "My super experiments desciption",
         "backend": {"__type__": "PurpleCaffeineBackend"},
         "metrics": [["nb_qubits", 2]],
         "parameters": [["OS", "ubuntu"]],
