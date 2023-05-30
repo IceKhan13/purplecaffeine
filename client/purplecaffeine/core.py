@@ -465,7 +465,7 @@ class LocalStorage(BaseStorage):
         offset = offset or 0
         limit = limit or 10
 
-        trials_path = glob.glob(f"{self.path}/**.json")[offset:limit]
+        trials_path = glob.glob(f"{self.path}/**.json")
         trials = []
         for path in trials_path:
             with open(path, "r", encoding="utf-8") as trial_file:
@@ -474,6 +474,7 @@ class LocalStorage(BaseStorage):
 
         if query:
             trials = [trial for trial in trials if trial.name.find(query) != -1]
+        trials = trials[offset:limit]
         return trials
 
 
