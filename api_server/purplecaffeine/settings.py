@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+from typing import Dict, Any
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "core",
     "health_check",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -155,4 +157,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 20,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "VERSION": "latest",
+    "EXTERNAL_DOCS": {"url": "https://icekhan13.github.io/purplecaffeine"},
+    "SCHEMA_PATH_PREFIX": "/api"
 }
