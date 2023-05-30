@@ -241,7 +241,7 @@ class BaseStorage:
         offset: Optional[int] = None,
         **kwargs,
     ) -> List[Trial]:
-        """Returns list of trails.
+        """Returns list of trials.
 
         Args:
             query: search query
@@ -465,9 +465,9 @@ class LocalStorage(BaseStorage):
         offset = offset or 0
         limit = limit or 10
 
-        trails_path = glob.glob(f"{self.path}/**.json")[offset:limit]
+        trials_path = glob.glob(f"{self.path}/**.json")[offset:limit]
         trials = []
-        for path in trails_path:
+        for path in trials_path:
             with open(path, "r", encoding="utf-8") as trial_file:
                 trial_dict = json.load(trial_file, cls=TrialDecoder)
                 trials.append(Trial(**trial_dict))
