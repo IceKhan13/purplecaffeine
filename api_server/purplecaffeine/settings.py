@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
-from typing import Dict, Any
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -163,5 +162,5 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     "VERSION": "latest",
     "EXTERNAL_DOCS": {"url": "https://icekhan13.github.io/purplecaffeine"},
-    "SCHEMA_PATH_PREFIX": "/api"
+    "SCHEMA_PATH_PREFIX": "/api",
 }
