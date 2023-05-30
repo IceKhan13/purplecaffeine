@@ -474,6 +474,12 @@ class LocalStorage(BaseStorage):
 
         if query:
             trials = [trial for trial in trials if trial.name.find(query) != -1]
+            if len(trials) == 0:
+                logging.warning(
+                    "trial with the name '%s' does not exist.",
+                    query,
+                )
+                raise ValueError(query)
         trials = trials[offset:limit]
         return trials
 
