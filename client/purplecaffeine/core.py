@@ -483,6 +483,7 @@ class S3Storage(BaseStorage):
         access_key: Optional[str] = None,
         secret_access_key: Optional[str] = None,
         directory: Optional[str] = None,
+        endpoint_url: Optional[str] = None,
     ):
         """Storage storage for s3 buckets.
 
@@ -496,9 +497,13 @@ class S3Storage(BaseStorage):
             access_key: aws key
             secret_access_key: aws access key
             directory: optional directory within bucket
+            endpoint_url: optional endpoint url for custom S3 location
         """
         client_s3 = boto3.client(
-            "s3", aws_access_key_id=access_key, aws_secret_access_key=secret_access_key
+            "s3",
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_access_key,
+            endpoint_url=endpoint_url,
         )
         self.client_s3 = client_s3
         self.bucket_name = bucket_name
