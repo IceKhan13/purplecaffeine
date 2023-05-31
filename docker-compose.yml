@@ -8,9 +8,46 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-purplecaffeinepassword}
     ports:
       - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - safe-tier
     restart:
       always
+
+  api_server:
+    container_name: purplecaffeine
+    image: purplecaffeine:latest
+    build:
+      context: ./api_server/
+      dockerfile: ./docker/Dockerfile
+    environment:
+      SERV_KEY: ${SERV_KEY:-test}
+      DEBUG: ${DEBUG:-0}
+      DB_NAME: ${DB_NAME:-purplecaffeine}
+      DB_USER: ${DB_USER:-purplecaffeine}
+      DB_PASSWORD: ${DB_PASSWORD:-purplecaffeinepassword}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_SCHEMA: ${DB_SCHEMA:-public}
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-admin}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-admin@admin.admin}
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8000/health_check/"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - safe-tier
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 networks:
   safe-tier:

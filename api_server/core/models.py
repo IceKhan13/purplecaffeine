@@ -14,7 +14,7 @@ class Trial(models.Model):
     uuid = models.CharField(max_length=255, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(default="No description")
-    backend = models.JSONField(default=list)
+    storage = models.JSONField(default=list)
     metrics = models.JSONField(default=list)
     parameters = models.JSONField(default=list)
     circuits = models.JSONField(default=list)
