@@ -473,13 +473,14 @@ class LocalStorage(BaseStorage):
                 trials.append(Trial(**trial_dict))
 
         if query:
-            trials = [trial for trial in trials if trial.name.find(query) != -1]
+            trials = [
+                trial for trial in trials
+                if (query in trial.tags) or (trial.name.find(query) != -1) or (trial.description.find(query) != -1)
+            ]
             if len(trials) == 0:
-                logging.warning(
-                    "trial with the name '%s' does not exist.",
-                    query,
-                )
+                logging.warning("No Trials returned for the query '%s'.", query)
                 raise ValueError(query)
+
         trials = trials[offset:limit]
         return trials
 
