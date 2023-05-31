@@ -475,8 +475,8 @@ class LocalStorage(BaseStorage):
         if query:
             trials = [
                 trial for trial in trials
-                if (query in trial.tags) or 
-                (trial.name.find(query) != -1) or 
+                if (query in trial.tags) or
+                (trial.name.find(query) != -1) or
                 (trial.description.find(query) != -1)
             ]
             if len(trials) == 0:
