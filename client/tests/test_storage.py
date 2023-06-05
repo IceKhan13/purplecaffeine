@@ -40,7 +40,7 @@ class TestStorage(TestCase):
         list_trials = self.local_storage.list(query="keep_trial")
         self.assertTrue(isinstance(list_trials, list))
         self.assertTrue(isinstance(list_trials[0], Trial))
-        list_trials = self.local_storage.list(query="keep_trial")
+        list_trials = self.local_storage.list(query="trial999")
         self.assertTrue(isinstance(list_trials, list))
         self.assertEqual(len(list_trials), 0)
 
