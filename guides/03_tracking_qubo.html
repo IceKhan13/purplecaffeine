@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Guide: Tracking QUBO experiments &#8212; PurpleCaffeine 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PurpleCaffeine API References" href="../apidocs/index.html" />
+    <link rel="prev" title="Guide: Tracking quantum experiments" href="01_tracking_quantum_experiments.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="Guide:-Tracking-QUBO-experiments">
+<h1>Guide: Tracking QUBO experiments<a class="headerlink" href="#Guide:-Tracking-QUBO-experiments" title="Permalink to this heading">¶</a></h1>
+<p>In this guide, we will show you how to track QUBO experiments solved by QAOA and VQE.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.algorithms.minimum_eigensolvers</span> <span class="kn">import</span> <span class="n">QAOA</span><span class="p">,</span> <span class="n">SamplingVQE</span>
+<span class="kn">from</span> <span class="nn">qiskit.algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+<span class="kn">from</span> <span class="nn">qiskit_optimization.algorithms</span> <span class="kn">import</span> <span class="n">MinimumEigenOptimizer</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">TwoLocal</span>
+<span class="kn">from</span> <span class="nn">qiskit_optimization</span> <span class="kn">import</span> <span class="n">QuadraticProgram</span>
+
+<span class="kn">from</span> <span class="nn">purplecaffeine</span> <span class="kn">import</span> <span class="n">Trial</span><span class="p">,</span> <span class="n">LocalStorage</span>
+</pre></div>
+</div>
+</div>
+<p>First let’s create a simple QUBO problem.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qubo</span> <span class="o">=</span> <span class="n">QuadraticProgram</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;qubo_trial&quot;</span><span class="p">)</span>
+<span class="n">qubo</span><span class="o">.</span><span class="n">binary_var</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">qubo</span><span class="o">.</span><span class="n">binary_var</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">qubo</span><span class="o">.</span><span class="n">binary_var</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+<span class="n">qubo</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">linear</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">quadratic</span><span class="o">=</span><span class="p">{(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span> <span class="mi">2</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">qubo</span><span class="o">.</span><span class="n">prettyprint</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Problem name: qubo_trial
+
+Minimize
+  x*y - x*z + 2*y*z + x - 2*y + 3*z
+
+Subject to
+  No constraints
+
+  Binary variables (3)
+    x y z
+
+</pre></div></div>
+</div>
+<section id="QAOA">
+<h2>QAOA<a class="headerlink" href="#QAOA" title="Permalink to this heading">¶</a></h2>
+<p>We setup our experiment using QAOA.</p>
+<p>Now let’s register this experiment in <code class="docutils literal notranslate"><span class="pre">LocalStorage</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_storage</span> <span class="o">=</span> <span class="n">LocalStorage</span><span class="p">(</span><span class="s2">&quot;./trials&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Trial</span><span class="p">(</span><span class="s2">&quot;QAOA trial&quot;</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">local_storage</span><span class="p">)</span> <span class="k">as</span> <span class="n">trial</span><span class="p">:</span>
+    <span class="c1"># track some parameters</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;algo&quot;</span><span class="p">,</span> <span class="s2">&quot;qaoa&quot;</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;sampler&quot;</span><span class="p">,</span> <span class="s2">&quot;qiskit.primitives.Sampler&quot;</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;optimizer&quot;</span><span class="p">,</span> <span class="s2">&quot;qiskit.algorithms.optimizers.COBYLA&quot;</span><span class="p">)</span>
+
+    <span class="c1"># track usefull data</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="s2">&quot;qubo&quot;</span><span class="p">,</span> <span class="n">qubo</span><span class="o">.</span><span class="n">export_as_lp_string</span><span class="p">())</span>
+    <span class="n">qaoa_mes</span> <span class="o">=</span> <span class="n">QAOA</span><span class="p">(</span>
+        <span class="n">sampler</span><span class="o">=</span><span class="n">Sampler</span><span class="p">(),</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(),</span>
+        <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">idx</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">add_metric</span><span class="p">(</span><span class="s2">&quot;qaoa_history&quot;</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># run</span>
+    <span class="n">qaoa</span> <span class="o">=</span> <span class="n">MinimumEigenOptimizer</span><span class="p">(</span><span class="n">qaoa_mes</span><span class="p">)</span>
+    <span class="n">qaoa_result</span> <span class="o">=</span> <span class="n">qaoa</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">qubo</span><span class="p">)</span>
+
+    <span class="c1"># track results of run</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="s2">&quot;qaoa_result&quot;</span><span class="p">,</span> <span class="n">qaoa_result</span><span class="o">.</span><span class="n">prettyprint</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="VQE">
+<h2>VQE<a class="headerlink" href="#VQE" title="Permalink to this heading">¶</a></h2>
+<p>We setup the ansatz circuit experiment for the VQE.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ansatz</span> <span class="o">=</span> <span class="n">TwoLocal</span><span class="p">(</span><span class="n">rotation_blocks</span><span class="o">=</span><span class="s2">&quot;ry&quot;</span><span class="p">,</span> <span class="n">entanglement_blocks</span><span class="o">=</span><span class="s2">&quot;cz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now let’s track it too and save it in our <code class="docutils literal notranslate"><span class="pre">LocalStorage</span></code> as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Trial</span><span class="p">(</span><span class="s2">&quot;VQE trial&quot;</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">local_storage</span><span class="p">)</span> <span class="k">as</span> <span class="n">trial</span><span class="p">:</span>
+    <span class="c1"># track some parameters</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;algo&quot;</span><span class="p">,</span> <span class="s2">&quot;vqe&quot;</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;sampler&quot;</span><span class="p">,</span> <span class="s2">&quot;qiskit.primitives.Sampler&quot;</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="s2">&quot;optimizer&quot;</span><span class="p">,</span> <span class="s2">&quot;qiskit.algorithms.optimizers.COBYLA&quot;</span><span class="p">)</span>
+
+    <span class="c1"># track usefull data</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="s2">&quot;qubo&quot;</span><span class="p">,</span> <span class="n">qubo</span><span class="o">.</span><span class="n">export_as_lp_string</span><span class="p">())</span>
+
+    <span class="c1"># track some objects</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_circuit</span><span class="p">(</span><span class="s2">&quot;ansatz&quot;</span><span class="p">,</span> <span class="n">ansatz</span><span class="p">)</span>
+
+    <span class="n">vqe_mes</span> <span class="o">=</span> <span class="n">SamplingVQE</span><span class="p">(</span>
+        <span class="n">sampler</span><span class="o">=</span><span class="n">Sampler</span><span class="p">(),</span>
+        <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(),</span>
+        <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">idx</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">add_metric</span><span class="p">(</span><span class="s2">&quot;vqe_history&quot;</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># run</span>
+    <span class="n">vqe</span> <span class="o">=</span> <span class="n">MinimumEigenOptimizer</span><span class="p">(</span><span class="n">vqe_mes</span><span class="p">)</span>
+    <span class="n">vqe_result</span> <span class="o">=</span> <span class="n">vqe</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">qubo</span><span class="p">)</span>
+
+    <span class="c1"># track results of run</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="s2">&quot;vqe_result&quot;</span><span class="p">,</span> <span class="n">vqe_result</span><span class="o">.</span><span class="n">prettyprint</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>And now we can see both our experiments in our <code class="docutils literal notranslate"><span class="pre">Storage</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_storage</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;Trial [QAOA trial] 671b7bc5-58c2-4162-8756-bddca2a71548&gt;,
+ &lt;Trial [VQE trial] e37d36e9-f9b0-4721-8b85-ad8b1784e9ed&gt;]
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PurpleCaffeine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_tracking_quantum_experiments.html">Guide: Tracking quantum experiments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide: Tracking QUBO experiments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#QAOA">QAOA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#VQE">VQE</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="01_tracking_quantum_experiments.html" title="previous chapter">Guide: Tracking quantum experiments</a></li>
+      <li>Next: <a href="../apidocs/index.html" title="next chapter">PurpleCaffeine API References</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/guides/03_tracking_qubo.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

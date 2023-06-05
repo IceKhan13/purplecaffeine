@@ -25,7 +25,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PurpleCaffeine API References" href="../apidocs/index.html" />
+    <link rel="next" title="Guide: Tracking QUBO experiments" href="03_tracking_qubo.html" />
     <link rel="prev" title="&lt;no title&gt;" href="index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -115,6 +115,9 @@ Pauli(&#39;YIIZ&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_storage</span> <span class="o">=</span> <span class="n">LocalStorage</span><span class="p">(</span><span class="s2">&quot;./trials&quot;</span><span class="p">)</span>
+<span class="c1">#You could also set the API storage or S3 storage by calling :</span>
+<span class="c1">#api_storage = ApiStorage(host=&quot;http://localhost:8000&quot;, username=&quot;MY_USERNAME&quot;, password=&quot;MY_PASS&quot;)</span>
+<span class="c1">#s3_storage = S3Storage(&quot;bucket&quot;, access_key=&quot;MY_KEY&quot;, secret_access_key=&quot;MY_SECRET&quot;)</span>
 </pre></div>
 </div>
 </div>
@@ -209,6 +212,7 @@ trial to understand what observables/operators where used in your work</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Guide: Tracking quantum experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_tracking_qubo.html">Guide: Tracking QUBO experiments</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
@@ -220,7 +224,7 @@ trial to understand what observables/operators where used in your work</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">&lt;no title&gt;</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">&lt;no title&gt;</a></li>
-      <li>Next: <a href="../apidocs/index.html" title="next chapter">PurpleCaffeine API References</a></li>
+      <li>Next: <a href="03_tracking_qubo.html" title="next chapter">Guide: Tracking QUBO experiments</a></li>
   </ul></li>
   </ul></li>
 </ul>
