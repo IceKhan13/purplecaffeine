@@ -480,9 +480,6 @@ class LocalStorage(BaseStorage):
                 or (trial.name.find(query) != -1)
                 or (trial.description.find(query) != -1)
             ]
-            if len(trials) == 0:
-                logging.warning("No Trials returned for the query '%s'.", query)
-                raise ValueError(query)
 
         trials = trials[offset:limit]
         return trials
