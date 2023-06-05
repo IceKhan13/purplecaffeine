@@ -1,45 +1,17 @@
-PurpleCaffeine API backend: API for tracking of quantum programs and experiments
-============================================================
+# Guide: Setting up the API server
 
+In this guide, we will show you how to setup the API server and how to use it.
 
-![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-informational)
-[![Python](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-informational)](https://www.python.org/)
-[![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%200.34.2-6133BD)](https://github.com/Qiskit/qiskit)
-[![License](https://img.shields.io/github/license/qiskit-community/quantum-prototype-template?label=License)](https://github.com/IceKhan13/purplecaffeine/blob/main/LICENSE)
-[![Code style: Black](https://img.shields.io/badge/Code%20style-Black-000.svg)](https://github.com/psf/black)
-
-![Logo](https://raw.githubusercontent.com/IceKhan13/purplecaffeine/main/docs/images/readme_logo.png)
-
-Tracking experiments and programs is known problem in scientific community.
-This project is aimed to create simple general interface to track quantum experiments, store and search them in an easy way.
-
-The role of this API is to support the PurpleCaffeine python library by allowing storage backend.
-
-### Table of Contents
-
-##### For Users
-
-1. [Quickstart](#quickstart)
-2. [Documentation](#documentation)
-3. [Guides](https://github.com/IceKhan13/purplecaffeine/tree/main/docs/guides)
-4. [How to Give Feedback](#how-to-give-feedback)
-5. [Contribution Guidelines](#contribution-guidelines)
-6. [References and Acknowledgements](#references-and-acknowledgements)
-7. [License](#license)
-
-
-----------------------------------------------------------------------------------------------------
-
-### Quickstart
+## Quickstart
 
 To start this image you first need to have a Postgress database running.
 The expose port of the API is `8000`.
 
-#### Automatically
+### Automatically
 
-A full [`docker-compose.yml](../docker-compose.yml) is provided. It's containing postgres and the api.
+A full [`docker-compose.yml](https://github.com/IceKhan13/purplecaffeine/blob/main/docker-compose.yml) is provided. It's containing postgres and the api.
 
-#### Manually
+### Manually
 
 Then you need to set some variables :
 
@@ -51,7 +23,7 @@ export ALLOWED_HOSTS="localhost,127.0.0.1"  # Optional, default: "*"
 export DB_NAME=postgres                     # Optional, default: "purplecaffeine"
 export DB_USER=root                         # Optional, default: "purplecaffeine"
 export DB_PASSWORD=root                     # Optional, default: "purplecaffeinepassword"
-export DB_HOST=localhost                    # Optional, default: "localhost"
+export DB_HOST=postgres                    # Optional, default: "localhost"
 export DB_PORT=5432                         # Optional, default: "5432"
 export DB_SCHEMA=public                     # Optional, default: "public"
 
@@ -86,7 +58,7 @@ services:
           DB_NAME: ${DB_NAME:-purplecaffeine}
           DB_USER: ${DB_USER:-purplecaffeine}
           DB_PASSWORD: ${DB_PASSWORD:-purplecaffeinepassword}
-          DB_HOST: ${DB_HOST:-"host.docker.internal"}
+          DB_HOST: ${DB_HOST:-"postgres"}
           DB_PORT: ${DB_PORT:-5432}
           DB_SCHEMA: ${DB_SCHEMA:-public}
           DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
@@ -99,9 +71,9 @@ services:
 
 ----------------------------------------------------------------------------------------------------
 
-### Documentation
+## Documentation
 
-**Get a token**
+### Get a token
 
 ```bash
 curl -X POST "http://localhost:8000/api/token/" \
@@ -120,7 +92,7 @@ Response:
 }
 ```
 
-**Get experiment**
+### Get experiment
 
 ```bash
 curl -X GET "http://localhost:8000/api/trials/1/" \
@@ -139,7 +111,7 @@ Response:
 }
 ```
 
-**Get all experiments**
+### Get all experiments
 
 ```bash
 curl -X GET "http://localhost:8000/api/trials/" \
@@ -173,7 +145,7 @@ Response:
 }
 ```
 
-**Post experiment**
+### Post experiment
 
 ```bash
 curl -X POST "http://localhost:8000/api/trials/" \
@@ -194,7 +166,7 @@ curl -X POST "http://localhost:8000/api/trials/" \
     }'
 ```
 
-**Update experiment**
+### Update experiment
 
 ```bash
 curl -X PUT "http://localhost:8000/api/trials/1/" \
@@ -215,41 +187,8 @@ curl -X PUT "http://localhost:8000/api/trials/1/" \
     }'
 ```
 
-**Delete experiment**
+### Delete experiment
 
 ```bash
 curl -X DELETE "http://localhost:8000/api/trials/1/"
 ```
-
-Full documentation for project is hosted at https://icekhan13.github.io/purplecaffeine/
-
-
-----------------------------------------------------------------------------------------------------
-
-### How to Give Feedback
-
-We encourage your feedback! You can share your thoughts with us by:
-- [Opening an issue](https://github.com/IceKhan13/purplecaffeine/issues) in the repository
-
-
-----------------------------------------------------------------------------------------------------
-
-
-### Contribution Guidelines
-
-For information on how to contribute to this project, please take a look at our [contribution guidelines](https://github.com/IceKhan13/purplecaffeine/blob/main/CONTRIBUTING.md).
-
-
-
-----------------------------------------------------------------------------------------------------
-
-
-## References and Acknowledgements
-[1] Qiskit is an open-source SDK for working with quantum computers at the level of circuits, algorithms, and application modules. \
-    https://github.com/Qiskit/qiskit
-
-
-----------------------------------------------------------------------------------------------------
-
-### License
-[Apache License 2.0](../LICENSE)
