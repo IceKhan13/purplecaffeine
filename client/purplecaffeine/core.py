@@ -67,18 +67,29 @@ class Trial:
             tags (List[str]): list of tags in string format
         """
         self.uuid = uuid or str(uuid4())
-        self.name = name
-        self.storage = storage or LocalStorage(path="./")
+        self.name = name or os.environ.get("PURPLE_CAFFEINE_TRIAL_NAME")
+        if self.name is None:
+            raise PurpleCaffeineException("Please specify name or trial or configure it using env variables")
+        if storage is None:
+            storage_type = os.environ.get("PURPLE_CAFFEINE_STORAGE_CLASS", "LocalStorage")
+            storage_mapping: Dict[str, BaseStorage] = {
+                "LocalStorage": LocalStorage,
+                "S3Storage": S3Storage,
+                "ApiStorage": ApiStorage
+            }
+            self.storage = storage_mapping.get(storage_type)()
+        else:
+            self.storage = storage
 
-        self.description = description or ""
-        self.metrics = metrics or []
-        self.parameters = parameters or []
-        self.circuits = circuits or []
-        self.operators = operators or []
-        self.artifacts = artifacts or []
-        self.texts = texts or []
-        self.arrays = arrays or []
-        self.tags = tags or []
+        self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
+        self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS").split(",") or []
+        self.parameters = parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS").split(",") or []
+        self.circuits = circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS").split(",") or []
+        self.operators = operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS").split(",") or []
+        self.artifacts = artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS").split(",") or []
+        self.texts = texts or os.environ.get("PURPLE_CAFFEINE_TRIAL_TEXTS").split(",") or []
+        self.arrays = arrays or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARRAYS").split(",") or []
+        self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS").split(",") or []
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
@@ -269,7 +280,12 @@ class BaseStorage:
 class ApiStorage(BaseStorage):
     """API storage class."""
 
-    def __init__(self, username: str, password: str, host: str):
+    def __init__(
+            self,
+            username: Optional[str] = None,
+            password: Optional[str] = None,
+            host: Optional[str] = None,
+    ):
         """Creates storage for APIServer.
 
         Example:
@@ -284,10 +300,15 @@ class ApiStorage(BaseStorage):
             password: password
             host: host of api server
         """
-        self.username = username
-        self.host = host
+        self.username = username or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_USERNAME")
+        if self.username is None:
+            raise PurpleCaffeineException("Please specify api storage username or configure it using env variables")
+        self.password = password or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_PASSWORD")
+        if self.password is None:
+            raise PurpleCaffeineException("Please specify api storage Password or configure it using env variables")
+        self.host = host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST", "http://localhost:8000/")
 
-        self.token = self._get_token(username, password)
+        self.token = self._get_token(self.username, self.password)
 
     def _get_token(self, username: str, password: str) -> str:
         """Returns token based on username and password
@@ -396,7 +417,10 @@ class ApiStorage(BaseStorage):
 class LocalStorage(BaseStorage):
     """Local storage."""
 
-    def __init__(self, path: str):
+    def __init__(
+        self,
+        path: Optional[str] = None
+    ):
         """Creates local storage for storing trial data
         at local folder.
 
@@ -406,7 +430,9 @@ class LocalStorage(BaseStorage):
         Args:
             path: path for the local storage folder
         """
-        self.path = path
+        self.path = path or os.environ.get("PURPLE_CAFFEINE_LOCAL_STORAGE_PATH")
+        if self.path is None:
+            raise PurpleCaffeineException("Please specify the local storage path or configure it using env variables")
         if not os.path.exists(self.path):
             Path(self.path).mkdir(parents=True, exist_ok=True)
 
