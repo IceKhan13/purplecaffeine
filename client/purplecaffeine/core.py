@@ -451,11 +451,7 @@ class LocalStorage(BaseStorage):
         Args:
             path: path for the local storage folder
         """
-        self.path = path or os.environ.get("PURPLE_CAFFEINE_LOCAL_STORAGE_PATH")
-        if self.path is None:
-            raise PurpleCaffeineException(
-                "Please specify the local storage path or configure it using env variables"
-            )
+        self.path = path or os.environ.get("PURPLE_CAFFEINE_LOCAL_STORAGE_PATH", "./")
         if not os.path.exists(self.path):
             Path(self.path).mkdir(parents=True, exist_ok=True)
 
