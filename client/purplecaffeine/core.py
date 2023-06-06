@@ -69,7 +69,7 @@ class Trial:
         self.uuid = uuid or str(uuid4())
         self.name = name or os.environ.get("PURPLE_CAFFEINE_TRIAL_NAME")
         if self.name is None:
-            raise PurpleCaffeineException("Please specify name or trial or configure it using env variables")
+            raise PurpleCaffeineException("Please specify name of trial or configure it using env variables")
         if storage is None:
             storage_type = os.environ.get("PURPLE_CAFFEINE_STORAGE_CLASS", "LocalStorage")
             storage_mapping: Dict[str, BaseStorage] = {
@@ -505,7 +505,7 @@ class S3Storage(BaseStorage):
 
     def __init__(
         self,
-        bucket_name: str,
+        bucket_name: Optional[str] = None,
         access_key: Optional[str] = None,
         secret_access_key: Optional[str] = None,
         directory: Optional[str] = None,
@@ -525,15 +525,24 @@ class S3Storage(BaseStorage):
             directory: optional directory within bucket
             endpoint_url: optional endpoint url for custom S3 location
         """
+        self.bucket_name = bucket_name or os.environ.get("PURPLE_CAFFEINE_S3_BUCKET")
+        if self.bucket_name is None:
+            raise PurpleCaffeineException("Please specify name of S3 Bucket or configure it using env variables")
+        self.access_key = access_key or os.environ.get("PURPLE_CAFFEINE_S3_ACCESS_KEY")
+        if self.access_key is None:
+            raise PurpleCaffeineException("Please specify Access key of S3 Bucket or configure it using env variables")
+        self.secret_access_key = secret_access_key or os.environ.get("PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY")
+        if self.secret_access_key is None:
+            raise PurpleCaffeineException("Please specify Secret Access key of S3 Bucket or configure it using env variables")
+        self.directory = directory or os.environ.get("PURPLE_CAFFEINE_S3_DIRECTORY")
+        self.endpoint_url = endpoint_url or os.environ.get("PURPLE_CAFFEINE_S3_ENDPOINT")
         client_s3 = boto3.client(
             "s3",
-            aws_access_key_id=access_key,
+            aws_access_key_id=self.access_key,
             aws_secret_access_key=secret_access_key,
             endpoint_url=endpoint_url,
         )
         self.client_s3 = client_s3
-        self.bucket_name = bucket_name
-        self.directory = directory
 
     def save(self, trial: Trial) -> str:
         """Saves given trial.
