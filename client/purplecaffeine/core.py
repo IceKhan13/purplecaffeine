@@ -85,24 +85,18 @@ class Trial:
             self.storage = storage
 
         self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
-        self.metrics = (
-            metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS","").split(",") or []
-        )
+        self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS", "").split(",")
         self.parameters = (
-            parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS","").split(",")
-            or []
+            parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS", "").split(",")
         )
         self.circuits = (
-            circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS","").split(",")
-            or []
+            circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS", "").split(",")
         )
         self.operators = (
-            operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS","").split(",")
-            or []
+            operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS", "").split(",")
         )
         self.artifacts = (
-            artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS","").split(",")
-            or []
+            artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS", "").split(",")
         )
         self.texts = texts or os.environ.get("PURPLE_CAFFEINE_TRIAL_TEXTS","").split(",") or []
         self.arrays = arrays or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARRAYS","").split(",") or []
