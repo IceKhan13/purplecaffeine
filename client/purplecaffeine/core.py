@@ -85,7 +85,9 @@ class Trial:
             self.storage = storage
 
         self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
-        self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS","").split(",") or []
+        self.metrics = (
+            metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS","").split(",") or []
+        )
         self.parameters = (
             parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS","").split(",")
             or []
