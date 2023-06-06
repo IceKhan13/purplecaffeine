@@ -69,7 +69,10 @@ class Trial:
         self.uuid = uuid or str(uuid4())
         self.name = name or os.environ.get("PURPLE_CAFFEINE_TRIAL_NAME")
         if self.name is None:
-            raise PurpleCaffeineException("Please specify name of trial or configure it using env variables")
+            raise PurpleCaffeineException(
+                "Please specify name of trial or configure it using env variables"
+            )
+
         if storage is None:
             storage_type = os.environ.get("PURPLE_CAFFEINE_STORAGE_CLASS", "LocalStorage")
             storage_mapping: Dict[str, BaseStorage] = {
@@ -83,10 +86,22 @@ class Trial:
 
         self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
         self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS").split(",") or []
-        self.parameters = parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS").split(",") or []
-        self.circuits = circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS").split(",") or []
-        self.operators = operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS").split(",") or []
-        self.artifacts = artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS").split(",") or []
+        self.parameters = (
+            parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS").split(",")
+            or []
+        )
+        self.circuits = (
+            circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS").split(",")
+            or []
+        )
+        self.operators = (
+            operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS").split(",")
+            or []
+        )
+        self.artifacts = (
+            artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS").split(",")
+            or []
+        )
         self.texts = texts or os.environ.get("PURPLE_CAFFEINE_TRIAL_TEXTS").split(",") or []
         self.arrays = arrays or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARRAYS").split(",") or []
         self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS").split(",") or []
@@ -302,11 +317,17 @@ class ApiStorage(BaseStorage):
         """
         self.username = username or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_USERNAME")
         if self.username is None:
-            raise PurpleCaffeineException("Please specify api storage username or configure it using env variables")
+            raise PurpleCaffeineException(
+                "Please specify api storage username or configure it using env variables"
+            )
         self.password = password or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_PASSWORD")
         if self.password is None:
-            raise PurpleCaffeineException("Please specify api storage Password or configure it using env variables")
-        self.host = host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST", "http://localhost:8000/")
+            raise PurpleCaffeineException(
+                "Please specify api storage Password or configure it using env variables"
+            )
+        self.host = (
+            host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST", "http://localhost:8000/")
+        )
 
         self.token = self._get_token(self.username, self.password)
 
@@ -432,7 +453,9 @@ class LocalStorage(BaseStorage):
         """
         self.path = path or os.environ.get("PURPLE_CAFFEINE_LOCAL_STORAGE_PATH")
         if self.path is None:
-            raise PurpleCaffeineException("Please specify the local storage path or configure it using env variables")
+            raise PurpleCaffeineException(
+                "Please specify the local storage path or configure it using env variables"
+            )
         if not os.path.exists(self.path):
             Path(self.path).mkdir(parents=True, exist_ok=True)
 
@@ -527,13 +550,21 @@ class S3Storage(BaseStorage):
         """
         self.bucket_name = bucket_name or os.environ.get("PURPLE_CAFFEINE_S3_BUCKET")
         if self.bucket_name is None:
-            raise PurpleCaffeineException("Please specify name of S3 Bucket or configure it using env variables")
+            raise PurpleCaffeineException(
+                "Please specify name of S3 Bucket or configure it using env variables"
+            )
         self.access_key = access_key or os.environ.get("PURPLE_CAFFEINE_S3_ACCESS_KEY")
         if self.access_key is None:
-            raise PurpleCaffeineException("Please specify Access key of S3 Bucket or configure it using env variables")
-        self.secret_access_key = secret_access_key or os.environ.get("PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY")
+            raise PurpleCaffeineException(
+                "Please specify Access key of S3 Bucket or configure it using env variables"
+            )
+        self.secret_access_key = (
+            secret_access_key or os.environ.get("PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY")
+        )
         if self.secret_access_key is None:
-            raise PurpleCaffeineException("Please specify Secret Access key of S3 Bucket or configure it using env variables")
+            raise PurpleCaffeineException(
+                "Please specify Secret Access key of S3 Bucket or configure it using env variables"
+            )
         self.directory = directory or os.environ.get("PURPLE_CAFFEINE_S3_DIRECTORY")
         self.endpoint_url = endpoint_url or os.environ.get("PURPLE_CAFFEINE_S3_ENDPOINT")
         client_s3 = boto3.client(
