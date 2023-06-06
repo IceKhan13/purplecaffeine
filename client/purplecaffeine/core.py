@@ -464,8 +464,22 @@ class LocalStorage(BaseStorage):
         """
         offset = offset or 0
         limit = limit or 10
+        return self.get_all()[offset:offset + limit]
+    
+    def get_all(self) -> List[Trial]:
+        """Returns list of trials.
 
-        trails_path = glob.glob(f"{self.path}/**.json")[offset:offset + limit]
+        Args:
+            query: search query
+            limit: limit
+            offset: offset
+            **kwargs: other filtering criteria
+
+        Returns:
+            list of trials
+        """
+
+        trails_path = glob.glob(f"{self.path}/**.json")
         trials = []
         for path in trails_path:
             with open(path, "r", encoding="utf-8") as trial_file:
