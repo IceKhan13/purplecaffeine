@@ -85,26 +85,26 @@ class Trial:
             self.storage = storage
 
         self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
-        self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS").split(",") or []
+        self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS","").split(",") or []
         self.parameters = (
-            parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS").split(",")
+            parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS","").split(",")
             or []
         )
         self.circuits = (
-            circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS").split(",")
+            circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS","").split(",")
             or []
         )
         self.operators = (
-            operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS").split(",")
+            operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS","").split(",")
             or []
         )
         self.artifacts = (
-            artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS").split(",")
+            artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS","").split(",")
             or []
         )
-        self.texts = texts or os.environ.get("PURPLE_CAFFEINE_TRIAL_TEXTS").split(",") or []
-        self.arrays = arrays or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARRAYS").split(",") or []
-        self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS").split(",") or []
+        self.texts = texts or os.environ.get("PURPLE_CAFFEINE_TRIAL_TEXTS","").split(",") or []
+        self.arrays = arrays or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARRAYS","").split(",") or []
+        self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS","").split(",") or []
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
