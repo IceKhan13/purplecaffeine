@@ -96,7 +96,11 @@ class Trial:
         self.artifacts = artifacts or []
         self.texts = texts or []
         self.arrays = arrays or []
-        self.tags = tags or []
+        self.tags = tags or (
+            os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS", "").split(",")
+            if os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS")
+            else []
+        )
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
