@@ -74,17 +74,21 @@ class Trial:
             )
 
         if storage is None:
-            storage_type = os.environ.get("PURPLE_CAFFEINE_STORAGE_CLASS", "LocalStorage")
+            storage_type = os.environ.get(
+                "PURPLE_CAFFEINE_STORAGE_CLASS", "LocalStorage"
+            )
             storage_mapping: Dict[str, BaseStorage] = {
                 "LocalStorage": LocalStorage,
                 "S3Storage": S3Storage,
-                "ApiStorage": ApiStorage
+                "ApiStorage": ApiStorage,
             }
             self.storage = storage_mapping.get(storage_type)()
         else:
             self.storage = storage
 
-        self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
+        self.description = description or os.environ.get(
+            "PURPLE_CAFFEINE_TRIAL_DESCRIPTION", ""
+        )
         self.metrics = metrics or []
         self.parameters = parameters or []
         self.circuits = circuits or []
@@ -284,10 +288,10 @@ class ApiStorage(BaseStorage):
     """API storage class."""
 
     def __init__(
-            self,
-            username: Optional[str] = None,
-            password: Optional[str] = None,
-            host: Optional[str] = None,
+        self,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        host: Optional[str] = None,
     ):
         """Creates storage for APIServer.
 
@@ -303,19 +307,21 @@ class ApiStorage(BaseStorage):
             password: password
             host: host of api server
         """
-        self.username = username or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_USERNAME")
+        self.username = username or os.environ.get(
+            "PURPLE_CAFFEINE_API_STORAGE_USERNAME"
+        )
         if self.username is None:
             raise PurpleCaffeineException(
                 "Please specify api storage username or configure it using env variables"
             )
-        self.password = password or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_PASSWORD")
+        self.password = password or os.environ.get(
+            "PURPLE_CAFFEINE_API_STORAGE_PASSWORD"
+        )
         if self.password is None:
             raise PurpleCaffeineException(
                 "Please specify api storage Password or configure it using env variables"
             )
-        self.host = (
-            host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST")
-        )
+        self.host = host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST")
         if self.host is None:
             raise PurpleCaffeineException(
                 "Please specify api storage host or configure it using env variables"
@@ -430,10 +436,7 @@ class ApiStorage(BaseStorage):
 class LocalStorage(BaseStorage):
     """Local storage."""
 
-    def __init__(
-        self,
-        path: Optional[str] = None
-    ):
+    def __init__(self, path: Optional[str] = None):
         """Creates local storage for storing trial data
         at local folder.
 
@@ -557,15 +560,17 @@ class S3Storage(BaseStorage):
             raise PurpleCaffeineException(
                 "Please specify Access key of S3 Bucket or configure it using env variables"
             )
-        self.secret_access_key = (
-            secret_access_key or os.environ.get("PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY")
+        self.secret_access_key = secret_access_key or os.environ.get(
+            "PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY"
         )
         if self.secret_access_key is None:
             raise PurpleCaffeineException(
                 "Please specify Secret Access key of S3 Bucket or configure it using env variables"
             )
         self.directory = directory or os.environ.get("PURPLE_CAFFEINE_S3_DIRECTORY")
-        self.endpoint_url = endpoint_url or os.environ.get("PURPLE_CAFFEINE_S3_ENDPOINT")
+        self.endpoint_url = endpoint_url or os.environ.get(
+            "PURPLE_CAFFEINE_S3_ENDPOINT"
+        )
         client_s3 = boto3.client(
             "s3",
             aws_access_key_id=self.access_key,
