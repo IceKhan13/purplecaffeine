@@ -92,7 +92,7 @@ class Trial:
         self.artifacts = artifacts or []
         self.texts = texts or []
         self.arrays = arrays or []
-        self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS","").split(",")
+        self.tags = tags or []
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
@@ -314,8 +314,12 @@ class ApiStorage(BaseStorage):
                 "Please specify api storage Password or configure it using env variables"
             )
         self.host = (
-            host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST", "http://localhost:8000/")
+            host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST")
         )
+        if self.host is None:
+            raise PurpleCaffeineException(
+                "Please specify api storage host or configure it using env variables"
+            )
 
         self.token = self._get_token(self.username, self.password)
 
