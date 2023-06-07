@@ -85,22 +85,14 @@ class Trial:
             self.storage = storage
 
         self.description = description or os.environ.get("PURPLE_CAFFEINE_TRIAL_DESCRIPTION", "")
-        self.metrics = metrics or os.environ.get("PURPLE_CAFFEINE_TRIAL_METRICS", "").split(",")
-        self.parameters = (
-            parameters or os.environ.get("PURPLE_CAFFEINE_TRIAL_PARAMETERS", "").split(",")
-        )
-        self.circuits = (
-            circuits or os.environ.get("PURPLE_CAFFEINE_TRIAL_CIRCUITS", "").split(",")
-        )
-        self.operators = (
-            operators or os.environ.get("PURPLE_CAFFEINE_TRIAL_OPERATORS", "").split(",")
-        )
-        self.artifacts = (
-            artifacts or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARTIFACTS", "").split(",")
-        )
-        self.texts = texts or os.environ.get("PURPLE_CAFFEINE_TRIAL_TEXTS","").split(",") or []
-        self.arrays = arrays or os.environ.get("PURPLE_CAFFEINE_TRIAL_ARRAYS","").split(",") or []
-        self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS","").split(",") or []
+        self.metrics = metrics or []
+        self.parameters = parameters or []
+        self.circuits = circuits or []
+        self.operators = operators or []
+        self.artifacts = artifacts or []
+        self.texts = texts or []
+        self.arrays = arrays or []
+        self.tags = tags or os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS","").split(",")
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
