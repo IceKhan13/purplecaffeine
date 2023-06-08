@@ -161,7 +161,8 @@ class Trial:
         """
         if asizeof.asizeof(artifact) >= Configuration.MAX_SIZE:
             logging.warning(
-                "Your file is too big ! Limit : %s Bytes", str(Configuration.MAX_SIZE)
+                "Your file is too big ! Limit : %s Bytes", str(
+                    Configuration.MAX_SIZE)
             )
         self.artifacts.append([name, artifact])
 
@@ -450,7 +451,8 @@ class LocalStorage(BaseStorage):
         Args:
             path: path for the local storage folder
         """
-        self.path = path or os.environ.get("PURPLE_CAFFEINE_LOCAL_STORAGE_PATH", "./")
+        self.path = path or os.environ.get(
+            "PURPLE_CAFFEINE_LOCAL_STORAGE_PATH", "./")
         if not os.path.exists(self.path):
             Path(self.path).mkdir(parents=True, exist_ok=True)
 
@@ -554,24 +556,27 @@ class S3Storage(BaseStorage):
             directory: optional directory within bucket
             endpoint_url: optional endpoint url for custom S3 location
         """
-        self.bucket_name = bucket_name or os.environ.get("PURPLE_CAFFEINE_S3_BUCKET")
+        self.bucket_name = bucket_name or os.environ.get(
+            "PURPLE_CAFFEINE_S3_BUCKET")
         if self.bucket_name is None:
             raise PurpleCaffeineException(
                 "Please specify name of S3 Bucket or configure it using env variables"
             )
-        self.access_key = access_key or os.environ.get("PURPLE_CAFFEINE_S3_ACCESS_KEY")
-        if self.access_key is None:
+        self.access_key = os.environ.get("PURPLE_CAFFEINE_S3_ACCESS_KEY")
+        if access_key is not None:
+            self.access_key = access_key
+
+        self.secret_access_key = os.environ.get(
+            "PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY")
+        if secret_access_key is not None:
+            self.secret_access_key = secret_access_key
+
+        if self.secret_access_key is None or self.access_key is None:
             raise PurpleCaffeineException(
                 "Please specify Access key of S3 Bucket or configure it using env variables"
             )
-        self.secret_access_key = secret_access_key or os.environ.get(
-            "PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY"
-        )
-        if self.secret_access_key is None:
-            raise PurpleCaffeineException(
-                "Please specify Secret Access key of S3 Bucket or configure it using env variables"
-            )
-        self.directory = directory or os.environ.get("PURPLE_CAFFEINE_S3_DIRECTORY")
+        self.directory = directory or os.environ.get(
+            "PURPLE_CAFFEINE_S3_DIRECTORY")
         self.endpoint_url = endpoint_url or os.environ.get(
             "PURPLE_CAFFEINE_S3_ENDPOINT"
         )
@@ -596,7 +601,8 @@ class S3Storage(BaseStorage):
         response: Dict[str, Any] = self.client_s3.put_object(
             Bucket=self.bucket_name, Key=trial.uuid, Body=trial_data
         )
-        status = response.get("ResponseMetadata", {}).get("HTTPStatusCode", 500)
+        status = response.get("ResponseMetadata", {}).get(
+            "HTTPStatusCode", 500)
         if status != 200:
             raise PurpleCaffeineException(
                 f"Error response from boto client on attempt to write trial: {response}"
@@ -616,7 +622,8 @@ class S3Storage(BaseStorage):
             response: Dict[str, Any] = self.client_s3.get_object(
                 Bucket=self.bucket_name, Key=trial_id
             )
-            status = response.get("ResponseMetadata", {}).get("HTTPStatusCode", 500)
+            status = response.get("ResponseMetadata", {}).get(
+                "HTTPStatusCode", 500)
             if status != 200:
                 raise PurpleCaffeineException(
                     f"Error response from boto client on attempt to read trial: {response}"
