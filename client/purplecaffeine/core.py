@@ -578,7 +578,7 @@ class S3Storage(BaseStorage):
         client_s3 = boto3.client(
             "s3",
             aws_access_key_id=self.access_key,
-            aws_secret_access_key=secret_access_key,
+            aws_secret_access_key=self.secret_access_key,
             endpoint_url=endpoint_url,
         )
         self.client_s3 = client_s3
