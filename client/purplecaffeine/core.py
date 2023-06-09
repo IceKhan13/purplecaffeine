@@ -67,10 +67,28 @@ class Trial:
             tags (List[str]): list of tags in string format
         """
         self.uuid = uuid or str(uuid4())
-        self.name = name
-        self.storage = storage or LocalStorage(path="./")
+        self.name = name or os.environ.get("PURPLE_CAFFEINE_TRIAL_NAME")
+        if self.name is None:
+            raise PurpleCaffeineException(
+                "Please specify name of trial or configure it using env variables"
+            )
 
-        self.description = description or ""
+        if storage is None:
+            storage_type = os.environ.get(
+                "PURPLE_CAFFEINE_STORAGE_CLASS", "LocalStorage"
+            )
+            storage_mapping: Dict[str, BaseStorage] = {
+                "LocalStorage": LocalStorage,
+                "S3Storage": S3Storage,
+                "ApiStorage": ApiStorage,
+            }
+            self.storage = storage_mapping.get(storage_type)()
+        else:
+            self.storage = storage
+
+        self.description = description or os.environ.get(
+            "PURPLE_CAFFEINE_TRIAL_DESCRIPTION", ""
+        )
         self.metrics = metrics or []
         self.parameters = parameters or []
         self.circuits = circuits or []
@@ -78,7 +96,11 @@ class Trial:
         self.artifacts = artifacts or []
         self.texts = texts or []
         self.arrays = arrays or []
-        self.tags = tags or []
+        self.tags = tags or (
+            os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS", "").split(",")
+            if os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS")
+            else []
+        )
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
@@ -269,7 +291,12 @@ class BaseStorage:
 class ApiStorage(BaseStorage):
     """API storage class."""
 
-    def __init__(self, username: str, password: str, host: str):
+    def __init__(
+        self,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        host: Optional[str] = None,
+    ):
         """Creates storage for APIServer.
 
         Example:
@@ -284,10 +311,27 @@ class ApiStorage(BaseStorage):
             password: password
             host: host of api server
         """
-        self.username = username
-        self.host = host
+        self.username = username or os.environ.get(
+            "PURPLE_CAFFEINE_API_STORAGE_USERNAME"
+        )
+        if self.username is None:
+            raise PurpleCaffeineException(
+                "Please specify api storage username or configure it using env variables"
+            )
+        self.password = password or os.environ.get(
+            "PURPLE_CAFFEINE_API_STORAGE_PASSWORD"
+        )
+        if self.password is None:
+            raise PurpleCaffeineException(
+                "Please specify api storage Password or configure it using env variables"
+            )
+        self.host = host or os.environ.get("PURPLE_CAFFEINE_API_STORAGE_HOST")
+        if self.host is None:
+            raise PurpleCaffeineException(
+                "Please specify api storage host or configure it using env variables"
+            )
 
-        self.token = self._get_token(username, password)
+        self.token = self._get_token(self.username, self.password)
 
     def _get_token(self, username: str, password: str) -> str:
         """Returns token based on username and password
@@ -396,7 +440,7 @@ class ApiStorage(BaseStorage):
 class LocalStorage(BaseStorage):
     """Local storage."""
 
-    def __init__(self, path: str):
+    def __init__(self, path: Optional[str] = None):
         """Creates local storage for storing trial data
         at local folder.
 
@@ -406,7 +450,7 @@ class LocalStorage(BaseStorage):
         Args:
             path: path for the local storage folder
         """
-        self.path = path
+        self.path = path or os.environ.get("PURPLE_CAFFEINE_LOCAL_STORAGE_PATH", "./")
         if not os.path.exists(self.path):
             Path(self.path).mkdir(parents=True, exist_ok=True)
 
@@ -490,7 +534,7 @@ class S3Storage(BaseStorage):
 
     def __init__(
         self,
-        bucket_name: str,
+        bucket_name: Optional[str] = None,
         access_key: Optional[str] = None,
         secret_access_key: Optional[str] = None,
         directory: Optional[str] = None,
@@ -510,15 +554,34 @@ class S3Storage(BaseStorage):
             directory: optional directory within bucket
             endpoint_url: optional endpoint url for custom S3 location
         """
+        self.bucket_name = bucket_name or os.environ.get("PURPLE_CAFFEINE_S3_BUCKET")
+        if self.bucket_name is None:
+            raise PurpleCaffeineException(
+                "Please specify name of S3 Bucket or configure it using env variables"
+            )
+        self.access_key = os.environ.get("PURPLE_CAFFEINE_S3_ACCESS_KEY")
+        if access_key is not None:
+            self.access_key = access_key
+
+        self.secret_access_key = os.environ.get("PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY")
+        if secret_access_key is not None:
+            self.secret_access_key = secret_access_key
+
+        if self.secret_access_key is None or self.access_key is None:
+            raise PurpleCaffeineException(
+                "Please specify Access key of S3 Bucket or configure it using env variables"
+            )
+        self.directory = directory or os.environ.get("PURPLE_CAFFEINE_S3_DIRECTORY")
+        self.endpoint_url = endpoint_url or os.environ.get(
+            "PURPLE_CAFFEINE_S3_ENDPOINT"
+        )
         client_s3 = boto3.client(
             "s3",
-            aws_access_key_id=access_key,
-            aws_secret_access_key=secret_access_key,
+            aws_access_key_id=self.access_key,
+            aws_secret_access_key=self.secret_access_key,
             endpoint_url=endpoint_url,
         )
         self.client_s3 = client_s3
-        self.bucket_name = bucket_name
-        self.directory = directory
 
     def save(self, trial: Trial) -> str:
         """Saves given trial.
