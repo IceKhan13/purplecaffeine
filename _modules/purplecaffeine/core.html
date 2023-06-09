@@ -107,10 +107,28 @@
 <span class="sd">            tags (List[str]): list of tags in string format</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span> <span class="ow">or</span> <span class="n">LocalStorage</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_TRIAL_NAME&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PurpleCaffeineException</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify name of trial or configure it using env variables&quot;</span>
+            <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">storage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">storage_type</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;PURPLE_CAFFEINE_STORAGE_CLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;LocalStorage&quot;</span>
+            <span class="p">)</span>
+            <span class="n">storage_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseStorage</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;LocalStorage&quot;</span><span class="p">:</span> <span class="n">LocalStorage</span><span class="p">,</span>
+                <span class="s2">&quot;S3Storage&quot;</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span>
+                <span class="s2">&quot;ApiStorage&quot;</span><span class="p">:</span> <span class="n">ApiStorage</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">storage_type</span><span class="p">)()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;PURPLE_CAFFEINE_TRIAL_DESCRIPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuits</span> <span class="o">=</span> <span class="n">circuits</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -118,7 +136,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span> <span class="o">=</span> <span class="n">artifacts</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="n">texts</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arrays</span> <span class="o">=</span> <span class="n">arrays</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">[]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_TRIAL_TAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_TRIAL_TAGS&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="p">[]</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Trial [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
@@ -309,7 +331,12 @@
 <div class="viewcode-block" id="ApiStorage"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiStorage.html#purplecaffeine.ApiStorage">[docs]</a><span class="k">class</span> <span class="nc">ApiStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;API storage class.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ApiStorage.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiStorage.html#purplecaffeine.ApiStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="ApiStorage.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.ApiStorage.html#purplecaffeine.ApiStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates storage for APIServer.</span>
 
 <span class="sd">        Example:</span>
@@ -324,10 +351,27 @@
 <span class="sd">            password: password</span>
 <span class="sd">            host: host of api server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;PURPLE_CAFFEINE_API_STORAGE_USERNAME&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PurpleCaffeineException</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify api storage username or configure it using env variables&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;PURPLE_CAFFEINE_API_STORAGE_PASSWORD&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PurpleCaffeineException</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify api storage Password or configure it using env variables&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_API_STORAGE_HOST&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PurpleCaffeineException</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify api storage host or configure it using env variables&quot;</span>
+            <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_token</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns token based on username and password</span>
@@ -436,7 +480,7 @@
 <div class="viewcode-block" id="LocalStorage"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalStorage.html#purplecaffeine.LocalStorage">[docs]</a><span class="k">class</span> <span class="nc">LocalStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Local storage.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LocalStorage.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalStorage.html#purplecaffeine.LocalStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="LocalStorage.__init__"><a class="viewcode-back" href="../../stubs/purplecaffeine.LocalStorage.html#purplecaffeine.LocalStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates local storage for storing trial data</span>
 <span class="sd">        at local folder.</span>
 
@@ -446,7 +490,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            path: path for the local storage folder</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_LOCAL_STORAGE_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;./&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
             <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -530,7 +574,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">bucket_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">bucket_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">access_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">secret_access_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -550,15 +594,34 @@
 <span class="sd">            directory: optional directory within bucket</span>
 <span class="sd">            endpoint_url: optional endpoint url for custom S3 location</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bucket_name</span> <span class="o">=</span> <span class="n">bucket_name</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_S3_BUCKET&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PurpleCaffeineException</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify name of S3 Bucket or configure it using env variables&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_S3_ACCESS_KEY&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">access_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="o">=</span> <span class="n">access_key</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_access_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_S3_SECRET_ACCESS_KEY&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">secret_access_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secret_access_key</span> <span class="o">=</span> <span class="n">secret_access_key</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">secret_access_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PurpleCaffeineException</span><span class="p">(</span>
+                <span class="s2">&quot;Please specify Access key of S3 Bucket or configure it using env variables&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PURPLE_CAFFEINE_S3_DIRECTORY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint_url</span> <span class="o">=</span> <span class="n">endpoint_url</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;PURPLE_CAFFEINE_S3_ENDPOINT&quot;</span>
+        <span class="p">)</span>
         <span class="n">client_s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
             <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
-            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">access_key</span><span class="p">,</span>
-            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">secret_access_key</span><span class="p">,</span>
+            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">access_key</span><span class="p">,</span>
+            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">secret_access_key</span><span class="p">,</span>
             <span class="n">endpoint_url</span><span class="o">=</span><span class="n">endpoint_url</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client_s3</span> <span class="o">=</span> <span class="n">client_s3</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bucket_name</span> <span class="o">=</span> <span class="n">bucket_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves given trial.</span>

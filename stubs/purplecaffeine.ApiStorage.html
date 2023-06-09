@@ -43,7 +43,7 @@
 <h1>purplecaffeine.ApiStorage<a class="headerlink" href="#purplecaffeine-apistorage" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="purplecaffeine.ApiStorage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ApiStorage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#ApiStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.ApiStorage" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ApiStorage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#ApiStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.ApiStorage" title="Permalink to this definition">¶</a></dt>
 <dd><p>API storage class.</p>
 <p>Creates storage for APIServer.</p>
 <p class="rubric">Example</p>
@@ -57,15 +57,15 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>username</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – username</p></li>
-<li><p><strong>password</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – password</p></li>
-<li><p><strong>host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – host of api server</p></li>
+<li><p><strong>username</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – username</p></li>
+<li><p><strong>password</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – password</p></li>
+<li><p><strong>host</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – host of api server</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="purplecaffeine.ApiStorage.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#ApiStorage.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.ApiStorage.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/purplecaffeine/core.html#ApiStorage.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#purplecaffeine.ApiStorage.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates storage for APIServer.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span> <span class="o">=</span> <span class="n">ApiStorage</span><span class="p">(</span>
@@ -78,9 +78,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>username</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – username</p></li>
-<li><p><strong>password</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – password</p></li>
-<li><p><strong>host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – host of api server</p></li>
+<li><p><strong>username</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – username</p></li>
+<li><p><strong>password</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – password</p></li>
+<li><p><strong>host</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – host of api server</p></li>
 </ul>
 </dd>
 </dl>
@@ -89,7 +89,7 @@
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.ApiStorage.__init__" title="purplecaffeine.ApiStorage.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(username, password, host)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#purplecaffeine.ApiStorage.__init__" title="purplecaffeine.ApiStorage.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([username, password, host])</p></td>
 <td><p>Creates storage for APIServer.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(trial_id)</p></td>
