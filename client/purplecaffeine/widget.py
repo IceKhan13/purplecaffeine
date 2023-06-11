@@ -32,8 +32,10 @@ class Widget:
 
     def display_empty(self):
         empty_message = widgets.HTML(
-            f"<h1 style='text-align: center;'> <br><br><br>Add a new trial to see the info of that trial </h1>"
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" '
+            "<h1 style='text-align: center;'> <br><br><br>Add a new trial to see "
+            "the info of that trial </h1>"
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/'
+            'dist/css/bootstrap.min.css" '
             'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
             'crossorigin="anonymous">'
         )
@@ -133,6 +135,7 @@ class Widget:
         )
 
         def search_function(clicked_button):
+            # pylint: disable=unused-argument
             self.search_value = search.value
             self.limit = 10
             self.offset = 0
@@ -170,13 +173,15 @@ class Widget:
             return self.display_empty()
 
         parameter_rows = ''.join([
-            f"<tr><td>{str(name)}</td><td><button class='btn btn-primary rounded-pill' disabled>{str(value)}</button"
+            f"<tr><td>{str(name)}</td><td><button class='btn btn-primary "
+            f"rounded-pill' disabled>{str(value)}</button"
             f"></td></tr>"
             for name, value in self.selected_trial.parameters
         ])
 
         tags = ''.join([
-            f"<button class='btn btn-primary rounded-pill btn-sm' style='margin-bottom:20px; margin-right: 10px' "
+            f"<button class='btn btn-primary rounded-pill btn-sm' "
+            f"style='margin-bottom:20px; margin-right: 10px' "
             f"disabled>{str(tag)}</button>"
             for tag in self.selected_trial.tags
         ])
@@ -186,15 +191,16 @@ class Widget:
             f"<p>Description: {self.selected_trial.description}</p>"
             f"<div>{tags}</div>"
             "<table border=2 class='table'><tr><th>Parameter</th><th>Value</th></tr>"
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" '
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
+            'bootstrap@5.2.3/dist/css/bootstrap.min.css" '
             'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
             'crossorigin="anonymous">'
             f"{parameter_rows}</table>")
         info.layout = Layout(overflow='scroll', max_height='300px')
         metrics = widgets.Output()
         with metrics:
-            df = pd.DataFrame(self.selected_trial.metrics, columns=["name", "value"])
-            df2 = df.groupby("name").agg(list)
+            data_frame = pd.DataFrame(self.selected_trial.metrics, columns=["name", "value"])
+            df2 = data_frame.groupby("name").agg(list)
             for metric_name, values in df2.to_dict()["value"].items():
                 if len(values) == 1:
                     pass

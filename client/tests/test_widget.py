@@ -19,11 +19,11 @@ class TestWidget(TestCase):
         self.local_storage = LocalStorage(path=self.save_path)
 
     def test_empty_string(self):
-        widget = Widget(self.local_storage)
         """Test when we don't have trials."""
+        widget = Widget(self.local_storage)
         self.assertEqual(widget.display_empty().value,
                          "<h1 style='text-align: center;'> <br><br><br>Add a new trial "
-                         "to see the"
+                         "to see the "
                          "info of that trial </h1>"
                          '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
                          'bootstrap@5.2.3/dist/'
