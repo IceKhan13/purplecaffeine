@@ -6,8 +6,7 @@ import pandas as pd
 from IPython.display import display, clear_output
 from ipywidgets import Layout, GridspecLayout, AppLayout
 
-from purplecaffeine.core import LocalStorage, Trial, BaseStorage
-
+from client.purplecaffeine.core import BaseStorage, LocalStorage, Trial
 
 class Widget:
     def __init__(self, storage: Optional[BaseStorage] = None):
@@ -16,6 +15,7 @@ class Widget:
         self.offset = 0
         self.trials: List[Trial] = self.storage.list(limit=self.limit, offset=self.offset)
         self.selected_trial: Optional[Trial] = self.trials[0] if len(self.trials) > 0 else None
+        self.search_value = ''
 
         self.list_view = widgets.Output()
         with self.list_view:
@@ -29,6 +29,14 @@ class Widget:
         with self.pagination_view:
             display(self.render_pagination())
 
+        self.load_bootstrap = widgets.Output()
+        with self.load_bootstrap:
+            display(self.render_bootstrap())
+        
+
+    def render_bootstrap(self):
+        return widgets.HTML('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">')
+
     def load_detail(self, trial_button):
         trial_id = trial_button.tooltip
         trial = self.storage.get(trial_id)
@@ -37,6 +45,8 @@ class Widget:
             with self.detail_view:
                 clear_output()
                 display(self.render_trial())
+            with self.load_bootstrap:
+                display(self.render_bootstrap())
         else:
             raise Exception("Something went wrong during trial loading.")
 
@@ -52,6 +62,10 @@ class Widget:
             )
             button.layout = Layout(width="95%")
             button.on_click(self.load_detail)
+            button.remove_class('lm-Widget')
+            button.remove_class('jupyter-widgets')
+            button.remove_class('jupyter-button')
+            button.remove_class('widget-button')
             button.add_class('btn')
             button.add_class('btn-outline-primary')
             buttons.append(button)
@@ -60,10 +74,10 @@ class Widget:
 
     def paginate(self, page_button):
         if page_button.tooltip == "prev":
-            self.trials = self.storage.list(limit=self.limit, offset=self.offset - self.limit)
+            self.trials = self.storage.list(limit=self.limit, offset=self.offset - self.limit, query=self.search_value)
             self.offset = self.offset - self.limit
         elif page_button.tooltip == "next":
-            self.trials = self.storage.list(limit=self.limit, offset=self.offset + self.limit)
+            self.trials = self.storage.list(limit=self.limit, offset=self.offset + self.limit, query=self.search_value)
             self.offset = self.offset + self.limit
         with self.list_view:
             clear_output()
@@ -71,6 +85,8 @@ class Widget:
         with self.pagination_view:
             clear_output()
             display(self.render_pagination())
+        with self.load_bootstrap:
+            display(self.render_bootstrap())
 
     def render_pagination(self):
         prev_page = widgets.Button(
@@ -82,8 +98,8 @@ class Widget:
         )
         prev_page.on_click(self.paginate)
         prev_page.layout = Layout(width="47%")
-        prev_page.add_class('btn');
-        prev_page.add_class('btn-secondary');
+        prev_page.add_class('btn')
+        prev_page.add_class('btn-secondary')
         next_page = widgets.Button(
             description='Next',
             disabled=len(self.trials) < self.limit,
@@ -97,6 +113,12 @@ class Widget:
         next_page.layout = Layout(width="47%")
 
         return widgets.HBox([prev_page, next_page])
+    
+    def display_empty(self):
+        empty_message = widgets.HTML(
+            f"<h1 style='text-align: center;'> <br><br><br>Add a new trial to see the info of that trial </h1>")
+        empty_message.layout = Layout(height = '300px')
+        return empty_message
 
     def search(self):
         search = widgets.Text(
@@ -113,12 +135,13 @@ class Widget:
             icon=''  # (FontAwesome names without the `fa-` prefix)
         )
         def search_function(search_button):
+            self.search_value = search.value
             self.limit = 10
             self.offset = 0
             if(search.value == ''):
-                self.trials = self.storage.list(limit=self.limit, offset=self.offset)
+                self.trials = self.storage.list(limit=self.limit, offset=self.offset, query=self.search_value)
             else:
-                self.trials = list(filter(lambda trial: search.value in trial.name, self.storage.get_all()))
+                self.trials = self.storage.list(query=search.value)
             with self.list_view:
                 clear_output()
                 display(self.render_trails_list())
@@ -130,6 +153,8 @@ class Widget:
             with self.pagination_view:
                 clear_output()
                 display(self.render_pagination())
+            with self.load_bootstrap:
+                display(self.render_bootstrap())
         search.layout = Layout(width="99%")
         search_button.on_click(search_function)
         search_button.add_class('btn');
@@ -143,6 +168,9 @@ class Widget:
         
 
     def render_trial(self):
+
+        if(self.selected_trial is None):
+            return self.display_empty()
 
         parameter_rows = ''.join([
             f"<tr><td>{str(name)}</td><td><button class='btn btn-primary rounded-pill' disabled>{str(value)}</button></td></tr>"
@@ -159,6 +187,7 @@ class Widget:
             f"<p>Description: {self.selected_trial.description }</p>" 
             f"<div>{tags}</div>"
             "<table border=2 class='table'><tr><th>Parameter</th><th>Value</th></tr>"
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">'
             f"{parameter_rows}</table>")
         info.layout = Layout(overflow = 'scroll', max_height = '300px')
         metrics = widgets.Output()
@@ -169,6 +198,7 @@ class Widget:
                 if len(values) == 1:
                     pass
                 else:
+                    
                     plt.plot(values)
                     plt.xlabel("entry")
                     plt.ylabel("value")
@@ -179,7 +209,7 @@ class Widget:
         with circuits:
             for name, circuit in self.selected_trial.circuits:
                 print(name)
-                print(circuit.draw())
+                print(circuit)
         circuits.layout = Layout(overflow = 'scroll', max_height = '300px')
 
         tab = widgets.Tab(children=[
