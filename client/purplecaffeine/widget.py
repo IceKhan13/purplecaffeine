@@ -29,14 +29,6 @@ class Widget:
         with self.pagination_view:
             display(self.render_pagination())
 
-        self.load_bootstrap = widgets.Output()
-        with self.load_bootstrap:
-            display(self.render_bootstrap())
-        
-
-    def render_bootstrap(self):
-        return widgets.HTML('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">')
-
     def load_detail(self, trial_button):
         trial_id = trial_button.tooltip
         trial = self.storage.get(trial_id)
@@ -45,8 +37,6 @@ class Widget:
             with self.detail_view:
                 clear_output()
                 display(self.render_trial())
-            with self.load_bootstrap:
-                display(self.render_bootstrap())
         else:
             raise Exception("Something went wrong during trial loading.")
 
@@ -85,8 +75,6 @@ class Widget:
         with self.pagination_view:
             clear_output()
             display(self.render_pagination())
-        with self.load_bootstrap:
-            display(self.render_bootstrap())
 
     def render_pagination(self):
         prev_page = widgets.Button(
@@ -116,7 +104,9 @@ class Widget:
     
     def display_empty(self):
         empty_message = widgets.HTML(
-            f"<h1 style='text-align: center;'> <br><br><br>Add a new trial to see the info of that trial </h1>")
+            f"<h1 style='text-align: center;'> <br><br><br>Add a new trial to see the info of that trial </h1>"
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">'
+            )
         empty_message.layout = Layout(height = '300px')
         return empty_message
 
@@ -153,12 +143,10 @@ class Widget:
             with self.pagination_view:
                 clear_output()
                 display(self.render_pagination())
-            with self.load_bootstrap:
-                display(self.render_bootstrap())
         search.layout = Layout(width="99%")
         search_button.on_click(search_function)
-        search_button.add_class('btn');
-        search_button.add_class('btn-secondary');
+        search_button.add_class('btn')
+        search_button.add_class('btn-secondary')
         
         return AppLayout(header=None,
           left_sidebar=search_button,
