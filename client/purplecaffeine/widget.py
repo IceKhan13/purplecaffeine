@@ -8,6 +8,10 @@ from ipywidgets import Layout, GridspecLayout, AppLayout
 
 from client.purplecaffeine.core import BaseStorage, LocalStorage, Trial
 
+
+
+
+
 class Widget:
     def __init__(self, storage: Optional[BaseStorage] = None):
         self.storage = storage or LocalStorage("./trials")
@@ -28,6 +32,16 @@ class Widget:
         self.pagination_view = widgets.Output()
         with self.pagination_view:
             display(self.render_pagination())
+
+    def display_empty():
+        empty_message = widgets.HTML(
+            f"<h1 style='text-align: center;'> <br><br><br>Add a new trial to see the info of that trial </h1>"
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" '
+            'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
+            'crossorigin="anonymous">'
+        )
+        empty_message.layout = Layout(height='300px')
+        return empty_message
 
     def load_detail(self, trial_button):
         trial_id = trial_button.tooltip
@@ -101,14 +115,6 @@ class Widget:
         next_page.layout = Layout(width="47%")
 
         return widgets.HBox([prev_page, next_page])
-    
-    def display_empty(self):
-        empty_message = widgets.HTML(
-            f"<h1 style='text-align: center;'> <br><br><br>Add a new trial to see the info of that trial </h1>"
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">'
-            )
-        empty_message.layout = Layout(height = '300px')
-        return empty_message
 
     def search(self):
         search = widgets.Text(
@@ -124,11 +130,12 @@ class Widget:
             tooltip='search',
             icon=''  # (FontAwesome names without the `fa-` prefix)
         )
-        def search_function(search_button):
+
+        def search_function(clicked_button):
             self.search_value = search.value
             self.limit = 10
             self.offset = 0
-            if(search.value == ''):
+            if search.value == '':
                 self.trials = self.storage.list(limit=self.limit, offset=self.offset, query=self.search_value)
             else:
                 self.trials = self.storage.list(query=search.value)
@@ -137,47 +144,51 @@ class Widget:
                 display(self.render_trails_list())
             with self.detail_view:
                 clear_output()
-                if(len(self.trials) > 0):
+                if len(self.trials) > 0:
                     self.selected_trial = self.trials[0]
                     display(self.render_trial())
             with self.pagination_view:
                 clear_output()
                 display(self.render_pagination())
+
         search.layout = Layout(width="99%")
         search_button.on_click(search_function)
         search_button.add_class('btn')
         search_button.add_class('btn-secondary')
-        
+
         return AppLayout(header=None,
-          left_sidebar=search_button,
-          center=None,
-          right_sidebar=search,
-          footer=None, pane_widths=[1, 0, 5],)
-        
+                         left_sidebar=search_button,
+                         center=None,
+                         right_sidebar=search,
+                         footer=None, pane_widths=[1, 0, 5], )
 
     def render_trial(self):
 
-        if(self.selected_trial is None):
-            return self.display_empty()
+        if self.selected_trial is None:
+            return display_empty()
 
         parameter_rows = ''.join([
-            f"<tr><td>{str(name)}</td><td><button class='btn btn-primary rounded-pill' disabled>{str(value)}</button></td></tr>"
+            f"<tr><td>{str(name)}</td><td><button class='btn btn-primary rounded-pill' disabled>{str(value)}</button"
+            f"></td></tr>"
             for name, value in self.selected_trial.parameters
         ])
 
         tags = ''.join([
-            f"<button class='btn btn-primary rounded-pill btn-sm' style='margin-bottom:20px; margin-right: 10px' disabled>{str(tag)}</button>"
+            f"<button class='btn btn-primary rounded-pill btn-sm' style='margin-bottom:20px; margin-right: 10px' "
+            f"disabled>{str(tag)}</button>"
             for tag in self.selected_trial.tags
         ])
 
         info = widgets.HTML(
             f"<h3>{self.selected_trial.name} | {self.selected_trial.uuid} </h3>"
-            f"<p>Description: {self.selected_trial.description }</p>" 
+            f"<p>Description: {self.selected_trial.description}</p>"
             f"<div>{tags}</div>"
             "<table border=2 class='table'><tr><th>Parameter</th><th>Value</th></tr>"
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">'
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" '
+            'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
+            'crossorigin="anonymous">'
             f"{parameter_rows}</table>")
-        info.layout = Layout(overflow = 'scroll', max_height = '300px')
+        info.layout = Layout(overflow='scroll', max_height='300px')
         metrics = widgets.Output()
         with metrics:
             df = pd.DataFrame(self.selected_trial.metrics, columns=["name", "value"])
@@ -186,19 +197,19 @@ class Widget:
                 if len(values) == 1:
                     pass
                 else:
-                    
+
                     plt.plot(values)
                     plt.xlabel("entry")
                     plt.ylabel("value")
                     plt.title(f"Metric: {metric_name}")
                     plt.show()
-        metrics.layout = Layout(overflow = 'scroll', max_height = '300px')
+        metrics.layout = Layout(overflow='scroll', max_height='300px')
         circuits = widgets.Output()
         with circuits:
             for name, circuit in self.selected_trial.circuits:
                 print(name)
                 print(circuit)
-        circuits.layout = Layout(overflow = 'scroll', max_height = '300px')
+        circuits.layout = Layout(overflow='scroll', max_height='300px')
 
         tab = widgets.Tab(children=[
             info,
