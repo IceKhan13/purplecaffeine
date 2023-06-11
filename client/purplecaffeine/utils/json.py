@@ -11,6 +11,7 @@ class TrialEncoder(RuntimeEncoder):
     """Json encoder for trial."""
 
     def default(self, obj: Any) -> Any:
+        "custom encoder"
         from purplecaffeine.core import BaseStorage
 
         if isinstance(obj, Backend):
@@ -27,6 +28,7 @@ class TrialDecoder(RuntimeDecoder):
     """Json decoder for trial."""
 
     def object_hook(self, obj: Any) -> Any:
+        "custom decoder"
         if "__type__" in obj:
             obj_type = obj["__type__"]
 

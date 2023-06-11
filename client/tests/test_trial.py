@@ -3,14 +3,14 @@ import os
 import shutil
 from pathlib import Path
 from typing import Optional
-from unittest import TestCase, skip
+from unittest import TestCase
 
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
-from purplecaffeine import Trial, LocalStorage, ApiStorage, BaseStorage as TrialStorage
+from purplecaffeine import Trial, LocalStorage, BaseStorage as TrialStorage
 
 
 def dummy_trial(
@@ -76,25 +76,6 @@ class TestTrial(TestCase):
             os.path.isfile(os.path.join(self.save_path, f"{trial.uuid}.json"))
         )
         recovered = trial.read(trial_id=trial.uuid)
-        self.assertEqual(recovered.description, "Short desc")
-        self.assertEqual(recovered.metrics, [["test_metric", 42]])
-        self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
-        self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
-        self.assertEqual(recovered.operators, [["test_operator", Operator(XGate())]])
-        self.assertEqual(recovered.texts, [["test_text", "text"]])
-        self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
-        self.assertEqual(recovered.tags, ["qiskit", "test"])
-
-    @skip("Remote call")
-    def test_save_read_api_trial(self):
-        """Test save and read Trial from API."""
-        storage = ApiStorage(
-            host="http://127.0.0.1:8000", username="admin", password="admin"
-        )
-        trial = dummy_trial(storage=storage)
-        trial.save()
-
-        recovered = trial.read(trial_id="1")
         self.assertEqual(recovered.description, "Short desc")
         self.assertEqual(recovered.metrics, [["test_metric", 42]])
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
