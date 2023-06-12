@@ -5,12 +5,30 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from IPython.display import display, clear_output
 from ipywidgets import Layout, GridspecLayout, AppLayout
-
 from purplecaffeine.core import BaseStorage, LocalStorage, Trial
 
 
 class Widget:
+    """Widget class.
+
+        Attributes:
+            storage (BaseStorage): storage where the trials are going to be saved
+            limit (int): number of trials per page
+            offset (int): aux int to paginate result
+            trials (List[Trial]): list of trials
+            selected_trial (Trial): current trial on display
+             (List[(str, Any)]): list of artifact, any external files
+            search_value (str): value that the user puts on search bar
+            list_view (DomWidget): widget to display list of trials
+            detail_view (DomWidget): widget to display the details of a trial
+            pagination_view (DomWidget): widget to display the pagination buttons
+        """
+
     def __init__(self, storage: Optional[BaseStorage] = None):
+        """Widget class:
+                Attributes:
+                    storage (BaseStorage): storage where the trials are going to be saved
+        """
         self.storage = storage or LocalStorage("./trials")
         self.limit = 10
         self.offset = 0
@@ -31,6 +49,12 @@ class Widget:
             display(self.render_pagination())
 
     def display_empty(self):
+        """
+            Returns a user-friendly message for displaying when
+            we don't have any trials
+            Returns:
+                empty_message (HTMLWidget): the widget with the info
+        """
         empty_message = widgets.HTML(
             "<h1 style='text-align: center;'> <br><br><br>Add a new trial to see "
             "the info of that trial </h1>"
@@ -43,6 +67,11 @@ class Widget:
         return empty_message
 
     def load_detail(self, trial_button):
+        """
+            Load the details of a trial
+                Args:
+                trial_button: a trial button that was clicked
+        """
         trial_id = trial_button.tooltip
         trial = self.storage.get(trial_id)
         if isinstance(trial, Trial):
@@ -54,6 +83,10 @@ class Widget:
             raise Exception("Something went wrong during trial loading.")
 
     def render_trails_list(self):
+        """
+            Render the list of trail buttons.
+            We render one button per each trial
+        """
         buttons = []
         for trial in self.trials:
             button = widgets.Button(
@@ -76,6 +109,13 @@ class Widget:
         return widgets.VBox(buttons)
 
     def paginate(self, page_button):
+        """
+            Displays the pagination accordingly to the clicked button
+            and the list of trials for the current
+            page.
+            Args:
+                page_button (WidgetButton): clicked pagination button
+        """
         if page_button.tooltip == "prev":
             self.trials = self.storage.list(limit=self.limit,
                                             offset=self.offset - self.limit,
@@ -94,6 +134,11 @@ class Widget:
             display(self.render_pagination())
 
     def render_pagination(self):
+        """
+                Displays the pagination buttons
+                and the list of trials for the current
+                page.
+        """
         prev_page = widgets.Button(
             description='Prev',
             disabled=self.offset < 1,
@@ -120,6 +165,9 @@ class Widget:
         return widgets.HBox([prev_page, next_page])
 
     def search(self):
+        """
+            Displays the search bar and button.
+        """
         search = widgets.Text(
             value='',
             placeholder='Name or description',
@@ -135,6 +183,11 @@ class Widget:
         )
 
         def search_function(clicked_button):
+            """
+                Function that filters the trial list
+                accordingly to the
+                input received from user.
+            """
             # pylint: disable=unused-argument
             self.search_value = search.value
             self.limit = 10
@@ -168,7 +221,10 @@ class Widget:
                          footer=None, pane_widths=[1, 0, 5], )
 
     def render_trial(self):
-
+        """
+            Load the tabs with the basic info, circuits and metrics
+            of the selected trial
+        """
         if self.selected_trial is None:
             return self.display_empty()
 
@@ -229,6 +285,10 @@ class Widget:
         return tab
 
     def show(self):
+        """
+            Function to assemble all the other
+            widgets into one
+        """
         grid = GridspecLayout(2, 1, height='500px')
         grid[0, 0] = self.list_view
         grid[1, 0] = self.pagination_view
