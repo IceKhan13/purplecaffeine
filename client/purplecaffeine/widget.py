@@ -60,7 +60,7 @@ class Widget:
             empty_message (HTMLWidget): the widget with the info
         """
         empty_message = widgets.HTML(
-            f"<h1 style='text-align: center;'> <br><br><br> {required_message}</h1>"
+            f"<h1 style='text-align: center;'> <br><br><br>{required_message}</h1>"
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/'
             'dist/css/bootstrap.min.css" '
             'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
