@@ -1,10 +1,10 @@
 """Tests for Trial."""
-from qiskit.circuit.random import random_circuit
-from qiskit.primitives import Estimator
-from qiskit.quantum_info.random import random_pauli
 import os
 from pathlib import Path
 from unittest import TestCase
+from qiskit.circuit.random import random_circuit
+from qiskit.primitives import Estimator
+from qiskit.quantum_info.random import random_pauli
 
 from purplecaffeine.core import LocalStorage, Trial
 from purplecaffeine.widget import Widget
@@ -60,7 +60,8 @@ class TestWidget(TestCase):
     def test_empty_string(self):
         """Test when we don't have trials."""
         widget = Widget(self.local_storage)
-        self.assertEqual(widget.display_empty().value,
+        self.assertEqual(widget.display_message("Add a new trial to see the info of that trial ")
+                         .value,
                          "<h1 style='text-align: center;'> <br><br><br>Add a new trial "
                          "to see the "
                          "info of that trial </h1>"

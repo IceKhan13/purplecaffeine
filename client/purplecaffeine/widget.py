@@ -51,8 +51,7 @@ class Widget:
 
     def display_message(self, required_message):
         """
-            Returns a user-friendly message for displaying when
-            we don't have any trials
+            Returns a user-friendly message for displaying
             Returns:
                 empty_message (HTMLWidget): the widget with the info
         """
