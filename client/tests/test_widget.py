@@ -1,13 +1,13 @@
 """Tests for Trial."""
+from qiskit.circuit.random import random_circuit
+from qiskit.primitives import Estimator
+from qiskit.quantum_info.random import random_pauli
 import os
 from pathlib import Path
 from unittest import TestCase
 
 from purplecaffeine.core import LocalStorage, Trial
 from purplecaffeine.widget import Widget
-from qiskit.circuit.random import random_circuit
-from qiskit.primitives import Estimator
-from qiskit.quantum_info.random import random_pauli
 
 
 class TestWidget(TestCase):
@@ -32,7 +32,7 @@ class TestWidget(TestCase):
                          .children[0].tooltip,
                          widget.selected_trial.uuid)
 
-    def add_n_trials(self, n):
+    def add_n_trials(self, number_of_trials):
         """Aux function to add 20 trials to the class storage"""
         n_qubits = 4
         depth = 3
@@ -40,7 +40,7 @@ class TestWidget(TestCase):
 
         circuit = random_circuit(n_qubits, depth)
         obs = random_pauli(n_qubits)
-        for i in range(0, n):
+        for i in range(0, number_of_trials):
             with Trial("Example trial " + str(i), storage=self.local_storage) as trial:
                 # track some parameters
                 trial.add_parameter("estimator", "qiskit.primitives.Estimator")

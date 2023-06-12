@@ -1,3 +1,4 @@
+"""Widget."""
 from typing import List, Optional
 
 import ipywidgets as widgets
@@ -48,7 +49,7 @@ class Widget:
         with self.pagination_view:
             display(self.render_pagination())
 
-    def display_empty(self):
+    def display_message(self, required_message):
         """
             Returns a user-friendly message for displaying when
             we don't have any trials
@@ -56,8 +57,7 @@ class Widget:
                 empty_message (HTMLWidget): the widget with the info
         """
         empty_message = widgets.HTML(
-            "<h1 style='text-align: center;'> <br><br><br>Add a new trial to see "
-            "the info of that trial </h1>"
+            f"<h1 style='text-align: center;'> <br><br><br> {required_message}</h1>"
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/'
             'dist/css/bootstrap.min.css" '
             'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
@@ -80,7 +80,7 @@ class Widget:
                 clear_output()
                 display(self.render_trial())
         else:
-            raise Exception("Something went wrong during trial loading.")
+            self.display_message("Something went wrong while loading your trials ):")
 
     def render_trails_list(self):
         """
@@ -226,7 +226,8 @@ class Widget:
             of the selected trial
         """
         if self.selected_trial is None:
-            return self.display_empty()
+            return self.display_message("Add a new trial to see "
+                                        "the info of that trial")
 
         parameter_rows = ''.join([
             f"<tr><td>{str(name)}</td><td><button class='btn btn-primary "
