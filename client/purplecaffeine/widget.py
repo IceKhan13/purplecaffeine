@@ -234,9 +234,7 @@ class Widget:
         of the selected trial
         """
         if self.selected_trial is None:
-            return self.display_message(
-                "Add a new trial to see " "the info of that trial"
-            )
+            return self.display_message("Add a new trial to see the info of that trial")
 
         parameter_rows = "".join(
             [
