@@ -25,12 +25,13 @@ class TestWidget(TestCase):
         """Test to check that new trials are being added."""
         self.add_n_trials(20)
         widget = Widget(self.local_storage)
-        self.assertEqual(widget.render_trails_list()
-                         .children[0].tooltip,
-                         self.local_storage.list()[0].uuid)
-        self.assertEqual(widget.render_trails_list()
-                         .children[0].tooltip,
-                         widget.selected_trial.uuid)
+        self.assertEqual(
+            widget.render_trails_list().children[0].tooltip,
+            self.local_storage.list()[0].uuid,
+        )
+        self.assertEqual(
+            widget.render_trails_list().children[0].tooltip, widget.selected_trial.uuid
+        )
 
     def add_n_trials(self, number_of_trials):
         """Aux function to add 20 trials to the class storage"""
@@ -52,7 +53,9 @@ class TestWidget(TestCase):
                 trial.add_circuit("circuit", circuit)
 
                 # run
-                exp_value = Estimator().run(circuit, obs, shots=shots).result().values.item()
+                exp_value = (
+                    Estimator().run(circuit, obs, shots=shots).result().values.item()
+                )
 
                 # track results of run
                 trial.add_metric("exp_value", exp_value)
@@ -60,14 +63,17 @@ class TestWidget(TestCase):
     def test_empty_string(self):
         """Test when we don't have trials."""
         widget = Widget(self.local_storage)
-        self.assertEqual(widget.display_message("Add a new trial to see the info of that trial ")
-                         .value,
-                         "<h1 style='text-align: center;'> <br><br><br>Add a new trial "
-                         "to see the "
-                         "info of that trial </h1>"
-                         '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
-                         'bootstrap@5.2.3/dist/'
-                         'css/bootstrap.min.css" '
-                         'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW'
-                         '1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
-                         'crossorigin="anonymous">')
+        self.assertEqual(
+            widget.display_message(
+                "Add a new trial to see the info of that trial "
+            ).value,
+            "<h1 style='text-align: center;'> <br><br><br>Add a new trial "
+            "to see the "
+            "info of that trial </h1>"
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
+            "bootstrap@5.2.3/dist/"
+            'css/bootstrap.min.css" '
+            'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW'
+            '1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
+            'crossorigin="anonymous">',
+        )
