@@ -1,13 +1,15 @@
 """Tests for Trial."""
 import os
+import shutil
 from pathlib import Path
 from unittest import TestCase
+
+from ipywidgets import widgets
+from purplecaffeine.core import LocalStorage, Trial
+from purplecaffeine.widget import Widget
 from qiskit.circuit.random import random_circuit
 from qiskit.primitives import Estimator
 from qiskit.quantum_info.random import random_pauli
-
-from purplecaffeine.core import LocalStorage, Trial
-from purplecaffeine.widget import Widget
 
 
 class TestWidget(TestCase):
@@ -20,6 +22,52 @@ class TestWidget(TestCase):
         if not os.path.exists(self.save_path):
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.local_storage = LocalStorage(path=self.save_path)
+
+    def test_render_pagination(self):
+        self.add_n_trials(20)
+        widget = Widget(self.local_storage)
+        box = widget.render_pagination()
+        previous_button = box.children[0]
+        next_button = box.children[1]
+        self.assertFalse(next_button.disabled)
+        self.assertTrue(previous_button.disabled)
+
+    def test_render_trial(self):
+        self.add_n_trials(5)
+        widget = Widget(self.local_storage)
+        tabs = widget.render_trial()
+        info = tabs.children[0]
+        circuits = tabs.children[2]
+        self.assertTrue(self.local_storage.list()[0].uuid in info.value)
+
+    def test_search(self):
+        self.add_n_trials(20)
+        widget = Widget(self.local_storage)
+        box = widget.search()
+        search_button = box.children[0]
+        input_text = box.children[1]
+        input_text.value = self.local_storage.list()[0].name
+        search_button.click()
+        self.assertEqual(widget.search_value, self.local_storage.list()[0].name)
+        self.assertEqual(len(widget.current_page_trials), 1)
+        input_text.value = ""
+        search_button.click()
+        self.assertEqual(len(widget.current_page_trials), 10)
+
+    def test_load_detail(self):
+        """Test to check that the selected trial is the first one"""
+        self.add_n_trials(2)
+        widget = Widget(self.local_storage)
+        first_trail = self.local_storage.list()[0]
+        button = widgets.Button(
+            description=first_trail.name,
+            disabled=False,
+            button_style="",
+            tooltip=first_trail.uuid,
+            icon="",
+        )
+        widget.load_detail(button)
+        self.assertEqual(widget.selected_trial.uuid, first_trail.uuid)
 
     def test_trial_list(self):
         """Test to check that new trials are being added."""
@@ -77,3 +125,9 @@ class TestWidget(TestCase):
             '1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
             'crossorigin="anonymous">',
         )
+
+    def tearDown(self) -> None:
+        """TearDown the trials objects."""
+        trials_files = os.path.join(self.save_path)
+        if os.path.exists(trials_files):
+            shutil.rmtree(trials_files)

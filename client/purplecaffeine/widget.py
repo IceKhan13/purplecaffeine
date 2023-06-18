@@ -16,7 +16,8 @@ class Widget:
         storage (BaseStorage): storage where the trials are going to be saved
         limit (int): number of trials per page
         offset (int): aux int to paginate result
-        trials (List[Trial]): list of trials
+        current_page_trials (List[Trial]): list of trials
+        next_page_trials (List[Trial]): list of trials for next page
         selected_trial (Trial): current trial on display
          (List[(str, Any)]): list of artifact, any external files
         search_value (str): value that the user puts on search bar
@@ -33,11 +34,14 @@ class Widget:
         self.storage = storage or LocalStorage("./trials")
         self.limit = 10
         self.offset = 0
-        self.trials: List[Trial] = self.storage.list(
+        self.current_page_trials: List[Trial] = self.storage.list(
             limit=self.limit, offset=self.offset
         )
+        self.next_page_trials: List[Trial] = self.storage.list(
+            limit=self.offset + self.limit + self.limit, offset=self.offset + self.limit
+        )
         self.selected_trial: Optional[Trial] = (
-            self.trials[0] if len(self.trials) > 0 else None
+            self.current_page_trials[0] if len(self.current_page_trials) > 0 else None
         )
         self.search_value = ""
 
@@ -91,7 +95,7 @@ class Widget:
         We render one button per each trial
         """
         buttons = []
-        for trial in self.trials:
+        for trial in self.current_page_trials:
             button = widgets.Button(
                 description=f"{trial.name} | {trial.uuid}"[:30],
                 disabled=False,
@@ -101,12 +105,6 @@ class Widget:
             )
             button.layout = Layout(width="95%")
             button.on_click(self.load_detail)
-            button.remove_class("lm-Widget")
-            button.remove_class("jupyter-widgets")
-            button.remove_class("jupyter-button")
-            button.remove_class("widget-button")
-            button.add_class("btn")
-            button.add_class("btn-outline-primary")
             buttons.append(button)
 
         return widgets.VBox(buttons)
@@ -120,19 +118,21 @@ class Widget:
             page_button (WidgetButton): clicked pagination button
         """
         if page_button.tooltip == "prev":
-            self.trials = self.storage.list(
+            self.next_page_trials = self.current_page_trials
+            self.current_page_trials = self.storage.list(
                 limit=self.limit,
                 offset=self.offset - self.limit,
                 query=self.search_value,
             )
             self.offset = self.offset - self.limit
         elif page_button.tooltip == "next":
-            self.trials = self.storage.list(
-                limit=self.limit,
+            self.current_page_trials = self.next_page_trials
+            self.offset = self.offset + self.limit
+            self.next_page_trials = self.storage.list(
+                limit=self.offset + self.limit,
                 offset=self.offset + self.limit,
                 query=self.search_value,
             )
-            self.offset = self.offset + self.limit
         with self.list_view:
             clear_output()
             display(self.render_trails_list())
@@ -159,7 +159,7 @@ class Widget:
         prev_page.add_class("btn-secondary")
         next_page = widgets.Button(
             description="Next",
-            disabled=len(self.trials) < self.limit,
+            disabled=len(self.next_page_trials) == 0,
             button_style="",  # 'success', 'info', 'warning', 'danger' or ''
             tooltip="next",
             icon="arrow-circle-right",  # (FontAwesome names without the `fa-` prefix)
@@ -197,18 +197,30 @@ class Widget:
             self.limit = 10
             self.offset = 0
             if search.value == "":
-                self.trials = self.storage.list(
+                self.current_page_trials = self.storage.list(
                     limit=self.limit, offset=self.offset, query=self.search_value
                 )
+                self.next_page_trials = self.storage.list(
+                    limit=self.offset + self.limit + self.limit,
+                    offset=self.offset + self.limit,
+                    query=self.search_value,
+                )
             else:
-                self.trials = self.storage.list(query=search.value)
+                self.current_page_trials = self.storage.list(
+                    limit=self.limit, offset=self.offset, query=search.value
+                )
+                self.next_page_trials = self.storage.list(
+                    limit=self.offset + self.limit + self.limit,
+                    offset=self.offset + self.limit,
+                    query=self.search_value,
+                )
             with self.list_view:
                 clear_output()
                 display(self.render_trails_list())
             with self.detail_view:
                 clear_output()
-                if len(self.trials) > 0:
-                    self.selected_trial = self.trials[0]
+                if len(self.current_page_trials) > 0:
+                    self.selected_trial = self.current_page_trials[0]
                     display(self.render_trial())
             with self.pagination_view:
                 clear_output()
