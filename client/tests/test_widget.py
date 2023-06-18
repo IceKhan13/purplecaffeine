@@ -5,11 +5,11 @@ from pathlib import Path
 from unittest import TestCase
 
 from ipywidgets import widgets
-from purplecaffeine.core import LocalStorage, Trial
-from purplecaffeine.widget import Widget
 from qiskit.circuit.random import random_circuit
 from qiskit.primitives import Estimator
 from qiskit.quantum_info.random import random_pauli
+from purplecaffeine.core import LocalStorage, Trial
+from purplecaffeine.widget import Widget
 
 
 class TestWidget(TestCase):
@@ -24,6 +24,7 @@ class TestWidget(TestCase):
         self.local_storage = LocalStorage(path=self.save_path)
 
     def test_render_pagination(self):
+        """Test to check that pagination buttons work correctly"""
         self.add_n_trials(20)
         widget = Widget(self.local_storage)
         box = widget.render_pagination()
@@ -33,14 +34,15 @@ class TestWidget(TestCase):
         self.assertTrue(previous_button.disabled)
 
     def test_render_trial(self):
+        """Test to check that trails buttons are being displayed"""
         self.add_n_trials(5)
         widget = Widget(self.local_storage)
         tabs = widget.render_trial()
         info = tabs.children[0]
-        circuits = tabs.children[2]
         self.assertTrue(self.local_storage.list()[0].uuid in info.value)
 
     def test_search(self):
+        """Test to check the search function"""
         self.add_n_trials(20)
         widget = Widget(self.local_storage)
         box = widget.search()

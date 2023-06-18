@@ -2,3 +2,6 @@ qiskit==0.43.0
 qiskit-ibm-runtime==0.10.0
 pympler~=0.9
 boto3==1.26.133
+pandas==2.0.2
+matplotlib==3.7.1
+ipywidgets==8.0.6
