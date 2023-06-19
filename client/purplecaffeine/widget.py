@@ -2,8 +2,6 @@
 from typing import List, Optional
 
 import ipywidgets as widgets
-import matplotlib.pyplot as plt
-import pandas as pd
 from IPython.display import display, clear_output
 from ipywidgets import Layout, GridspecLayout, AppLayout
 from purplecaffeine.core import BaseStorage, LocalStorage, Trial
@@ -240,6 +238,25 @@ class Widget:
             pane_widths=[1, 0, 5],
         )
 
+    def render_table(self, name_value_list):
+        if(len(name_value_list) == 0):
+            return ""
+        parameter_rows = "".join(
+            [
+                f"<tr><td style='text-align: center;'>{str(name)}</td>"+
+                "<td style='text-align: center;'><button class='btn btn-primary "
+                f"rounded-pill' disabled>{str(value)}</button"
+                f"></td></tr>"
+                for name, value in name_value_list
+            ]
+        )
+        return (
+            "<table border=2 class='table'><tr>"
+            "<th style='text-align: center;'>Parameter</th>"
+            "<th style='text-align: center;'>Value</th></tr>"
+            f"{parameter_rows}</table>"
+        )
+
     def render_trial(self):
         """
         Load the tabs with the basic info, circuits and metrics
@@ -247,15 +264,6 @@ class Widget:
         """
         if self.selected_trial is None:
             return self.display_message("Add a new trial to see the info of that trial")
-
-        parameter_rows = "".join(
-            [
-                f"<tr><td>{str(name)}</td><td><button class='btn btn-primary "
-                f"rounded-pill' disabled>{str(value)}</button"
-                f"></td></tr>"
-                for name, value in self.selected_trial.parameters
-            ]
-        )
 
         tags = "".join(
             [
@@ -266,33 +274,26 @@ class Widget:
             ]
         )
 
+        description = ("<p>Description: "+
+        f"{self.selected_trial.description}</p>" if self.selected_trial.description else "")
+
         info = widgets.HTML(
-            f"<h3>{self.selected_trial.name} | {self.selected_trial.uuid} </h3>"
-            f"<p>Description: {self.selected_trial.description}</p>"
-            f"<div>{tags}</div>"
-            "<table border=2 class='table'><tr><th>Parameter</th><th>Value</th></tr>"
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
             'bootstrap@5.2.3/dist/css/bootstrap.min.css" '
             'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
             'crossorigin="anonymous">'
-            f"{parameter_rows}</table>"
+            f"<h3>{self.selected_trial.name} | {self.selected_trial.uuid} </h3>" +
+            description +
+            f"<div>{tags}</div>" +
+            self.render_table(self.selected_trial.parameters)
         )
         info.layout = Layout(overflow="scroll", max_height="300px")
-        metrics = widgets.Output()
-        with metrics:
-            data_frame = pd.DataFrame(
-                self.selected_trial.metrics, columns=["name", "value"]
-            )
-            df2 = data_frame.groupby("name").agg(list)
-            for metric_name, values in df2.to_dict()["value"].items():
-                if len(values) == 1:
-                    pass
-                else:
-                    plt.plot(values)
-                    plt.xlabel("entry")
-                    plt.ylabel("value")
-                    plt.title(f"Metric: {metric_name}")
-                    plt.show()
+
+        metrics = widgets.HTML(
+            "<h3 style='text-align:center'> Metrics </h3>" +
+            (self.render_table(self.selected_trial.metrics))
+        )
+        
         metrics.layout = Layout(overflow="scroll", max_height="300px")
         circuits = widgets.Output()
         with circuits:
