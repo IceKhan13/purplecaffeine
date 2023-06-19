@@ -239,6 +239,13 @@ class Widget:
         )
 
     def render_table(self, name_value_list):
+        """
+        Method to construct a new html string representing
+        a table using name and values.
+
+        Returns:
+            table string (str): html string that contains the table
+        """
         if(len(name_value_list) == 0):
             return ""
         parameter_rows = "".join(
