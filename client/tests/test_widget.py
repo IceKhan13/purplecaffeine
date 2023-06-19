@@ -1,4 +1,4 @@
-"""Tests for Trial."""
+"""Tests for Widget."""
 import os
 import shutil
 from pathlib import Path
