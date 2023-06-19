@@ -1,0 +1,44 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0000-0002-6809-8943",
+      "@type": "Person",
+      "email": "",
+      "name": "Iskandar Sitdikov",
+      "affiliation": "IBM Quantum"
+    },
+    {
+      "@id": "http://orcid.org/0000-0001-8619-8190",
+      "@type": "Person",
+      "email": "",
+      "name": "Michaël Rollin",
+      "affiliation": ""
+    },
+    {
+      "@id": "http://orcid.org/0009-0005-5517-5363",
+      "@type": "Person",
+      "email": "",
+      "name": "Ansah Mohammad Kuriyodath",
+      "affiliation": ""
+    },
+    {
+      "@id": "http://orcid.org/0000-0003-0354-5092",
+      "@type": "Person",
+      "email": "",
+      "name": "Luis Eduardo Martínez Hérnandez",
+      "affiliation": ""
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/IceKhan13/purplecaffeine",
+  "datePublished": "2023-06-19",
+  "dateModified": "2023-06-19",
+  "dateCreated": "2023-06-19",
+  "description": "Tracking experiments and programs is known problem in scientific community. This project is aimed to create simple general interface to track quantum experiments, store and search them in an easy way.",
+  "keywords": "quantum computing, qiskit, tracking, experiments",
+  "license": "Apache 2.0",
+  "title": "PurpleCaffeine",
+  "version": "v0.2.0"
+}
