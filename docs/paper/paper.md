@@ -48,7 +48,7 @@ By utilizing this package, researchers can effortlessly capture and
 store crucial information related to their quantum experiments. The 
 user-friendly interface simplifies the process of inputting and 
 organizing data, including experimental parameters, measurement 
-results, quantum circuits, OpenQASM files, devices information and other
+results, quantum circuits, OpenQASM [@openqasm] files, devices information and other
 relevant metadata. The package's emphasis on simplicity 
 reduces the learning curve and frees researchers from complex data 
 management tasks, enabling them to focus on their core work. 
@@ -56,7 +56,7 @@ management tasks, enabling them to focus on their core work.
 # Statement of need
 
 Researchers in the field of quantum computing predominantly rely on 
-notebook services, such as Jupyter, to work within an interactive 
+notebook services, such as Jupyter [@jupyter], to work within an interactive 
 coding environment. While this approach offers numerous benefits, 
 including code experimentation and real-time analysis, it presents 
 a significant challenge when it comes to tracking experimental data. 
@@ -134,7 +134,7 @@ as a user interface for searching, viewing, and analyzing previous trials.
 This widget is specifically designed to integrate with Jupyter notebooks, 
 providing a convenient and interactive environment for researchers.
 
-![Widget.\label{fig:widget}](./images/widget.png)
+![Widget.\label{fig:widget}](./images/widget_updated.png)
 
 # Acknowledgements
 
