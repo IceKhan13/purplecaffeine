@@ -35,6 +35,7 @@ from qiskit.quantum_info.random import random_pauli
 from qiskit.primitives import Estimator
 
 from purplecaffeine.core import Trial, LocalStorage
+from purplecaffeine.widget import Widget
 
 n_qubits = 4
 depth = 3
@@ -43,7 +44,7 @@ shots = 2000
 circuit = random_circuit(n_qubits, depth)
 obs = random_pauli(n_qubits)
 
-local_storage = LocalStorage("./")
+local_storage = LocalStorage("./trials")
 
 with Trial("Example trial", storage=local_storage) as trial:
     # track some parameters
@@ -61,7 +62,11 @@ with Trial("Example trial", storage=local_storage) as trial:
     
     # track results of run
     trial.add_metric("exp_value", exp_value)
+
+Widget(local_storage).show()
 ```
+![visualization](./docs/images/visualization.png)
+
 
 ----------------------------------------------------------------------------------------------------
 

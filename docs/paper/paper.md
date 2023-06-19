@@ -48,7 +48,7 @@ By utilizing this package, researchers can effortlessly capture and
 store crucial information related to their quantum experiments. The 
 user-friendly interface simplifies the process of inputting and 
 organizing data, including experimental parameters, measurement 
-results, quantum circuits, OpenQASM files, devices information and other
+results, quantum circuits, OpenQASM [@openqasm] files, devices information and other
 relevant metadata. The package's emphasis on simplicity 
 reduces the learning curve and frees researchers from complex data 
 management tasks, enabling them to focus on their core work. 
@@ -56,7 +56,7 @@ management tasks, enabling them to focus on their core work.
 # Statement of need
 
 Researchers in the field of quantum computing predominantly rely on 
-notebook services, such as Jupyter, to work within an interactive 
+notebook services, such as Jupyter [@jupyter], to work within an interactive 
 coding environment. While this approach offers numerous benefits, 
 including code experimentation and real-time analysis, it presents 
 a significant challenge when it comes to tracking experimental data. 
@@ -89,19 +89,22 @@ Qiskit [@Qiskit] objects like QuantumCircuit, Operators, Backends, etc.
 
 To cater to diverse needs, the package provides three flavors of storage 
 options for storing experimental data:
+
 1. Local Storage: The local storage allows researchers to store 
     their experimental data locally on their machines. 
     This option offers convenience and data privacy, as 
     researchers have direct control over their data storage. 
     It is an excellent choice for individual researchers or 
     small-scale projects where data sharing and collaboration 
-    are not a primary concern. 
+    are not a primary concern.
+
 2. API Storage: The API storage is a RESTful API service that  
     functions as a multi-tenant storage solution. 
     Researchers can utilize this storage to store their experimental 
     data in a centralized and scalable manner. 
     It is particularly beneficial for collaborative research projects or 
     environments where data sharing and team collaboration are essential. 
+
 3. S3 Storage: The S3 storage provides the option to store experimental 
     data in S3 buckets, which are highly scalable and reliable storage 
     containers. Researchers can leverage the power and versatility of 
@@ -134,7 +137,7 @@ as a user interface for searching, viewing, and analyzing previous trials.
 This widget is specifically designed to integrate with Jupyter notebooks, 
 providing a convenient and interactive environment for researchers.
 
-![Widget.\label{fig:widget}](./images/widget.png)
+![Widget.\label{fig:widget}](./images/widget_updated.png)
 
 # Acknowledgements
 
