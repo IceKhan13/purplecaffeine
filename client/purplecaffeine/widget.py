@@ -2,9 +2,46 @@
 from typing import List, Optional
 
 import ipywidgets as widgets
+import pandas as pd
 from IPython.display import display, clear_output
 from ipywidgets import Layout, GridspecLayout, AppLayout
+from matplotlib import pyplot as plt
+
 from purplecaffeine.core import BaseStorage, LocalStorage, Trial
+
+
+def display_message(required_message):
+    """
+    Returns a user-friendly message for displaying
+    Returns:
+        empty_message (HTMLWidget): the widget with the info
+    """
+    empty_message = widgets.HTML(
+        f"<h1 style='text-align: center;'> <br><br><br>{required_message}</h1>"
+        '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/'
+        'dist/css/bootstrap.min.css" '
+        'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
+        'crossorigin="anonymous">'
+    )
+    empty_message.layout = Layout(height="300px")
+    return empty_message
+
+
+TABLE_STYLE = """
+<style>
+    table {
+        width: 100% !important;
+        font-family:IBM Plex Sans, Arial, sans-serif !important;
+    }
+
+    th, td {
+        text-align: left !important;
+        padding: 5px !important;
+    }
+
+    tr:nth-child(even) {background-color: #f6f6f6 !important;}
+</style>
+"""
 
 
 class Widget:
@@ -14,8 +51,7 @@ class Widget:
         storage (BaseStorage): storage where the trials are going to be saved
         limit (int): number of trials per page
         offset (int): aux int to paginate result
-        current_page_trials (List[Trial]): list of trials
-        next_page_trials (List[Trial]): list of trials for next page
+        trials (List[Trial]): list of trials
         selected_trial (Trial): current trial on display
          (List[(str, Any)]): list of artifact, any external files
         search_value (str): value that the user puts on search bar
@@ -32,14 +68,11 @@ class Widget:
         self.storage = storage or LocalStorage("./trials")
         self.limit = 10
         self.offset = 0
-        self.current_page_trials: List[Trial] = self.storage.list(
+        self.trials: List[Trial] = self.storage.list(
             limit=self.limit, offset=self.offset
         )
-        self.next_page_trials: List[Trial] = self.storage.list(
-            limit=self.offset + self.limit + self.limit, offset=self.offset + self.limit
-        )
         self.selected_trial: Optional[Trial] = (
-            self.current_page_trials[0] if len(self.current_page_trials) > 0 else None
+            self.trials[0] if len(self.trials) > 0 else None
         )
         self.search_value = ""
 
@@ -55,22 +88,6 @@ class Widget:
         with self.pagination_view:
             display(self.render_pagination())
 
-    def display_message(self, required_message):
-        """
-        Returns a user-friendly message for displaying
-        Returns:
-            empty_message (HTMLWidget): the widget with the info
-        """
-        empty_message = widgets.HTML(
-            f"<h1 style='text-align: center;'> <br><br><br>{required_message}</h1>"
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/'
-            'dist/css/bootstrap.min.css" '
-            'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
-            'crossorigin="anonymous">'
-        )
-        empty_message.layout = Layout(height="300px")
-        return empty_message
-
     def load_detail(self, trial_button):
         """
         Load the details of a trial
@@ -85,7 +102,7 @@ class Widget:
                 clear_output()
                 display(self.render_trial())
         else:
-            self.display_message("Something went wrong while loading your trials ):")
+            display_message("Something went wrong while loading your trials ):")
 
     def render_trails_list(self):
         """
@@ -93,7 +110,7 @@ class Widget:
         We render one button per each trial
         """
         buttons = []
-        for trial in self.current_page_trials:
+        for trial in self.trials:
             button = widgets.Button(
                 description=f"{trial.name} | {trial.uuid}"[:30],
                 disabled=False,
@@ -107,43 +124,45 @@ class Widget:
 
         return widgets.VBox(buttons)
 
-    def paginate(self, page_button):
-        """
-        Displays the pagination accordingly to the clicked button
-        and the list of trials for the current
-        page.
-        Args:
-            page_button (WidgetButton): clicked pagination button
-        """
-        if page_button.tooltip == "prev":
-            self.next_page_trials = self.current_page_trials
-            self.current_page_trials = self.storage.list(
-                limit=self.limit,
-                offset=self.offset - self.limit,
-                query=self.search_value,
-            )
-            self.offset = self.offset - self.limit
-        elif page_button.tooltip == "next":
-            self.current_page_trials = self.next_page_trials
-            self.offset = self.offset + self.limit
-            self.next_page_trials = self.storage.list(
-                limit=self.offset + self.limit,
-                offset=self.offset + self.limit,
-                query=self.search_value,
-            )
-        with self.list_view:
-            clear_output()
-            display(self.render_trails_list())
-        with self.pagination_view:
-            clear_output()
-            display(self.render_pagination())
-
     def render_pagination(self):
         """
         Displays the pagination buttons
         and the list of trials for the current
         page.
         """
+
+        def paginate(page_button):
+            """
+            Displays the pagination accordingly to the clicked button
+            and the list of trials for the current
+            page.
+            Args:
+                page_button (WidgetButton): clicked pagination button
+            """
+            if page_button.tooltip == "prev":
+                self.offset = self.offset - self.limit
+                self.trials = self.storage.list(
+                    limit=self.limit,
+                    offset=self.offset,
+                    query=self.search_value,
+                )
+            elif page_button.tooltip == "next":
+                self.offset = self.offset + self.limit
+                self.trials = self.storage.list(
+                    limit=self.limit,
+                    offset=self.offset,
+                    query=self.search_value,
+                )
+
+            print(self.offset, self.limit)
+
+            with self.list_view:
+                clear_output()
+                display(self.render_trails_list())
+            with self.pagination_view:
+                clear_output()
+                display(self.render_pagination())
+
         prev_page = widgets.Button(
             description="Prev",
             disabled=self.offset < 1,
@@ -151,20 +170,16 @@ class Widget:
             tooltip="prev",
             icon="arrow-circle-left",  # (FontAwesome names without the `fa-` prefix)
         )
-        prev_page.on_click(self.paginate)
+        prev_page.on_click(paginate)
         prev_page.layout = Layout(width="47%")
-        prev_page.add_class("btn")
-        prev_page.add_class("btn-secondary")
         next_page = widgets.Button(
             description="Next",
-            disabled=len(self.next_page_trials) == 0,
+            disabled=len(self.trials) < self.limit,
             button_style="",  # 'success', 'info', 'warning', 'danger' or ''
             tooltip="next",
             icon="arrow-circle-right",  # (FontAwesome names without the `fa-` prefix)
         )
-        next_page.add_class("btn")
-        next_page.add_class("btn-secondary")
-        next_page.on_click(self.paginate)
+        next_page.on_click(paginate)
         next_page.layout = Layout(width="47%")
 
         return widgets.HBox([prev_page, next_page])
@@ -194,31 +209,16 @@ class Widget:
             self.search_value = search.value
             self.limit = 10
             self.offset = 0
-            if search.value == "":
-                self.current_page_trials = self.storage.list(
-                    limit=self.limit, offset=self.offset, query=self.search_value
-                )
-                self.next_page_trials = self.storage.list(
-                    limit=self.offset + self.limit + self.limit,
-                    offset=self.offset + self.limit,
-                    query=self.search_value,
-                )
-            else:
-                self.current_page_trials = self.storage.list(
-                    limit=self.limit, offset=self.offset, query=search.value
-                )
-                self.next_page_trials = self.storage.list(
-                    limit=self.offset + self.limit + self.limit,
-                    offset=self.offset + self.limit,
-                    query=self.search_value,
-                )
+            self.trials = self.storage.list(
+                limit=self.limit, offset=self.offset, query=self.search_value
+            )
             with self.list_view:
                 clear_output()
                 display(self.render_trails_list())
             with self.detail_view:
                 clear_output()
-                if len(self.current_page_trials) > 0:
-                    self.selected_trial = self.current_page_trials[0]
+                if len(self.trials) > 0:
+                    self.selected_trial = self.trials[0]
                     display(self.render_trial())
             with self.pagination_view:
                 clear_output()
@@ -226,8 +226,6 @@ class Widget:
 
         search.layout = Layout(width="99%")
         search_button.on_click(search_function)
-        search_button.add_class("btn")
-        search_button.add_class("btn-secondary")
 
         return AppLayout(
             header=None,
@@ -238,83 +236,133 @@ class Widget:
             pane_widths=[1, 0, 5],
         )
 
-    def render_table(self, name_value_list):
-        """
-        Method to construct a new html string representing
-        a table using name and values.
-
-        Returns:
-            table string (str): html string that contains the table
-        """
-        if len(name_value_list) == 0:
-            return ""
-        parameter_rows = "".join(
-            [
-                f"<tr><td style='text-align: center;'>{str(name)}</td>"
-                + "<td style='text-align: center;'><button class='btn btn-primary "
-                f"rounded-pill' disabled>{str(value)}</button"
-                f"></td></tr>"
-                for name, value in name_value_list
-            ]
-        )
-        return (
-            "<table border=2 class='table'><tr>"
-            "<th style='text-align: center;'>Parameter</th>"
-            "<th style='text-align: center;'>Value</th></tr>"
-            f"{parameter_rows}</table>"
-        )
-
     def render_trial(self):
         """
         Load the tabs with the basic info, circuits and metrics
         of the selected trial
         """
         if self.selected_trial is None:
-            return self.display_message("Add a new trial to see the info of that trial")
+            return display_message("Add a new trial to see the info of that trial")
 
-        tags = "".join(
-            [
-                f"<button class='btn btn-primary rounded-pill btn-sm' "
-                f"style='margin-bottom:20px; margin-right: 10px' "
-                f"disabled>{str(tag)}</button>"
-                for tag in self.selected_trial.tags
+        def render_table(entries):
+            """
+            Method to construct a new html string representing
+            a table using name and values.
+
+            Returns:
+                table string (str): html string that contains the table
+            """
+            if len(entries) == 0:
+                return ""
+
+            rows = [
+                f"""
+                <tr>
+                    <td>{key}</td>
+                    <td>{value}</td>
+                </tr>
+                """
+                for key, value in entries
             ]
-        )
 
-        description = (
-            "<p>Description: " + f"{self.selected_trial.description}</p>"
-            if self.selected_trial.description
-            else ""
-        )
+            return f"""
+                <table>
+                    {TABLE_STYLE}
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    {"".join(rows)}
+                </table>
+            """
 
-        info = widgets.HTML(
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
-            'bootstrap@5.2.3/dist/css/bootstrap.min.css" '
-            'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
-            'crossorigin="anonymous">'
-            f"<h3>{self.selected_trial.name} | {self.selected_trial.uuid} </h3>"
-            + description
-            + f"<div>{tags}</div>"
-            + self.render_table(self.selected_trial.parameters)
-        )
-        info.layout = Layout(overflow="scroll", max_height="300px")
+        def render_line_plot(title, values):
+            """Renders line plot."""
+            plt.plot(values)
+            plt.xlabel("entry")
+            plt.ylabel("value")
+            plt.title(f"Metric: {title}")
+            plt.show()
 
-        metrics = widgets.HTML(
-            "<h3 style='text-align:center'> Metrics </h3>"
-            + (self.render_table(self.selected_trial.metrics))
-        )
+        # info tab
+        info_html = f"""
+            <b>{self.selected_trial.name}</b> #{self.selected_trial.uuid}
+            <div>{" ".join([
+                f"<span style='color:blue'>#{tag}</span>"
+                for tag in self.selected_trial.tags
+            ])}</div>
+            <p>Description: {self.selected_trial.description or "..."}</p>
+            {render_table(self.selected_trial.parameters)}
+        """
+        info_tab = widgets.HTML(info_html)
+        info_tab.layout = Layout(overflow="scroll", max_height="300px")
 
-        metrics.layout = Layout(overflow="scroll", max_height="300px")
-        circuits = widgets.Output()
-        with circuits:
+        # metrics tab
+        metrics_tab = widgets.Output()
+        metrics_tab.layout = Layout(overflow="scroll", max_height="500px")
+        with metrics_tab:
+            dataframe = (
+                pd.DataFrame(self.selected_trial.metrics, columns=["name", "value"])
+                .groupby("name")
+                .agg(list)
+            )
+            metrics_to_table = []
+            metrics_to_plot = []
+            for metric_name, values in dataframe.to_dict()["value"].items():
+                if len(values) == 1:
+                    metrics_to_table.append((metric_name, values[0]))
+                else:
+                    metrics_to_table.append((metric_name, values))
+                    metrics_to_plot.append((metric_name, values))
+            metrics_html = widgets.HTML(
+                f"""
+                <div>
+                    <b>Metrics</b>
+                    {render_table(metrics_to_table)}
+                </div>
+            """
+            )
+            display(metrics_html)
+
+            for metric_name, values in metrics_to_plot:
+                render_line_plot(metric_name, values)
+
+        # circuits tab
+        circuits_tab = widgets.Output()
+        with circuits_tab:
+            display(widgets.HTML("<div> <b>Circuits</b></div>"))
             for name, circuit in self.selected_trial.circuits:
-                print(name)
-                print(circuit)
-        circuits.layout = Layout(overflow="scroll", max_height="300px")
+                axis = plt.subplot(111)
+                axis.set_title(name)
+                circuit.draw("mpl", ax=axis)
+                plt.show()
 
-        tab = widgets.Tab(children=[info, metrics, circuits])
-        tab.titles = ["Info", "Metrics", "Circuits"]
+        circuits_tab.layout = Layout(overflow="scroll", max_height="500px")
 
+        # texts tab
+        texts_html = f"""
+            <div>
+                <b>Texts</b>
+            </div>
+            {render_table(self.selected_trial.texts)}
+        """
+        texts_tab = widgets.HTML(texts_html)
+        texts_tab.layout = Layout(overflow="scroll", max_height="300px")
+
+        # operators tab
+        operators_html = f"""
+            <div>
+                <b>Operators</b>
+            </div>
+            {render_table(self.selected_trial.operators)}
+        """
+        operators_tab = widgets.HTML(operators_html)
+        operators_tab.layout = Layout(overflow="scroll", max_height="300px")
+
+        tab = widgets.Tab(
+            children=[info_tab, metrics_tab, circuits_tab, operators_tab, texts_tab]
+        )
+        tab.titles = ["Info", "Metrics", "Circuits", "Operators", "Texts"]
         return tab
 
     def show(self):
@@ -322,16 +370,9 @@ class Widget:
         Function to assemble all the other
         widgets into one
         """
-        grid = GridspecLayout(2, 1, height="500px")
-        grid[0, 0] = self.list_view
-        grid[1, 0] = self.pagination_view
-
-        return AppLayout(
-            header=self.search(),
-            left_sidebar=grid,
-            center=self.detail_view,
-            right_sidebar=None,
-            footer=None,
-            pane_widths=[0.5, 1, 1],
-            pane_heights=[0.5, 5, 1],
-        )
+        grid = GridspecLayout(10, 3, height="500px")
+        grid[0, :] = self.search()
+        grid[1:8, 0:1] = self.list_view
+        grid[1:9, 1:] = self.detail_view
+        grid[8, :1] = self.pagination_view
+        return grid

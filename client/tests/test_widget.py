@@ -114,9 +114,7 @@ class TestWidget(TestCase):
         """Test when we don't have trials."""
         widget = Widget(self.local_storage)
         self.assertEqual(
-            widget.display_message(
-                "Add a new trial to see the info of that trial "
-            ).value,
+            display_message("Add a new trial to see the info of that trial ").value,
             "<h1 style='text-align: center;'> <br><br><br>Add a new trial "
             "to see the "
             "info of that trial </h1>"
