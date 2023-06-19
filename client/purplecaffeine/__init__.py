@@ -9,3 +9,4 @@
 """
 
 from .core import Trial, LocalStorage, ApiStorage, BaseStorage
+from .widget import Widget

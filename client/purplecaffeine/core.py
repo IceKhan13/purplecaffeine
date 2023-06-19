@@ -510,6 +510,7 @@ class LocalStorage(BaseStorage):
         limit = limit or 10
 
         trials_path = glob.glob(f"{self.path}/**.json")
+        trials_path.sort(key=os.path.getmtime, reverse=True)
         trials = []
         for path in trials_path:
             with open(path, "r", encoding="utf-8") as trial_file:
@@ -525,7 +526,7 @@ class LocalStorage(BaseStorage):
                 or (trial.description.find(query) != -1)
             ]
 
-        trials = trials[offset:limit]
+        trials = trials[offset : offset + limit]
         return trials
 
 
