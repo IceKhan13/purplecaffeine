@@ -8,6 +8,7 @@ from ipywidgets import widgets
 from qiskit.circuit.random import random_circuit
 from qiskit.primitives import Estimator
 from qiskit.quantum_info.random import random_pauli
+
 from purplecaffeine.core import LocalStorage, Trial
 from purplecaffeine.widget import Widget
 
@@ -51,10 +52,10 @@ class TestWidget(TestCase):
         input_text.value = self.local_storage.list()[0].name
         search_button.click()
         self.assertEqual(widget.search_value, self.local_storage.list()[0].name)
-        self.assertEqual(len(widget.current_page_trials), 1)
+        self.assertEqual(len(widget.trials), 1)
         input_text.value = ""
         search_button.click()
-        self.assertEqual(len(widget.current_page_trials), 10)
+        self.assertEqual(len(widget.trials), 10)
 
     def test_load_detail(self):
         """Test to check that the selected trial is the first one"""
@@ -109,22 +110,6 @@ class TestWidget(TestCase):
 
                 # track results of run
                 trial.add_metric("exp_value", exp_value)
-
-    def test_empty_string(self):
-        """Test when we don't have trials."""
-        widget = Widget(self.local_storage)
-        self.assertEqual(
-            display_message("Add a new trial to see the info of that trial ").value,
-            "<h1 style='text-align: center;'> <br><br><br>Add a new trial "
-            "to see the "
-            "info of that trial </h1>"
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
-            "bootstrap@5.2.3/dist/"
-            'css/bootstrap.min.css" '
-            'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW'
-            '1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
-            'crossorigin="anonymous">',
-        )
 
     def tearDown(self) -> None:
         """TearDown the trials objects."""
