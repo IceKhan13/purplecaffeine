@@ -246,12 +246,12 @@ class Widget:
         Returns:
             table string (str): html string that contains the table
         """
-        if(len(name_value_list) == 0):
+        if len(name_value_list) == 0:
             return ""
         parameter_rows = "".join(
             [
-                f"<tr><td style='text-align: center;'>{str(name)}</td>"+
-                "<td style='text-align: center;'><button class='btn btn-primary "
+                f"<tr><td style='text-align: center;'>{str(name)}</td>"
+                + "<td style='text-align: center;'><button class='btn btn-primary "
                 f"rounded-pill' disabled>{str(value)}</button"
                 f"></td></tr>"
                 for name, value in name_value_list
@@ -281,26 +281,29 @@ class Widget:
             ]
         )
 
-        description = ("<p>Description: "+
-        f"{self.selected_trial.description}</p>" if self.selected_trial.description else "")
+        description = (
+            "<p>Description: " + f"{self.selected_trial.description}</p>"
+            if self.selected_trial.description
+            else ""
+        )
 
         info = widgets.HTML(
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/'
             'bootstrap@5.2.3/dist/css/bootstrap.min.css" '
             'integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" '
             'crossorigin="anonymous">'
-            f"<h3>{self.selected_trial.name} | {self.selected_trial.uuid} </h3>" +
-            description +
-            f"<div>{tags}</div>" +
-            self.render_table(self.selected_trial.parameters)
+            f"<h3>{self.selected_trial.name} | {self.selected_trial.uuid} </h3>"
+            + description
+            + f"<div>{tags}</div>"
+            + self.render_table(self.selected_trial.parameters)
         )
         info.layout = Layout(overflow="scroll", max_height="300px")
 
         metrics = widgets.HTML(
-            "<h3 style='text-align:center'> Metrics </h3>" +
-            (self.render_table(self.selected_trial.metrics))
+            "<h3 style='text-align:center'> Metrics </h3>"
+            + (self.render_table(self.selected_trial.metrics))
         )
-        
+
         metrics.layout = Layout(overflow="scroll", max_height="300px")
         circuits = widgets.Output()
         with circuits:
