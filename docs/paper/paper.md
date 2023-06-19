@@ -89,19 +89,22 @@ Qiskit [@Qiskit] objects like QuantumCircuit, Operators, Backends, etc.
 
 To cater to diverse needs, the package provides three flavors of storage 
 options for storing experimental data:
+
 1. Local Storage: The local storage allows researchers to store 
     their experimental data locally on their machines. 
     This option offers convenience and data privacy, as 
     researchers have direct control over their data storage. 
     It is an excellent choice for individual researchers or 
     small-scale projects where data sharing and collaboration 
-    are not a primary concern. 
+    are not a primary concern.
+
 2. API Storage: The API storage is a RESTful API service that  
     functions as a multi-tenant storage solution. 
     Researchers can utilize this storage to store their experimental 
     data in a centralized and scalable manner. 
     It is particularly beneficial for collaborative research projects or 
     environments where data sharing and team collaboration are essential. 
+
 3. S3 Storage: The S3 storage provides the option to store experimental 
     data in S3 buckets, which are highly scalable and reliable storage 
     containers. Researchers can leverage the power and versatility of 
