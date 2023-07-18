@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath("../client"))
 
 project = "PurpleCaffeine"
 copyright = "2023"  # pylint: disable=redefined-builtin
-author = ""
+author = "Iskandar Sitdikov, Michaël Rollin, Ansah Mohammad, Luis Eduardo Martínez Hérnandez"
 
 _rootdir = Path(__file__).parent.parent
 
