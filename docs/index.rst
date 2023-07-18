@@ -71,19 +71,20 @@ Step 2: visualize tracked data
 .. image:: /images/visualization.png
 
 ------------
+.. toctree::
+  :maxdepth: 2
 
-**Guides**
+  Documentation Home <index>
 
 .. toctree::
   :maxdepth: 2
+  :caption: Guides
 
   Guides <guides/index>
 
-
-**API references**
-
 .. toctree::
   :maxdepth: 2
+  :caption: API references
 
   API References <apidocs/index>
 
