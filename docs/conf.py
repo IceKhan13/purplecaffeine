@@ -32,6 +32,7 @@ extensions = [
     "reno.sphinxext",
     "nbsphinx",
     "sphinx_copybutton",
+    "qiskit_sphinx_theme",
 ]
 templates_path = ["_templates"]
 numfig = True
@@ -42,7 +43,7 @@ add_module_names = False
 modindex_common_prefix = ["purple_caffeine_project."]
 
 # html theme options
-html_static_path = ["_static"]
+html_theme = "qiskit"
 # html_logo = "_static/images/logo.png"
 
 # autodoc/autosummary options
