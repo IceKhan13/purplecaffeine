@@ -45,7 +45,7 @@ modindex_common_prefix = ["purple_caffeine_project."]
 # html theme options
 html_theme = "qiskit-ecosystem"
 html_title = f"{project} {release}"
-html_logo = "images/readme_logo.png"
+html_logo = "images/transparent_logo.png"
 html_theme_options = {
     "sidebar_hide_name": True
 }
