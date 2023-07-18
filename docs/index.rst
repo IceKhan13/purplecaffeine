@@ -77,7 +77,7 @@ Step 2: visualize tracked data
 .. toctree::
   :maxdepth: 2
 
-  Documentation Home <index>
+  Documentation Home <self>
 
 .. toctree::
   :maxdepth: 2
