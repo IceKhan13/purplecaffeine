@@ -43,7 +43,8 @@ add_module_names = False
 modindex_common_prefix = ["purple_caffeine_project."]
 
 # html theme options
-html_theme = "qiskit"
+html_theme = "qiskit-ecosystem"
+html_title = f"{project} {release}"
 # html_logo = "_static/images/logo.png"
 
 # autodoc/autosummary options
