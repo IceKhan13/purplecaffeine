@@ -87,9 +87,9 @@ Step 2: visualize tracked data
 
 .. toctree::
   :maxdepth: 2
-  :caption: API references
+  :caption: References
 
-   References <apidocs/index>
+   API References <apidocs/index>
 
 .. Hiding - Indices and tables
    :ref:`genindex`
