@@ -81,7 +81,6 @@ Step 2: visualize tracked data
 
 .. toctree::
   :maxdepth: 2
-  :caption: Guides
 
   Guides <guides/index>
 
