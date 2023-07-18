@@ -71,6 +71,9 @@ Step 2: visualize tracked data
 .. image:: /images/visualization.png
 
 ------------
+
+**Content**
+
 .. toctree::
   :maxdepth: 2
 
