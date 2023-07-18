@@ -89,7 +89,7 @@ Step 2: visualize tracked data
   :maxdepth: 2
   :caption: API references
 
-  API References <apidocs/index>
+   References <apidocs/index>
 
 .. Hiding - Indices and tables
    :ref:`genindex`
