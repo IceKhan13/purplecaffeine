@@ -1,10 +1,6 @@
-##############
-PurpleCaffeine
-##############
+.. image:: /images/readme_logo.png
 
 PurpleCaffeine is a software for tracking quantum programs and experiments.
-
-.. image:: /images/readme_logo.png
 
 The source code to the project is available `on GitHub <https://github.com/IceKhan13/purplecaffeine>`_.
 
@@ -83,12 +79,7 @@ Step 2: visualize tracked data
   :maxdepth: 2
 
   Guides <guides/index>
-
-.. toctree::
-  :maxdepth: 2
-  :caption: References
-
-   API References <apidocs/index>
+  API References <apidocs/index>
 
 .. Hiding - Indices and tables
    :ref:`genindex`
