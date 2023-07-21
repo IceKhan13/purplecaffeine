@@ -29,6 +29,10 @@ This project is aimed to create simple general interface to track quantum experi
 
 ### Quickstart
 
+```shell
+pip install purplecaffeine
+```
+
 ```python
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info.random import random_pauli
