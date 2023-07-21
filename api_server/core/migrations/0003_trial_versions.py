@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="trial",
             name="versions",
-            field=models.TextField(default=[]),
+            field=models.JSONField(default=list),
         ),
     ]
