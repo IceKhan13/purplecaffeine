@@ -6,7 +6,7 @@ from typing import Optional
 from unittest import TestCase
 
 import numpy as np
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
@@ -31,6 +31,7 @@ def dummy_trial(
     trial.add_array("test_array", np.array([42]))
     trial.add_tag("qiskit")
     trial.add_tag("test")
+    trial.add_version("numpy", "1.2.3-4")
     return trial
 
 
@@ -53,6 +54,7 @@ class TestTrial(TestCase):
         trial.read(trial_id=uuid)
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, f"{uuid}.json")))
         self.assertEqual(trial.metrics, [["test_metric", 42]])
+        self.assertEqual(trial.versions, [[key, value] for key, value in __qiskit_version__.items()])
 
     def test_add_trial(self):
         """Test adding stuff into Trial."""
@@ -66,6 +68,7 @@ class TestTrial(TestCase):
         self.assertEqual(trial.texts, [["test_text", "text"]])
         self.assertEqual(trial.arrays, [["test_array", np.array([42])]])
         self.assertEqual(trial.tags, ["qiskit", "test"])
+        self.assertEqual(trial.versions, [["numpy", "1.2.3-4"]])
 
     def test_save_read_local_trial(self):
         """Test save and read Trial locally."""
@@ -84,6 +87,7 @@ class TestTrial(TestCase):
         self.assertEqual(recovered.texts, [["test_text", "text"]])
         self.assertEqual(recovered.arrays, [["test_array", np.array([42])]])
         self.assertEqual(recovered.tags, ["qiskit", "test"])
+        self.assertEqual(recovered.versions, [["numpy", "1.2.3-4"]])
 
     def test_export_import(self):
         """Test export and import Trial from shared file."""
@@ -105,6 +109,7 @@ class TestTrial(TestCase):
         self.assertEqual(new_trial.texts, [["test_text", "text"]])
         self.assertEqual(new_trial.arrays, [["test_array", np.array([42])]])
         self.assertEqual(new_trial.tags, ["qiskit", "test"])
+        self.assertEqual(new_trial.versions, [["numpy", "1.2.3-4"]])
 
     def tearDown(self) -> None:
         """TearDown Trial object."""
