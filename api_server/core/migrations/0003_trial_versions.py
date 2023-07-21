@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
     """Migration"""
 
     dependencies = [
-        ("core", "0001_initial"),
+        ("core", "0002_trial_description"),
     ]
 
     operations = [
