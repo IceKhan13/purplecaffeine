@@ -23,3 +23,4 @@ class Trial(models.Model):
     texts = models.JSONField(default=list)
     arrays = models.JSONField(default=list)
     tags = models.JSONField(default=list)
+    versions = models.JSONField(default=list)

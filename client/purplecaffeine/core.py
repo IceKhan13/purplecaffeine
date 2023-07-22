@@ -13,6 +13,7 @@ import boto3
 import numpy as np
 import requests
 from pympler import asizeof
+from qiskit import __qiskit_version__
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 
@@ -35,6 +36,7 @@ class Trial:
         arrays (List[(str, Union[np.ndarray, List[Any]])]):
             list of array, like quantum circuit results
         tags (List[str]): list of tags in string format
+        versions (List[(str, str)]): list of qiskit version
     """
 
     def __init__(
@@ -51,6 +53,7 @@ class Trial:
         texts: Optional[List[List[str]]] = None,
         arrays: Optional[List[List[Union[str, np.ndarray]]]] = None,
         tags: Optional[List[str]] = None,
+        versions: Optional[List[List[str]]] = None,
     ):
         """Trial class for tracking experiments data.
 
@@ -65,6 +68,7 @@ class Trial:
             arrays (List[(str, Union[np.ndarray, List[Any]])]):
                 list of array, like quantum circuit results
             tags (List[str]): list of tags in string format
+            versions (List[(str, str)]): list of qiskit version
         """
         self.uuid = uuid or str(uuid4())
         self.name = name or os.environ.get("PURPLE_CAFFEINE_TRIAL_NAME")
@@ -101,6 +105,7 @@ class Trial:
             if os.environ.get("PURPLE_CAFFEINE_TRIAL_TAGS")
             else []
         )
+        self.versions = versions or []
 
     def __repr__(self):
         return f"<Trial [{self.name}] {self.uuid}>"
@@ -191,6 +196,15 @@ class Trial:
         """
         self.tags.append(tag)
 
+    def add_version(self, name: str, value: str):
+        """Adds version to trial data.
+
+        Args:
+            name: name of the package
+            value: version for the package
+        """
+        self.versions.append([name, value])
+
     def save(self):
         """Save into Storage."""
         self.storage.save(trial=self)
@@ -242,6 +256,8 @@ class Trial:
         return filename
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        for key in __qiskit_version__:
+            self.add_version(key, __qiskit_version__[key])
         self.save()
 
 
