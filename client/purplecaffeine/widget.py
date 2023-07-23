@@ -370,7 +370,7 @@ class Widget:
         Function to assemble all the other
         widgets into one
         """
-        grid = GridspecLayout(10, 3, height="500px")
+        grid = GridspecLayout(10, 3)
         grid[0, :] = self.search()
         grid[1:8, 0:1] = self.list_view
         grid[1:9, 1:] = self.detail_view
