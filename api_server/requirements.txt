@@ -1,6 +1,6 @@
 Django==4.2.3
 djangorestframework==3.14.0
-psycopg2-binary==2.9.6
+psycopg2-binary==2.9.7
 tzdata==2023.3
 djangorestframework-simplejwt==5.2.2
 gunicorn==21.2.0
