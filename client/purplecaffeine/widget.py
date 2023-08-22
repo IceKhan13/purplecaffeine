@@ -110,9 +110,9 @@ class Widget:
         We render one button per each trial
         """
         buttons = []
-        for trial in self.trials:
+        for idx, trial in enumerate(self.trials):
             button = widgets.Button(
-                description=f"{trial.name} | {trial.uuid}"[:30],
+                description=f"{self.offset + idx + 1}. {trial.name}"[:30],
                 disabled=False,
                 button_style="",
                 tooltip=trial.uuid,
