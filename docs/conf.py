@@ -59,4 +59,8 @@ autoclass_content = "both"
 nbsphinx_timeout = 180
 nbsphinx_execute = "never"
 nbsphinx_widgets_path = ""
+nbsphinx_thumbnails = {
+    "**": "_static/images/logo.png",
+}
+
 exclude_patterns = ["_build", "**.ipynb_checkpoints"]

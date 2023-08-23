@@ -139,6 +139,19 @@ providing a convenient and interactive environment for researchers.
 
 ![Widget.\label{fig:widget}](./images/widget_updated.png)
 
+## Serialization
+
+`Trial`s are serialized using Python's `json` module. We've implemented
+custom `json.JSONEncoder` and `json.JSONDecoder` to handle quantum computing objects
+like `QuantumCircuit`, `Backend`, `Operator`, etc.
+
+Encoders and decoders are using `pickle` module to serialize some classes (`Backend`).
+The pickle module is not secure. Only unpickle data you trust.
+It is possible to construct malicious pickle data which will
+execute arbitrary code during unpickling. Never unpickle data that
+could have come from an untrusted source, or that could have been tampered with.
+
+
 # Acknowledgements
 
 We would like to express our sincere gratitude to the Qiskit Advocates Mentorship 
