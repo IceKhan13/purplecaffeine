@@ -186,7 +186,7 @@ curl -X POST "http://localhost:8000/api/trials/" \
         "metrics": [["nb_qubits", 2]],
         "parameters": [["OS", "ubuntu"]],
         "circuits": [],
-        "operators": [["obs", Pauli("XZYI")]],
+        "operators": [],
         "artifacts": [],
         "texts": [],
         "arrays": [],
