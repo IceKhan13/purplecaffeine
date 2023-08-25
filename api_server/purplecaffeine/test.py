@@ -90,7 +90,7 @@ class UnitTests(TestCase):
         self.assertEqual(get_all.status_code, 200)
 
         get_one = self.client.get(
-            "/api/trials/",
+            "/api/trials/1/",
             headers={"Authorization": f" Bearer {self.get_token()}"},
             content_type="application/json",
         )
