@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  tests_client:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -28,7 +28,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install tox
       - name: Test using tox environment
-        shell: bash
         env:
           FOLDER: ${{ matrix.folder }}
         run: |
@@ -38,3 +37,44 @@ jobs:
         env:
           FOLDER: ${{ matrix.folder }}
         run: tox -ecoverage
+
+  tests_api:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-latest]
+        # In future we can add [macos-latest, windows-latest]
+        python-version: [3.9]
+        folder: ["api_server"]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: purplecaffeine
+          POSTGRES_PASSWORD: purplecaffeinepassword
+          POSTGRES_DB: purplecaffeine
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+      - name: Test using tox environment
+        env:
+          FOLDER: ${{ matrix.folder }}
+        run: |
+          tox -edjango
