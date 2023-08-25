@@ -46,10 +46,10 @@ INSTALLED_APPS = [
     "django_nose",
 ]
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 NOSE_ARGS = [
-    '--cover-erase',
-    '--cover-package=purplecaffeine',
+    "--cover-erase",
+    "--cover-package=purplecaffeine",
 ]
 
 MIDDLEWARE = [
