@@ -1,9 +1,8 @@
 """Tests file."""
+import json
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase
-
-import json
 
 
 class UnitTests(TestCase):
@@ -17,7 +16,7 @@ class UnitTests(TestCase):
     def get_token(self):
         """Get token."""
 
-        data = {"username": f"admin", "password": f"admin"}
+        data = {"username": "admin", "password": "admin"}
 
         url = reverse("token_obtain_pair")
         login = self.client.post(url, data=data, content_type="application/json")
@@ -32,7 +31,7 @@ class UnitTests(TestCase):
 
         url = reverse("token_obtain_pair")
         login = self.client.post(url, data=data, content_type="application/json")
-        self.assertEquals(login.status_code, 200)
+        self.assertEqual(login.status_code, 200)
 
         token_refresh = json.loads(login.content)["refresh"]
 
@@ -40,7 +39,7 @@ class UnitTests(TestCase):
         refresh = self.client.post(
             url, data={"refresh": f"{token_refresh}"}, content_type="application/json"
         )
-        self.assertEquals(refresh.status_code, 200)
+        self.assertEqual(refresh.status_code, 200)
 
         token_access = json.loads(login.content)["access"]
 
@@ -48,7 +47,7 @@ class UnitTests(TestCase):
         verify = self.client.post(
             url, data={"token": f"{token_access}"}, content_type="application/json"
         )
-        self.assertEquals(verify.status_code, 200)
+        self.assertEqual(verify.status_code, 200)
 
     def test_get_swagger(self):
         """
@@ -57,7 +56,7 @@ class UnitTests(TestCase):
 
         url = reverse("swagger-ui")
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_trials(self):
         """Tests getting trials."""
@@ -81,25 +80,25 @@ class UnitTests(TestCase):
             headers={"Authorization": f" Bearer {self.get_token()}"},
             content_type="application/json",
         )
-        self.assertEquals(post.status_code, 201)
+        self.assertEqual(post.status_code, 201)
 
         get_all = self.client.get(
             "/api/trials/",
             headers={"Authorization": f" Bearer {self.get_token()}"},
             content_type="application/json",
         )
-        self.assertEquals(get_all.status_code, 200)
+        self.assertEqual(get_all.status_code, 200)
 
         get_one = self.client.get(
             "/api/trials/",
             headers={"Authorization": f" Bearer {self.get_token()}"},
             content_type="application/json",
         )
-        self.assertEquals(get_one.status_code, 200)
+        self.assertEqual(get_one.status_code, 200)
 
         delete = self.client.delete(
             "/api/trials/1/",
             headers={"Authorization": f" Bearer {self.get_token()}"},
             content_type="application/json",
         )
-        self.assertEquals(delete.status_code, 204)
+        self.assertEqual(delete.status_code, 204)
