@@ -88,6 +88,7 @@ class UnitTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(get_all.status_code, 200)
+        self.assertIsInstance(json.loads(get_all.content)["results"], list)
 
         get_one = self.client.get(
             "/api/trials/1/",
@@ -95,6 +96,7 @@ class UnitTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(get_one.status_code, 200)
+        self.assertEqual(json.loads(get_one.content)["id"], 1)
 
         delete = self.client.delete(
             "/api/trials/1/",
