@@ -73,12 +73,10 @@ Widget(local_storage).show()
 ### Source Code Installation
 
 
-If you want to install from source code, execute while in the client folder of the project:
-
+If you want to install from source code, execute while in the root folder of the project:
 
 ```shell
-python3 setup.py install
-```
+pip install client/.
 
 ----------------------------------------------------------------------------------------------------
 
