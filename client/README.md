@@ -17,17 +17,23 @@ This project is aimed to create simple general interface to track quantum experi
 ##### For Users
 
 1. [Quickstart](#quickstart)
-2. [Documentation](#documentation)
-3. [Guides](https://github.com/IceKhan13/purplecaffeine/tree/main/docs/guides)
-4. [How to Give Feedback](#how-to-give-feedback)
-5. [Contribution Guidelines](#contribution-guidelines)
-6. [References and Acknowledgements](#references-and-acknowledgements)
-7. [License](#license)
+2. [Source Code Installation](#source-code-installation)
+3. [Documentation](#documentation)
+4. [Guides](https://github.com/IceKhan13/purplecaffeine/tree/main/docs/guides)
+5. [How to Give Feedback](#how-to-give-feedback)
+6. [Contribution Guidelines](#contribution-guidelines)
+7. [References and Acknowledgements](#references-and-acknowledgements)
+8. [License](#license)
 
 
 ----------------------------------------------------------------------------------------------------
 
 ### Quickstart
+
+```shell
+pip install purplecaffeine
+```
+
 
 ```python
 from qiskit.circuit.random import random_circuit
@@ -66,6 +72,18 @@ with Trial("Example trial", storage=local_storage) as trial:
 Widget(local_storage).show()
 ```
 ![visualization](https://raw.githubusercontent.com/IceKhan13/purplecaffeine/main/docs/images/visualization.png)
+
+----------------------------------------------------------------------------------------------------
+
+### Source Code Installation
+
+
+If you want to install from source code, execute while in the root folder of the project:
+
+```shell
+cd client
+pip install .
+```
 
 ----------------------------------------------------------------------------------------------------
 
