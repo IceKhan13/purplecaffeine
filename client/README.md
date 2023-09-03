@@ -81,7 +81,7 @@ Widget(local_storage).show()
 If you want to install from source code, execute while in the root folder of the project:
 
 ```shell
-cd ./client
+cd client
 pip install .
 ```
 
