@@ -37,46 +37,46 @@ bibliography: paper.bib
 
 PurpleCaffeine aims to provide researchers in the field of quantum computing
 with a user-friendly and efficient solution for tracking their 
-experimentation data. With the rapid advancement of quantum 
+experimental data. With the rapid advancement of quantum 
 computing research, the need for accessible and organized data 
 management tools has become increasingly important. By offering 
-a simplified interface, the package allows researchers to easily 
+a simple interface, PurpleCaffeine allows researchers to easily 
 record and organize quantum experimental data, ensuring its accessibility
 and facilitating future analysis.
 
-By utilizing this package, researchers can effortlessly capture and 
+Researchers can use PurpleCaffeine to capture and 
 store crucial information related to their quantum experiments. The 
 user-friendly interface simplifies the process of inputting and 
 organizing data, including experimental parameters, measurement 
 results, quantum circuits, OpenQASM [@openqasm] files, devices information and other
-relevant metadata. The package's emphasis on simplicity 
+relevant metadata. The emphasis on simplicity 
 reduces the learning curve and frees researchers from complex data 
 management tasks, enabling them to focus on their core work. 
 
 # Statement of need
 
-Researchers in the field of quantum computing predominantly rely on 
+Researchers in the field of quantum computing rely predominantly on 
 notebook services, such as Jupyter [@jupyter], to work within an interactive 
 coding environment. While this approach offers numerous benefits, 
 including code experimentation and real-time analysis, it presents 
 a significant challenge when it comes to tracking experimental data. 
 One of the main drawbacks is the constant overwriting of data, 
 making it exceedingly difficult to trace the specific parameters, 
-circuits, and other details utilized in previous iterations.
+circuits, and other details used in previous iterations.
 
-As quantum computing research progresses, it becomes increasingly 
+As quantum computing research progresses it becomes increasingly 
 important to have a reliable and efficient system for managing 
 experimental data. A comprehensive solution is needed to address 
 the shortcomings of interactive workflows, ensuring that researchers
 can easily record and access vital information related to their experiments.
 By overcoming the limitations of current approaches, this solution
-would empower researchers to track their data effectively and gain
+ empowers researchers to track their data effectively and gain
 valuable insights from previous iterations, leading to more accurate 
 analyses, reproducible research, and accelerated progress in the field.
 
 # Architecture
 
-The proposed software package utilizes a variation of the client-server 
+The proposed software package uses a variation of the client-server 
 architecture, consisting of a client-side component and multiple storage 
 options for storing experimental data \autoref{fig:architecture}.
 
@@ -85,7 +85,7 @@ options for storing experimental data \autoref{fig:architecture}.
 
 The client component is a Python library specifically designed for 
 tracking experimental data in quantum computing research, covering essential
-Qiskit [@Qiskit] objects like QuantumCircuit, Operators, Backends, etc.
+Qiskit [@Qiskit] objects including QuantumCircuit, Operators and Backends.
 
 To cater to diverse needs, the package provides three flavors of storage 
 options for storing experimental data:
