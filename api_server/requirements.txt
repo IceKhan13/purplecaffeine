@@ -1,4 +1,4 @@
-Django==4.2.4
+Django==4.2.5
 djangorestframework==3.14.0
 psycopg2-binary==2.9.7
 tzdata==2023.3
