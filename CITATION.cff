@@ -1,18 +1,20 @@
 cff-version: 1.1.0
 message: "If you use this software, please cite it as below."
 authors:
-  - family-names: Sitdikov
-    given-names: Iskandar
+  - family-names: "Sitdikov"
+    given-names: "Iskandar"
     orcid: https://orcid.org/0000-0002-6809-8943
-  - family-names: Rollin
-    given-names: Michaël
+  - family-names: "Rollin"
+    given-names: "Michaël"
     orcid: https://orcid.org/0000-0001-8619-8190
-  - family-names: Kuriyodath
-    given-names: Ansah Mohammad 
+  - family-names: "Kuriyodath"
+    given-names: "Ansah Mohammad" 
     orcid: https://orcid.org/0009-0005-5517-5363
-  - family-names: Hérnandez
-    given-names: Luis Eduardo Martínez
+  - family-names: "Hérnandez"
+    given-names: "Luis Eduardo Martínez"
     orcid: https://orcid.org/0000-0003-0354-5092
-title: PurpleCaffeine: tracking of quantum programs and experiments
+title: "PurpleCaffeine: tracking of quantum programs and experiments"
 version: v0.2.4
+doi: 10.5281/zenodo.8357490
 date-released: 2023-09-19
+url: "https://github.com/IceKhan13/purplecaffeine"
