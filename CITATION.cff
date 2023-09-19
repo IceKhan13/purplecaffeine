@@ -14,7 +14,7 @@ authors:
     given-names: "Luis Eduardo Martínez"
     orcid: https://orcid.org/0000-0003-0354-5092
 title: "PurpleCaffeine: tracking of quantum programs and experiments"
-version: v0.2.4
+version: v0.2.5
 doi: 10.5281/zenodo.8357490
 date-released: 2023-09-19
 url: "https://github.com/IceKhan13/purplecaffeine"
