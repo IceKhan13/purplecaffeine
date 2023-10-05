@@ -1,6 +1,7 @@
 PurpleCaffeine: tracking of quantum programs and experiments
 ============================================================
 
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05673/status.svg)](https://doi.org/10.21105/joss.05673)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-informational)
 [![Python](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-informational)](https://www.python.org/)
 [![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%200.34.2-6133BD)](https://github.com/Qiskit/qiskit)
