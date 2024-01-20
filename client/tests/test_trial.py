@@ -52,7 +52,9 @@ class TestTrial(TestCase):
         with Trial(name="test_trial", storage=self.local_storage, uuid=uuid) as trial:
             trial.add_metric("test_metric", 42)
         trial.read(trial_id=uuid)
-        self.assertTrue(os.path.isfile(os.path.join(self.save_path, f"trial_{uuid}/trial.json")))
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.save_path, f"trial_{uuid}/trial.json"))
+        )
         self.assertEqual(trial.metrics, [["test_metric", 42]])
         self.assertEqual(
             trial.versions, [[key, value] for key, value in __qiskit_version__.items()]
@@ -78,7 +80,9 @@ class TestTrial(TestCase):
         trial.save()
 
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, f"trial_{trial.uuid}/trial.json"))
+            os.path.isfile(
+                os.path.join(self.save_path, f"trial_{trial.uuid}/trial.json")
+            )
         )
         recovered = trial.read(trial_id=trial.uuid)
         self.assertEqual(recovered.description, "Short desc")

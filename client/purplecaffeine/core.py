@@ -233,7 +233,9 @@ class Trial:
         Returns:
             Trial dict object
         """
-        with open(os.path.join(path, "trial.json"), "r", encoding="utf-8") as trial_file:
+        with open(
+            os.path.join(path, "trial.json"), "r", encoding="utf-8"
+        ) as trial_file:
             trial_json = json.load(trial_file, cls=TrialDecoder)
             if "id" in trial_json:
                 del trial_json["id"]
@@ -263,7 +265,9 @@ class Trial:
             json.dump(self.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         for circuit in self.circuits:
-            save_circuit = os.path.join(path, f"trial_{self.uuid}/circuit_{circuit[0]}.json")
+            save_circuit = os.path.join(
+                path, f"trial_{self.uuid}/circuit_{circuit[0]}.json"
+            )
             with open(save_circuit, "w", encoding="utf-8") as circuit_file:
                 json.dump(circuit, circuit_file, cls=CircEncoder, indent=4)
 
@@ -500,7 +504,9 @@ class LocalStorage(BaseStorage):
             json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         for circuit in trial.circuits:
-            save_circuit = os.path.join(self.path, f"trial_{trial.uuid}/circuit_{circuit[0]}.json")
+            save_circuit = os.path.join(
+                self.path, f"trial_{trial.uuid}/circuit_{circuit[0]}.json"
+            )
             with open(save_circuit, "w", encoding="utf-8") as circuit_file:
                 json.dump(circuit, circuit_file, cls=CircEncoder, indent=4)
 
@@ -526,7 +532,9 @@ class LocalStorage(BaseStorage):
             trial = Trial(**json.load(trial_file, cls=TrialDecoder))
 
         for index, circuit in enumerate(copy.copy(trial.circuits)):
-            circ_path = os.path.join(self.path, f"trial_{trial_id}/circuit_{circuit[0]}.json")
+            circ_path = os.path.join(
+                self.path, f"trial_{trial_id}/circuit_{circuit[0]}.json"
+            )
             with open(circ_path, "r", encoding="utf-8") as circ_file:
                 trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
 
