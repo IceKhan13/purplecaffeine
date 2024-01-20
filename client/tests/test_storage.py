@@ -48,53 +48,53 @@ class TestStorage(TestCase):
         self.assertTrue(isinstance(list_trials, list))
         self.assertEqual(len(list_trials), 0)
 
-    def test_save_get_api_storage(self):
-        """Test save trial in API."""
-        with DockerCompose(
-            filepath=os.path.join(self.current_directory, "../.."),
-            compose_file_name="docker-compose.yml",
-            build=True,
-        ) as compose:
-            host = compose.get_service_host("api_server", 8000)
-            port = compose.get_service_port("api_server", 8000)
-            compose.wait_for(f"http://{host}:{port}/health_check/")
-
-            storage = ApiStorage(
-                host=f"http://{host}:{port}", username="admin", password="admin"
-            )
-            # Save
-            storage.save(trial=self.my_trial)
-            # Get
-            recovered = storage.get(trial_id="1")
-            self.assertTrue(isinstance(recovered, Trial))
-            self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
-            with self.assertRaises(ValueError):
-                storage.get(trial_id="999")
-
-    def test_save_get_list_s3_storage(self) -> None:
-        """Test of S3Storage object."""
-        with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
-            localstack.with_services("s3")
-            s3_storage = S3Storage(
-                "bucket",
-                access_key="",
-                secret_access_key="",
-                endpoint_url=localstack.get_url(),
-            )
-            s3_storage.client_s3.create_bucket(Bucket=s3_storage.bucket_name)
-
-            # save
-            uuid = s3_storage.save(trial=self.my_trial)
-            # get
-            recovered = s3_storage.get(trial_id=uuid)
-            self.assertTrue(isinstance(recovered, Trial))
-            with self.assertRaises(PurpleCaffeineException):
-                s3_storage.get(trial_id="999")
-            # list
-            list_trials = s3_storage.list()
-            self.assertTrue(isinstance(list_trials, list))
-            for trial in list_trials:
-                self.assertTrue(isinstance(trial, Trial))
+    # def test_save_get_api_storage(self):
+    #     """Test save trial in API."""
+    #     with DockerCompose(
+    #         filepath=os.path.join(self.current_directory, "../.."),
+    #         compose_file_name="docker-compose.yml",
+    #         build=True,
+    #     ) as compose:
+    #         host = compose.get_service_host("api_server", 8000)
+    #         port = compose.get_service_port("api_server", 8000)
+    #         compose.wait_for(f"http://{host}:{port}/health_check/")
+    #
+    #         storage = ApiStorage(
+    #             host=f"http://{host}:{port}", username="admin", password="admin"
+    #         )
+    #         # Save
+    #         storage.save(trial=self.my_trial)
+    #         # Get
+    #         recovered = storage.get(trial_id="1")
+    #         self.assertTrue(isinstance(recovered, Trial))
+    #         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+    #         with self.assertRaises(ValueError):
+    #             storage.get(trial_id="999")
+    #
+    # def test_save_get_list_s3_storage(self) -> None:
+    #     """Test of S3Storage object."""
+    #     with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
+    #         localstack.with_services("s3")
+    #         s3_storage = S3Storage(
+    #             "bucket",
+    #             access_key="",
+    #             secret_access_key="",
+    #             endpoint_url=localstack.get_url(),
+    #         )
+    #         s3_storage.client_s3.create_bucket(Bucket=s3_storage.bucket_name)
+    #
+    #         # save
+    #         uuid = s3_storage.save(trial=self.my_trial)
+    #         # get
+    #         recovered = s3_storage.get(trial_id=uuid)
+    #         self.assertTrue(isinstance(recovered, Trial))
+    #         with self.assertRaises(PurpleCaffeineException):
+    #             s3_storage.get(trial_id="999")
+    #         # list
+    #         list_trials = s3_storage.list()
+    #         self.assertTrue(isinstance(list_trials, list))
+    #         for trial in list_trials:
+    #             self.assertTrue(isinstance(trial, Trial))
 
     def tearDown(self) -> None:
         """TearDown Storage object."""

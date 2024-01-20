@@ -566,8 +566,19 @@ class LocalStorage(BaseStorage):
         trials = []
         for path in trials_path:
             with open(path, "r", encoding="utf-8") as trial_file:
-                trial_dict = json.load(trial_file, cls=TrialDecoder)
-                trials.append(Trial(**trial_dict))
+                trial_dict = Trial(**json.load(trial_file, cls=TrialDecoder))
+
+                for index, circuit in enumerate(copy.copy(trial_dict.circuits)):
+                    circ_path = os.path.join(
+                        f"{self.path}",
+                        f"trial_{trial_dict.uuid}/circuit_{circuit[0]}.json",
+                    )
+                    with open(circ_path, "r", encoding="utf-8") as circ_file:
+                        trial_dict.circuits[index] = json.load(
+                            circ_file, cls=TrialDecoder
+                        )
+
+                trials.append(trial_dict)
 
         if query:
             trials = [
