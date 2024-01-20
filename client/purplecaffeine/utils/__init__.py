@@ -6,4 +6,4 @@
     TrialDecoder
 """
 
-from .json import TrialEncoder, TrialDecoder
+from .json import TrialEncoder, TrialDecoder, CircEncoder

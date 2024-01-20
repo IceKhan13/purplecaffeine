@@ -5,6 +5,7 @@ import glob
 import json
 import logging
 import os
+import copy
 from pathlib import Path
 from typing import Optional, Union, List, Any, Dict
 from uuid import uuid4
@@ -19,7 +20,7 @@ from qiskit.quantum_info.operators import Operator
 
 from purplecaffeine.exception import PurpleCaffeineException
 from purplecaffeine.helpers import Configuration
-from purplecaffeine.utils import TrialEncoder, TrialDecoder
+from purplecaffeine.utils import TrialEncoder, TrialDecoder, CircEncoder
 
 
 class Trial:
@@ -479,9 +480,16 @@ class LocalStorage(BaseStorage):
         Returns:
             self.path: path of the trial file
         """
-        save_path = os.path.join(self.path, f"{trial.uuid}.json")
+        save_path = os.path.join(self.path, f"trial_{trial.uuid}/trial.json")
+        if not os.path.isdir(os.path.join(self.path, f"trial_{trial.uuid}")):
+            os.makedirs(os.path.join(self.path, f"trial_{trial.uuid}"))
         with open(save_path, "w", encoding="utf-8") as trial_file:
             json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
+
+        for circuit in trial.circuits:
+            save_circuit = os.path.join(self.path, f"trial_{trial.uuid}/circuit_{circuit[0]}.json")
+            with open(save_circuit, "w", encoding="utf-8") as circuit_file:
+                json.dump(circuit, circuit_file, cls=CircEncoder, indent=4)
 
         return self.path
 
@@ -494,7 +502,7 @@ class LocalStorage(BaseStorage):
         Returns:
             trial: object of a trial
         """
-        trial_path = os.path.join(self.path, f"{trial_id}.json")
+        trial_path = os.path.join(self.path, f"trial_{trial_id}/trial.json")
         if not os.path.isfile(trial_path):
             logging.warning(
                 "Your file %s does not exist.",
@@ -502,7 +510,14 @@ class LocalStorage(BaseStorage):
             )
             raise ValueError(trial_id)
         with open(trial_path, "r", encoding="utf-8") as trial_file:
-            return Trial(**json.load(trial_file, cls=TrialDecoder))
+            trial = Trial(**json.load(trial_file, cls=TrialDecoder))
+
+        for index, circuit in enumerate(copy.copy(trial.circuits)):
+            circ_path = os.path.join(self.path, f"trial_{trial_id}/circuit_{circuit[0]}.json")
+            with open(circ_path, "r", encoding="utf-8") as circ_file:
+                trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
+
+        return trial
 
     def list(
         self,
@@ -525,7 +540,7 @@ class LocalStorage(BaseStorage):
         offset = offset or 0
         limit = limit or 10
 
-        trials_path = glob.glob(f"{self.path}/**.json")
+        trials_path = glob.glob(f"{self.path}/**/trial.json")
         trials_path.sort(key=os.path.getmtime, reverse=True)
         trials = []
         for path in trials_path:

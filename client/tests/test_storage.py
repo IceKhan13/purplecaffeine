@@ -28,7 +28,7 @@ class TestStorage(TestCase):
         # Save
         self.local_storage.save(trial=self.my_trial)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, f"{self.my_trial.uuid}.json"))
+            os.path.isfile(os.path.join(self.save_path, f"trial_{self.my_trial.uuid}/trial.json"))
         )
         # Get
         recovered = self.local_storage.get(trial_id=self.my_trial.uuid)

@@ -1,9 +1,10 @@
 """Tests for Json."""
 import json
+import copy
 from unittest import TestCase
 
 from purplecaffeine.core import Trial
-from purplecaffeine.utils import TrialEncoder, TrialDecoder
+from purplecaffeine.utils import TrialEncoder, TrialDecoder, CircEncoder
 
 from ..test_trial import dummy_trial
 
@@ -17,9 +18,14 @@ class TestJson(TestCase):
         # Encoder
         trial_encode = json.dumps(my_trial.__dict__, cls=TrialEncoder, indent=4)
         self.assertTrue(isinstance(trial_encode, str))
+        for circuit in my_trial.circuits:
+            circ_encode = json.dumps(circuit, cls=CircEncoder, indent=4)
 
         # Decoder
         trial_decode = Trial(**json.loads(trial_encode, cls=TrialDecoder))
+        for index, circuit in enumerate(copy.copy(trial_decode.circuits)):
+            trial_decode.circuits[index] = json.loads(circ_encode, cls=TrialDecoder)
+
         self.assertTrue(isinstance(trial_decode, Trial))
         self.assertEqual(trial_decode.metrics, my_trial.metrics)
         self.assertEqual(trial_decode.parameters, my_trial.parameters)
