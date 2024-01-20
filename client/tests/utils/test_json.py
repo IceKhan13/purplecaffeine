@@ -3,8 +3,10 @@ import json
 import copy
 from unittest import TestCase
 
+from qiskit_ibm_runtime.utils import RuntimeEncoder
+
 from purplecaffeine.core import Trial
-from purplecaffeine.utils import TrialEncoder, TrialDecoder, CircEncoder
+from purplecaffeine.utils import TrialEncoder, TrialDecoder
 
 from ..test_trial import dummy_trial
 
@@ -19,7 +21,7 @@ class TestJson(TestCase):
         trial_encode = json.dumps(my_trial.__dict__, cls=TrialEncoder, indent=4)
         self.assertTrue(isinstance(trial_encode, str))
         for circuit in my_trial.circuits:
-            circ_encode = json.dumps(circuit, cls=CircEncoder, indent=4)
+            circ_encode = json.dumps(circuit, cls=RuntimeEncoder, indent=4)
 
         # Decoder
         trial_decode = Trial(**json.loads(trial_encode, cls=TrialDecoder))

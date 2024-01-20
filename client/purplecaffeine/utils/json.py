@@ -42,7 +42,3 @@ class TrialDecoder(RuntimeDecoder):
                 return None
             return super().object_hook(obj)
         return obj
-
-
-class CircEncoder(RuntimeEncoder):
-    """Json encoder for circuit."""

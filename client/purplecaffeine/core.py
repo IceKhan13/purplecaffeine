@@ -5,6 +5,7 @@ import glob
 import json
 import logging
 import os
+import re
 import copy
 from pathlib import Path
 from typing import Optional, Union, List, Any, Dict
@@ -17,10 +18,11 @@ from pympler import asizeof
 from qiskit import __qiskit_version__
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
+from qiskit_ibm_runtime.utils import RuntimeEncoder
 
 from purplecaffeine.exception import PurpleCaffeineException
 from purplecaffeine.helpers import Configuration
-from purplecaffeine.utils import TrialEncoder, TrialDecoder, CircEncoder
+from purplecaffeine.utils import TrialEncoder, TrialDecoder
 
 
 class Trial:
@@ -224,32 +226,20 @@ class Trial:
         return self.storage.get(trial_id=trial_id)
 
     @staticmethod
-    def import_from_shared_file(path) -> Trial:
+    def import_from_shared_file(path: str, trial_id: str) -> Trial:
         """Import Trial for shared file.
 
         Args:
             path: full path of the file
+            trial_id: trial id of the folder
 
         Returns:
             Trial dict object
         """
-        with open(
-            os.path.join(path, "trial.json"), "r", encoding="utf-8"
-        ) as trial_file:
-            trial_json = json.load(trial_file, cls=TrialDecoder)
-            if "id" in trial_json:
-                del trial_json["id"]
-            if "uuid" in trial_json:
-                del trial_json["uuid"]
-            trial = Trial(**trial_json)
 
-            for index, circuit in enumerate(copy.copy(trial.circuits)):
-                circ_path = os.path.join(path, f"circuit_{circuit[0]}.json")
-                with open(circ_path, "r", encoding="utf-8") as circ_file:
-                    trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
-            return trial
+        return LocalStorage(path).get(trial_id=trial_id)
 
-    def export_to_shared_file(self, path) -> str:
+    def export_to_shared_file(self, path: str) -> str:
         """Export trial to shared file.
 
         Args:
@@ -258,18 +248,8 @@ class Trial:
         Returns:
             Full path of the file
         """
-        filename = os.path.join(path, f"trial_{self.uuid}/trial.json")
-        if not os.path.isdir(os.path.join(path, f"trial_{self.uuid}")):
-            os.makedirs(os.path.join(path, f"trial_{self.uuid}"))
-        with open(filename, "w", encoding="utf-8") as trial_file:
-            json.dump(self.__dict__, trial_file, cls=TrialEncoder, indent=4)
-
-        for circuit in self.circuits:
-            save_circuit = os.path.join(
-                path, f"trial_{self.uuid}/circuit_{circuit[0]}.json"
-            )
-            with open(save_circuit, "w", encoding="utf-8") as circuit_file:
-                json.dump(circuit, circuit_file, cls=CircEncoder, indent=4)
+        self.storage.path = path
+        self.storage.save(trial=self)
 
         return os.path.join(path, f"trial_{self.uuid}")
 
@@ -497,18 +477,19 @@ class LocalStorage(BaseStorage):
         Returns:
             self.path: path of the trial file
         """
-        save_path = os.path.join(self.path, f"trial_{trial.uuid}/trial.json")
-        if not os.path.isdir(os.path.join(self.path, f"trial_{trial.uuid}")):
-            os.makedirs(os.path.join(self.path, f"trial_{trial.uuid}"))
-        with open(save_path, "w", encoding="utf-8") as trial_file:
+        save_path = os.path.join(self.path, f"trial_{trial.uuid}")
+        if not os.path.isdir(save_path):
+            os.makedirs(save_path)
+
+        with open(
+            os.path.join(save_path, "trial.json"), "w", encoding="utf-8"
+        ) as trial_file:
             json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         for circuit in trial.circuits:
-            save_circuit = os.path.join(
-                self.path, f"trial_{trial.uuid}/circuit_{circuit[0]}.json"
-            )
+            save_circuit = os.path.join(save_path, f"circuit_{circuit[0]}.json")
             with open(save_circuit, "w", encoding="utf-8") as circuit_file:
-                json.dump(circuit, circuit_file, cls=CircEncoder, indent=4)
+                json.dump(circuit, circuit_file, cls=RuntimeEncoder, indent=4)
 
         return self.path
 
@@ -521,24 +502,24 @@ class LocalStorage(BaseStorage):
         Returns:
             trial: object of a trial
         """
-        trial_path = os.path.join(self.path, f"trial_{trial_id}/trial.json")
-        if not os.path.isfile(trial_path):
+        trial_path = os.path.join(self.path, f"trial_{trial_id}")
+        if not os.path.isfile(os.path.join(trial_path, "trial.json")):
             logging.warning(
                 "Your file %s does not exist.",
                 trial_path,
             )
             raise ValueError(trial_id)
-        with open(trial_path, "r", encoding="utf-8") as trial_file:
+        with open(
+            os.path.join(trial_path, "trial.json"), "r", encoding="utf-8"
+        ) as trial_file:
             trial = Trial(**json.load(trial_file, cls=TrialDecoder))
 
-        for index, circuit in enumerate(copy.copy(trial.circuits)):
-            circ_path = os.path.join(
-                self.path, f"trial_{trial_id}/circuit_{circuit[0]}.json"
-            )
-            with open(circ_path, "r", encoding="utf-8") as circ_file:
-                trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
+            for index, circuit in enumerate(copy.copy(trial.circuits)):
+                circ_path = os.path.join(trial_path, f"circuit_{circuit[0]}.json")
+                with open(circ_path, "r", encoding="utf-8") as circ_file:
+                    trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
 
-        return trial
+            return trial
 
     def list(
         self,
@@ -561,24 +542,17 @@ class LocalStorage(BaseStorage):
         offset = offset or 0
         limit = limit or 10
 
-        trials_path = glob.glob(f"{self.path}/**/trial.json")
+        trials_path = glob.glob(f"{self.path}/trial_*")
         trials_path.sort(key=os.path.getmtime, reverse=True)
         trials = []
         for path in trials_path:
-            with open(path, "r", encoding="utf-8") as trial_file:
-                trial_dict = Trial(**json.load(trial_file, cls=TrialDecoder))
-
-                for index, circuit in enumerate(copy.copy(trial_dict.circuits)):
-                    circ_path = os.path.join(
-                        f"{self.path}",
-                        f"trial_{trial_dict.uuid}/circuit_{circuit[0]}.json",
+            trials.append(
+                self.get(
+                    trial_id=re.search(r"trial_([^/]+)", os.path.basename(path)).group(
+                        1
                     )
-                    with open(circ_path, "r", encoding="utf-8") as circ_file:
-                        trial_dict.circuits[index] = json.load(
-                            circ_file, cls=TrialDecoder
-                        )
-
-                trials.append(trial_dict)
+                )
+            )
 
         if query:
             trials = [

@@ -105,7 +105,7 @@ class TestTrial(TestCase):
         )
         # Import
         new_trial = Trial("test_import").import_from_shared_file(
-            os.path.join(self.save_path, f"trial_{trial.uuid}")
+            self.save_path, trial.uuid
         )
         self.assertEqual(new_trial.description, "Short desc")
         self.assertEqual(new_trial.metrics, [["test_metric", 42]])
