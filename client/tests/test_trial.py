@@ -97,11 +97,11 @@ class TestTrial(TestCase):
         # Export
         trial.export_to_shared_file(path=self.save_path)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, f"{trial.uuid}.json"))
+            os.path.isdir(os.path.join(self.save_path, f"trial_{trial.uuid}"))
         )
         # Import
         new_trial = Trial("test_import").import_from_shared_file(
-            os.path.join(self.save_path, f"trial_{trial.uuid}/trial.json")
+            os.path.join(self.save_path, f"trial_{trial.uuid}")
         )
         self.assertEqual(new_trial.description, "Short desc")
         self.assertEqual(new_trial.metrics, [["test_metric", 42]])

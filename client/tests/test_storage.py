@@ -3,6 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from unittest import TestCase
+from qiskit import QuantumCircuit
 from testcontainers.compose import DockerCompose
 from testcontainers.localstack import LocalStackContainer
 
@@ -34,6 +35,7 @@ class TestStorage(TestCase):
         recovered = self.local_storage.get(trial_id=self.my_trial.uuid)
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
         with self.assertRaises(ValueError):
             self.local_storage.get(trial_id="999")
         # List

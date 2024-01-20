@@ -233,13 +233,19 @@ class Trial:
         Returns:
             Trial dict object
         """
-        with open(os.path.join(path), "r", encoding="utf-8") as trial_file:
+        with open(os.path.join(path, "trial.json"), "r", encoding="utf-8") as trial_file:
             trial_json = json.load(trial_file, cls=TrialDecoder)
             if "id" in trial_json:
                 del trial_json["id"]
             if "uuid" in trial_json:
                 del trial_json["uuid"]
-            return Trial(**trial_json)
+            trial = Trial(**trial_json)
+
+            for index, circuit in enumerate(copy.copy(trial.circuits)):
+                circ_path = os.path.join(path, f"circuit_{circuit[0]}.json")
+                with open(circ_path, "r", encoding="utf-8") as circ_file:
+                    trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
+            return trial
 
     def export_to_shared_file(self, path) -> str:
         """Export trial to shared file.
@@ -250,11 +256,18 @@ class Trial:
         Returns:
             Full path of the file
         """
-        filename = os.path.join(path, f"{self.uuid}.json")
+        filename = os.path.join(path, f"trial_{self.uuid}/trial.json")
+        if not os.path.isdir(os.path.join(path, f"trial_{self.uuid}")):
+            os.makedirs(os.path.join(path, f"trial_{self.uuid}"))
         with open(filename, "w", encoding="utf-8") as trial_file:
             json.dump(self.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
-        return filename
+        for circuit in self.circuits:
+            save_circuit = os.path.join(path, f"trial_{self.uuid}/circuit_{circuit[0]}.json")
+            with open(save_circuit, "w", encoding="utf-8") as circuit_file:
+                json.dump(circuit, circuit_file, cls=CircEncoder, indent=4)
+
+        return os.path.join(path, f"trial_{self.uuid}")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         for key in __qiskit_version__:
