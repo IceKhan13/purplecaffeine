@@ -38,6 +38,7 @@ class TestStorage(TestCase):
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
         self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
+        self.assertEqual(recovered.texts, [["test_text", "text"]])
         with self.assertRaises(ValueError):
             self.local_storage.get(trial_id="999")
         # List

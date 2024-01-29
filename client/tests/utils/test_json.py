@@ -22,11 +22,15 @@ class TestJson(TestCase):
         self.assertTrue(isinstance(trial_encode, str))
         for circuit in my_trial.circuits:
             circ_encode = json.dumps(circuit, cls=RuntimeEncoder, indent=4)
+        for text in my_trial.texts:
+            text_encode = json.dumps(text, cls=RuntimeEncoder, indent=4)
 
         # Decoder
         trial_decode = Trial(**json.loads(trial_encode, cls=TrialDecoder))
         for index, circuit in enumerate(copy.copy(trial_decode.circuits)):
             trial_decode.circuits[index] = json.loads(circ_encode, cls=TrialDecoder)
+        for index, text in enumerate(copy.copy(trial_decode.texts)):
+            trial_decode.texts[index] = json.loads(text_encode, cls=TrialDecoder)
 
         self.assertTrue(isinstance(trial_decode, Trial))
         self.assertEqual(trial_decode.metrics, my_trial.metrics)

@@ -53,7 +53,7 @@ class Trial:
         circuits: Optional[List[List[Union[str, QuantumCircuit]]]] = None,
         operators: Optional[List[List[Union[str, Operator]]]] = None,
         artifacts: Optional[List[List[str]]] = None,
-        texts: Optional[List[List[str]]] = None,
+        texts: Optional[List[List[Union[str, str]]]] = None,
         arrays: Optional[List[List[Union[str, np.ndarray]]]] = None,
         tags: Optional[List[str]] = None,
         versions: Optional[List[List[str]]] = None,
@@ -481,15 +481,22 @@ class LocalStorage(BaseStorage):
         if not os.path.isdir(save_path):
             os.makedirs(save_path)
 
-        with open(
-            os.path.join(save_path, "trial.json"), "w", encoding="utf-8"
-        ) as trial_file:
-            json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
-
         for circuit in trial.circuits:
             save_circuit = os.path.join(save_path, f"circuit_{circuit[0]}.json")
             with open(save_circuit, "w", encoding="utf-8") as circuit_file:
                 json.dump(circuit, circuit_file, cls=RuntimeEncoder, indent=4)
+            circuit[1] = f"Check the circuit_{circuit[0]}.json file."
+
+        for text in trial.texts:
+            save_text = os.path.join(save_path, f"text_{text[0]}.json")
+            with open(save_text, "w", encoding="utf-8") as text_file:
+                json.dump(text, text_file, cls=RuntimeEncoder, indent=4)
+            text[1] = f"Check the text_{text[0]}.json file."
+
+        with open(
+            os.path.join(save_path, "trial.json"), "w", encoding="utf-8"
+        ) as trial_file:
+            json.dump(trial.__dict__, trial_file, cls=TrialEncoder, indent=4)
 
         return self.path
 
@@ -518,6 +525,11 @@ class LocalStorage(BaseStorage):
                 circ_path = os.path.join(trial_path, f"circuit_{circuit[0]}.json")
                 with open(circ_path, "r", encoding="utf-8") as circ_file:
                     trial.circuits[index] = json.load(circ_file, cls=TrialDecoder)
+
+            for index, text in enumerate(copy.copy(trial.texts)):
+                text_path = os.path.join(trial_path, f"text_{text[0]}.json")
+                with open(text_path, "r", encoding="utf-8") as text_file:
+                    trial.texts[index] = json.load(text_file, cls=TrialDecoder)
 
             return trial
 
