@@ -256,8 +256,7 @@ class Trial:
         return filename
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        for key in __version__:
-            self.add_version(key, __version__[key])
+        self.add_version("qiskit", __version__)
         self.save()
 
 

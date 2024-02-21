@@ -55,7 +55,7 @@ class TestTrial(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, f"{uuid}.json")))
         self.assertEqual(trial.metrics, [["test_metric", 42]])
         self.assertEqual(
-            trial.versions, [[key, value] for key, value in __version__.items()]
+            trial.versions, [["qiskit", __version__]]
         )
 
     def test_add_trial(self):
