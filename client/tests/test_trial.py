@@ -6,7 +6,7 @@ from typing import Optional
 from unittest import TestCase
 
 import numpy as np
-from qiskit import QuantumCircuit, __qiskit_version__
+from qiskit import QuantumCircuit, __version__
 from qiskit.circuit.library import XGate
 from qiskit.quantum_info import Operator
 
@@ -55,7 +55,7 @@ class TestTrial(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self.save_path, f"{uuid}.json")))
         self.assertEqual(trial.metrics, [["test_metric", 42]])
         self.assertEqual(
-            trial.versions, [[key, value] for key, value in __qiskit_version__.items()]
+            trial.versions, [[key, value] for key, value in __version__.items()]
         )
 
     def test_add_trial(self):
