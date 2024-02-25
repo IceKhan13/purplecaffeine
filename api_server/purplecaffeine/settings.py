@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "core",
     "health_check",
     "drf_spectacular",
-    "django_nose2",
+    "djnose2",
 ]
 
 TEST_RUNNER = "djnose2.TestRunner"
