@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django_nose",
 ]
 
-TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
+TEST_RUNNER = "djnose2.TestRunner"
 NOSE_ARGS = [
     "--cover-erase",
     "--cover-package=purplecaffeine",
