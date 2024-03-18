@@ -46,7 +46,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         # In future we can add [macos-latest, windows-latest]
-        python-version: [3.9]
+        python-version: ['3.10']
         folder: ["api_server"]
     services:
       postgres:

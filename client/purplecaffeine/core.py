@@ -13,7 +13,7 @@ import boto3
 import numpy as np
 import requests
 from pympler import asizeof
-from qiskit import __qiskit_version__
+from qiskit import __version__
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Operator
 
@@ -256,8 +256,7 @@ class Trial:
         return filename
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        for key in __qiskit_version__:
-            self.add_version(key, __qiskit_version__[key])
+        self.add_version("qiskit", __version__)
         self.save()
 
 
