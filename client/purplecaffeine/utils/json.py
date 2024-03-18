@@ -3,6 +3,7 @@ import pickle
 from typing import Any
 
 from qiskit.providers import Backend
+from qiskit.circuit import QuantumCircuit
 from qiskit_ibm_runtime.utils import RuntimeEncoder, RuntimeDecoder
 
 
@@ -21,6 +22,8 @@ class TrialEncoder(RuntimeEncoder):
             }
         elif isinstance(obj, BaseStorage):
             return {"__type__": "PurpleCaffeineStorage"}
+        elif isinstance(obj, QuantumCircuit):
+            return None
         return super().default(obj)
 
 

@@ -3,6 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from unittest import TestCase
+from qiskit import QuantumCircuit
 from testcontainers.compose import DockerCompose
 from testcontainers.localstack import LocalStackContainer
 
@@ -28,12 +29,16 @@ class TestStorage(TestCase):
         # Save
         self.local_storage.save(trial=self.my_trial)
         self.assertTrue(
-            os.path.isfile(os.path.join(self.save_path, f"{self.my_trial.uuid}.json"))
+            os.path.isfile(
+                os.path.join(self.save_path, f"trial_{self.my_trial.uuid}/trial.json")
+            )
         )
         # Get
         recovered = self.local_storage.get(trial_id=self.my_trial.uuid)
         self.assertTrue(isinstance(recovered, Trial))
         self.assertEqual(recovered.parameters, [["test_parameter", "parameter"]])
+        self.assertEqual(recovered.circuits, [["test_circuit", QuantumCircuit(2)]])
+        self.assertEqual(recovered.texts, [["test_text", "text"]])
         with self.assertRaises(ValueError):
             self.local_storage.get(trial_id="999")
         # List
