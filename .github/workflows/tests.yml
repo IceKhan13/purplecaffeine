@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-latest]
         # In future we can add [macos-latest, windows-latest]
         python-version: [3.9, '3.10']
         folder: ["client"]
