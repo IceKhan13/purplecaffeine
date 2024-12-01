@@ -52,7 +52,7 @@ class TestStorage(TestCase):
     def test_save_get_api_storage(self):
         """Test save trial in API."""
         with DockerCompose(
-            filepath=os.path.join(self.current_directory, "../.."),
+            context=os.path.join(self.current_directory, "../.."),
             compose_file_name="docker-compose.yml",
             build=True,
         ) as compose:
