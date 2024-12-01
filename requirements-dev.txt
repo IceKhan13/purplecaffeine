@@ -7,6 +7,6 @@ pillow==9.5.0
 jupyter==1.0.0
 nbconvert==7.4.0
 nbformat==5.8.0
-testcontainers==4.8.2
+testcontainers==4.0.0
 qiskit-optimization==0.6.0
 qiskit-algorithms==0.3.0
