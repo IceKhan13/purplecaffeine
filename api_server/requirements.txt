@@ -6,6 +6,6 @@ djangorestframework-simplejwt==5.3.1
 gunicorn==22.0.0
 django-health-check==3.18.3
 whitenoise==6.7.0
-drf-spectacular==0.27.2
+drf-spectacular==0.28.0
 django-nose==1.4.7
 pynose==1.5.3
