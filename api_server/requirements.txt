@@ -5,7 +5,7 @@ tzdata==2024.1
 djangorestframework-simplejwt==5.3.1
 gunicorn==23.0.0
 django-health-check==3.18.3
-whitenoise==6.7.0
+whitenoise==6.8.2
 drf-spectacular==0.28.0
 django-nose==1.4.7
 pynose==1.5.3
