@@ -1,7 +1,7 @@
 Django==5.1.4
 djangorestframework==3.14.0
 psycopg2-binary==2.9.9
-tzdata==2024.1
+tzdata==2024.2
 djangorestframework-simplejwt==5.3.1
 gunicorn==23.0.0
 django-health-check==3.18.3
