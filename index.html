@@ -8,7 +8,7 @@
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
         <title>PurpleCaffeine 0.2.0</title>
       <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
@@ -243,12 +243,12 @@
 <p>Step 1: run experiment</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-number">Listing 2 </span><span class="caption-text">script.py</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>   <span class="kn">from</span> <span class="nn">qiskit.circuit.random</span> <span class="kn">import</span> <span class="n">random_circuit</span>
-   <span class="kn">from</span> <span class="nn">qiskit.quantum_info.random</span> <span class="kn">import</span> <span class="n">random_pauli</span>
-   <span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>   <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_circuit</span>
+   <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.quantum_info.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_pauli</span>
+   <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">Estimator</span>
 
-   <span class="kn">from</span> <span class="nn">purplecaffeine.core</span> <span class="kn">import</span> <span class="n">Trial</span><span class="p">,</span> <span class="n">LocalStorage</span>
-   <span class="kn">from</span> <span class="nn">purplecaffeine.widget</span> <span class="kn">import</span> <span class="n">Widget</span>
+   <span class="kn">from</span><span class="w"> </span><span class="nn">purplecaffeine.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trial</span><span class="p">,</span> <span class="n">LocalStorage</span>
+   <span class="kn">from</span><span class="w"> </span><span class="nn">purplecaffeine.widget</span><span class="w"> </span><span class="kn">import</span> <span class="n">Widget</span>
 
    <span class="n">n_qubits</span> <span class="o">=</span> <span class="mi">4</span>
    <span class="n">depth</span> <span class="o">=</span> <span class="mi">3</span>
