@@ -4,7 +4,7 @@ psycopg2-binary==2.9.10
 tzdata==2025.1
 djangorestframework-simplejwt==5.5.0
 gunicorn==23.0.0
-django-health-check==3.18.3
+django-health-check==3.19.0
 whitenoise==6.9.0
 drf-spectacular==0.28.0
 django-nose==1.4.7
